@@ -12,13 +12,24 @@
      }">
 
     {{-- HEADER --}}
-    <div class="mb-8">
-        <h1 class="text-xl font-bold mb-4">Daftar Kategori</h1>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-4">Daftar Kategori</h1>
 
-        <div class="flex justify-end mb-6">
+        <div class="flex justify-end">
             <button 
                 @click="openTambah = true"
-                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="h-5 w-5" fill="none" 
+                     viewBox="0 0 24 24" 
+                     stroke="currentColor">
+                    <path stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M12 4v16m8-8H4"/>
+                </svg>
+
                 Tambah Kategori
             </button>
         </div>
@@ -50,30 +61,30 @@
                     <td class="px-6 py-4">
                         {{ $item->tahun->tahun ?? '-' }}
                     </td>
-                    <td class="px-6 py-4 text-center space-x-2">
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex flex-col gap-1 items-center">
+                            {{-- EDIT --}}
+                            <button 
+                                @click="
+                                    openEdit = true;
+                                    kategoriId = {{ $item->id }};
+                                    kategoriNama = '{{ $item->name }}';
+                                    kategoriTahun = '{{ $item->tahun_id }}';
+                                "
+                                class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                Edit
+                            </button>
 
-                        {{-- EDIT --}}
-                        <button 
-                            @click="
-                                openEdit = true;
-                                kategoriId = {{ $item->id }};
-                                kategoriNama = '{{ $item->name }}';
-                                kategoriTahun = '{{ $item->tahun_id }}';
-                            "
-                            class="px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
-                            Edit
-                        </button>
-
-                        {{-- DELETE --}}
-                        <button 
-                            @click="
-                                openDelete = true;
-                                kategoriId = {{ $item->id }};
-                            "
-                            class="px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
-                            Hapus
-                        </button>
-
+                            {{-- DELETE --}}
+                            <button 
+                                @click="
+                                    openDelete = true;
+                                    kategoriId = {{ $item->id }};
+                                "
+                                class="w-28 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                Hapus
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @empty

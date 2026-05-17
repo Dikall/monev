@@ -10,7 +10,7 @@ use App\Models\PublicBody;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
-use App\Http\Requests\UpdateProfileRequest;
+#use App\Http\Requests\UpdateProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -45,7 +45,7 @@ class ProfileController extends Controller
     public function deactivateAccount()
     {
         $user = Auth::user();
-        $user->update(['active' => false]); // pastikan field active ada di tabel users
+        $user->update(['is_aktif' => false]); // pastikan field active ada di tabel users
         Auth::logout();
 
         return redirect('/')->with('info', 'Akun Anda telah dinonaktifkan.');

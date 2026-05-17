@@ -21,7 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'public_body_id',
         'name',
-        'username', 
+        'username',
         'alamat',
         'telepon',
         'website',
@@ -58,10 +58,13 @@ class User extends Authenticatable
         return $this->belongsToMany(PublicBody::class, 'admin_public_body');
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     /**
      * The attributes that should be cast.
-     *
-     * @var array<string, string>
      */
     protected function casts(): array
     {

@@ -9,6 +9,8 @@ class Jawaban extends Model
 {
     use HasFactory;
 
+    protected $table = 'jawabans';
+
     protected $fillable = [
         'user_id',
         'public_body_id',
@@ -19,6 +21,10 @@ class Jawaban extends Model
         'dokumen_path',
         'is_submitted',
         'submitted_at',
+        'is_verified',
+        'catatan_verifikasi',
+        'verified_by',
+        'verified_at',
     ];
 
     protected $casts = [
@@ -26,6 +32,8 @@ class Jawaban extends Model
         'jawaban' => 'integer',
         'is_submitted' => 'boolean',
         'submitted_at' => 'datetime',
+        'is_verified'  => 'boolean',
+        'verified_at'  => 'datetime',
     ];
 
     public function user()
@@ -46,5 +54,10 @@ class Jawaban extends Model
     public function tahun()
     {
         return $this->belongsTo(Tahun::class);
+    }
+
+    public function verifikator()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }

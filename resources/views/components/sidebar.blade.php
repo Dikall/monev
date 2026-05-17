@@ -169,7 +169,7 @@
                  x-transition:enter-start="opacity-0 -translate-y-1"
                  x-transition:enter-end="opacity-100 translate-y-0"
                  class="pl-11 pr-2 pb-1 space-y-0.5 mt-0.5">
-                <a href="{{ route('superadmin.verifikator.index') }}" class="sidebar-sub-item block px-3 py-2 rounded-lg text-xs text-white text-opacity-60">Admin Provinsi</a>
+                <a href="{{ route('superadmin.verifikator.index') }}" class="sidebar-sub-item block px-3 py-2 rounded-lg text-xs text-white text-opacity-60">Admin Verifikator</a>
                 <a href="{{ route('superadmin.akunbpublik.index') }}" class="sidebar-sub-item block px-3 py-2 rounded-lg text-xs text-white text-opacity-60">Badan Publik</a>
             </div>
         </div>
@@ -204,7 +204,7 @@
         <div class="border-t border-white border-opacity-10 my-2 mx-1"></div>
 
         {{-- Rekap Nilai --}}
-        <a href="#"
+        <a href="{{ route('superadmin.rekap-nilai.index') }}"
            :class="sidebarOpen ? 'justify-start px-3' : 'justify-center px-0'"
            class="sidebar-item flex items-center gap-3 py-2.5 rounded-xl text-sm text-white text-opacity-75 font-medium">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -213,16 +213,43 @@
             <span x-show="sidebarOpen" class="whitespace-nowrap">Rekap Nilai</span>
         </a>
 
-        {{-- Notifikasi --}}
-        <a href="#"
+        {{-- Kelola Tampilan --}}
+        <a href="{{ route('superadmin.settings.index') }}"
            :class="sidebarOpen ? 'justify-start px-3' : 'justify-center px-0'"
-           class="sidebar-item flex items-center gap-3 py-2.5 rounded-xl text-sm text-white text-opacity-75 font-medium">
+           class="sidebar-item flex items-center gap-3 py-2.5 rounded-xl text-sm text-white text-opacity-75 font-medium {{ request()->routeIs('superadmin.settings.*') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C8.67 6.165 8 7.388 8 9v5.159c0 .538-.214 1.055-.595 1.436L6 17h9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
-            <span x-show="sidebarOpen" class="whitespace-nowrap">Notifikasi</span>
+            <span x-show="sidebarOpen" class="whitespace-nowrap">Kelola Tampilan</span>
         </a>
-
+        
+        {{-- Notifikasi --}}
+        <a href="{{ route('notifications.index') }}"
+           :class="sidebarOpen ? 'justify-start px-3' : 'justify-center px-0'"
+           class="sidebar-item flex items-center gap-3 py-2.5 rounded-xl text-sm text-white text-opacity-75 font-medium relative {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+            <div class="relative">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C8.67 6.165 8 7.388 8 9v5.159c0 .538-.214 1.055-.595 1.436L6 17h9z"/>
+                </svg>
+                {{-- Badge when sidebar is collapsed --}}
+                @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                    <div x-show="!sidebarOpen" class="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white border-2 border-red-700">
+                        {{ $unreadNotificationsCount > 9 ? '9+' : $unreadNotificationsCount }}
+                    </div>
+                @endif
+            </div>
+            
+            <div x-show="sidebarOpen" class="flex items-center justify-between w-full overflow-hidden">
+                <span class="whitespace-nowrap">Notifikasi</span>
+                @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-white bg-opacity-20 text-[10px] font-bold text-white">
+                        {{ $unreadNotificationsCount }}
+                    </span>
+                @endif
+            </div>
+        </a>
+        <div x-show="!sidebarOpen" class="border-t border-white border-opacity-10 my-2"></div>
     </nav>
 
     {{-- ===== FOOTER: Logout ===== --}}

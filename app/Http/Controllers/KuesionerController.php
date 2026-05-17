@@ -174,13 +174,8 @@ class KuesionerController extends Controller
             ];
  
             if (!empty($links[$pertanyaanId])) {
-                $rawLinks = preg_split(
-                    '/[\s,]+/',
-                    trim($links[$pertanyaanId]),
-                    -1,
-                    PREG_SPLIT_NO_EMPTY
-                );
-                $data['links'] = array_values(array_filter($rawLinks));
+                $rawLinks = is_array($links[$pertanyaanId]) ? $links[$pertanyaanId] : [$links[$pertanyaanId]];
+                $data['links'] = array_values(array_filter($rawLinks, fn($l) => !empty($l) && trim($l) !== ''));
             } else {
                 $data['links'] = null;
             }
@@ -218,13 +213,8 @@ class KuesionerController extends Controller
             ];
  
             if (!empty($links[$pertanyaanId])) {
-                $rawLinks = preg_split(
-                    '/[\s,]+/',
-                    trim($links[$pertanyaanId]),
-                    -1,
-                    PREG_SPLIT_NO_EMPTY
-                );
-                $data['links'] = array_values(array_filter($rawLinks));
+                $rawLinks = is_array($links[$pertanyaanId]) ? $links[$pertanyaanId] : [$links[$pertanyaanId]];
+                $data['links'] = array_values(array_filter($rawLinks, fn($l) => !empty($l) && trim($l) !== ''));
             } else {
                 $data['links'] = null;
             }

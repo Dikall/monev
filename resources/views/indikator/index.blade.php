@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="ml-64 p-6"
+<div class="p-6"
      x-data="{
         openTambah:false,
         openEdit:false,
@@ -99,38 +99,38 @@
                     <td class="px-4 py-2">{{ $item->bobot }}</td>
                     <td class="px-4 py-2 max-w-xs truncate">{{ $item->keterangan }}</td>
 
-                    <td class="px-4 py-2 text-center space-x-2">
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex flex-col gap-1 items-center">
+                            {{-- EDIT --}}
+                            <button 
+                                @click="
+                                    openEdit = true;
 
-                        {{-- EDIT --}}
-                        <button 
-                            @click="
-                                openEdit = true;
+                                    indikatorId = {{ $item->id }};
+                                    indikatorNo = '{{ $item->no }}';
+                                    indikatorNama = '{{ $item->nama_indikator }}';
+                                    indikatorBobot = '{{ $item->bobot }}';
+                                    indikatorKeterangan = '{{ $item->keterangan }}';
 
-                                indikatorId = {{ $item->id }};
-                                indikatorNo = '{{ $item->no }}';
-                                indikatorNama = '{{ $item->nama_indikator }}';
-                                indikatorBobot = '{{ $item->bobot }}';
-                                indikatorKeterangan = '{{ $item->keterangan }}';
+                                    indikatorTahun = '{{ $item->tahun_id }}';
 
-                                indikatorTahun = '{{ $item->tahun_id }}';
+                                    filterKategori(false);
+                                    indikatorKategori = '{{ $item->kategori_id }}';
+                                "
+                                class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                Edit
+                            </button>
 
-                                filterKategori(false);
-                                indikatorKategori = '{{ $item->kategori_id }}';
-                            "
-                            class="px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
-                            Edit
-                        </button>
-
-                        {{-- DELETE --}}
-                        <button 
-                            @click="
-                                openDelete = true;
-                                indikatorId = {{ $item->id }};
-                            "
-                            class="px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
-                            Hapus
-                        </button>
-
+                            {{-- DELETE --}}
+                            <button 
+                                @click="
+                                    openDelete = true;
+                                    indikatorId = {{ $item->id }};
+                                "
+                                class="w-28 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                Hapus
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @empty

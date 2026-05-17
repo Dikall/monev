@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('tahuns', function (Blueprint $table) {
             $table->id();
             $table->integer('tahun');
+            $table->decimal('bobot_saq', 5, 2)->default(70.00);
+            $table->decimal('bobot_presentasi', 5, 2)->default(30.00);
             $table->timestamps();
         });
     }

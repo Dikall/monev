@@ -12,6 +12,11 @@ class Tenggat extends Model
         'waktu_nonaktif'
     ];
 
+    protected $casts = [
+        'waktu_aktif'    => 'datetime',
+        'waktu_nonaktif' => 'datetime',
+    ];
+
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);

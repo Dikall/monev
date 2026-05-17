@@ -14,12 +14,15 @@
         telepon: '',
         email: '',
         username: '',
+        originalBodies: [],
+
 
         /* ── Multi-select state ── */
         selectedBodies: [],
         selectedKategori: '',
 
         allBodies: @js($bodies),
+        assignedBodyIds: @js($assignedBodyIds),
         filteredBodies: [],
 
         openKategoriDrop: false,
@@ -39,7 +42,11 @@
                 return;
             }
             this.filteredBodies = this.allBodies.filter(b => {
-                return String(b.kategori_id) === String(this.selectedKategori);
+                const isSameKategori = String(b.kategori_id) === String(this.selectedKategori);
+                // Dianggap milik orang lain jika ada di assignedBodyIds tapi TIDAK ada di originalBodies verifikator ini
+                const isAssignedToOthers = this.assignedBodyIds.includes(b.id) && !this.originalBodies.includes(b.id);
+                
+                return isSameKategori && !isAssignedToOthers;
             });
         },
 
@@ -54,6 +61,7 @@
 
         removeBody(id) {
             this.selectedBodies = this.selectedBodies.filter(b => b !== id);
+            this.filterBodies();
         },
 
         isBodySelected(id) {
@@ -79,14 +87,27 @@
 >
 
     {{-- HEADER --}}
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-xl font-bold">Kelola Verifikator</h1>
-        <button
-            @click="openTambah = true"
-            class="rounded-lg bg-red-700 px-5 py-2 text-white hover:bg-red-800"
-        >
-            + Tambah Verifikator
-        </button>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-4">Kelola Verifikator</h1>
+
+        <div class="flex justify-end">
+            <button 
+                @click="openTambah = true"
+                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="h-5 w-5" fill="none" 
+                     viewBox="0 0 24 24" 
+                     stroke="currentColor">
+                    <path stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M12 4v16m8-8H4"/>
+                </svg>
+
+                Tambah Verifikator
+            </button>
+        </div>
     </div>
 
     {{-- Alert sukses --}}
@@ -118,60 +139,67 @@
                         <td class="px-4 py-3">{{ $item->username }}</td>
                         <td class="px-4 py-3">{{ $item->email }}</td>
                         <td class="px-4 py-3">
-                            @foreach ($item->publicBodies->unique('kategori_id') as $body)
-                                <span class="rounded bg-gray-100 px-2 py-1 text-xs">
-                                    {{ $body->kategori->name ?? '-' }}
-                                </span>
-                            @endforeach
+                            <div class="flex flex-col gap-1">
+                                @foreach ($item->publicBodies->unique('kategori_id') as $body)
+                                    <span class="w-fit rounded bg-gray-100 px-2 py-1 text-xs">
+                                        {{ $body->kategori->name ?? '-' }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </td>
                         <td class="px-4 py-3">
-                            @foreach ($item->publicBodies as $body)
-                                <span class="rounded bg-gray-200 px-2 py-1 text-xs">
-                                    {{ $body->nama_badan }}
-                                </span>
-                            @endforeach
+                            <div class="flex flex-col gap-1">
+                                @foreach ($item->publicBodies as $body)
+                                    <span class="w-fit rounded bg-gray-200 px-2 py-1 text-xs">
+                                        {{ $body->nama_badan }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </td>
-                        <td class="space-x-1 px-4 py-3 text-center">
-                            {{-- Edit --}}
-                            <button
-                                @click="
-                                    openEdit      = true;
-                                    verifikatorId = {{ $item->id }};
-                                    nama          = '{{ addslashes($item->name) }}';
-                                    telepon       = '{{ addslashes($item->telepon ?? '') }}';
-                                    email         = '{{ $item->email }}';
-                                    username      = '{{ $item->username }}';
-                                "
-                                class="rounded bg-blue-600 px-3 py-1 text-xs text-white"
-                            >Edit</button>
+                        <td class="px-4 py-3">
+                            <div class="flex flex-col gap-1">
+                                {{-- Edit --}}
+                                <button
+                                    @click="
+                                        openEdit      = true;
+                                        verifikatorId = {{ $item->id }};
+                                        nama          = '{{ addslashes($item->name) }}';
+                                        telepon       = '{{ addslashes($item->telepon ?? '') }}';
+                                        email         = '{{ $item->email }}';
+                                        username      = '{{ $item->username }}';
+                                    "
+                                    class="w-full rounded bg-blue-600 px-4 py-2 text-xs text-white text-center"
+                                >Edit</button>
 
-                            {{-- Set Badan Publik --}}
-                            <button
-                                @click="
-                                    openSet          = true;
-                                    verifikatorId    = {{ $item->id }};
-                                    selectedBodies   = {{ $item->publicBodies->pluck('id') }};
-                                    selectedKategori = '{{ $item->publicBodies->first()?->kategori_id ?? '' }}';
-                                    openBodyDrop     = false;
-                                    openKategoriDrop = false;
-                                    filterBodies();
-                                "
-                                class="rounded bg-yellow-500 px-3 py-1 text-xs text-white"
-                            >Set</button>
+                                {{-- Set Badan Publik --}}
+                                <button
+                                    @click="
+                                        openSet          = true;
+                                        verifikatorId    = {{ $item->id }};
+                                        selectedBodies   = {{ $item->publicBodies->pluck('id') }};
+                                        originalBodies   = {{ $item->publicBodies->pluck('id') }};
+                                        selectedKategori = '{{ $item->publicBodies->first()?->kategori_id ?? '' }}';
+                                        openBodyDrop     = false;
+                                        openKategoriDrop = false;
+                                        filterBodies();
+                                    "
+                                    class="w-full rounded bg-yellow-500 px-4 py-2 text-xs text-white text-center"
+                                >Set</button>
 
-                            {{-- Hapus --}}
-                            <form
-                                action="{{ route('superadmin.verifikator.destroy', $item->id) }}"
-                                method="POST"
-                                class="inline"
-                                onsubmit="return confirm('Hapus verifikator ini?')"
-                            >
-                                @csrf
-                                @method('DELETE')
-                                <button class="rounded bg-red-700 px-3 py-1 text-xs text-white">
-                                    Hapus
-                                </button>
-                            </form>
+                                {{-- Hapus --}}
+                                <form
+                                    action="{{ route('superadmin.verifikator.destroy', $item->id) }}"
+                                    method="POST"
+                                    class="w-full"
+                                    onsubmit="return confirm('Hapus verifikator ini?')"
+                                >
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="w-full rounded bg-red-700 px-4 py-2 text-xs text-white text-center">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
@@ -220,10 +248,9 @@
                     class="mb-3 w-full rounded border p-3"
                 >
                 <input
-                    type="email"
+                    type="text"
                     name="email"
                     placeholder="Email"
-                    required
                     class="mb-3 w-full rounded border p-3"
                 >
                 <input
@@ -278,7 +305,7 @@
                     x-model="nama"
                     placeholder="Nama"
                     class="mb-3 w-full rounded border p-3"
-                >
+                >   
                 <input
                     type="text"
                     name="telepon"
@@ -287,7 +314,7 @@
                     class="mb-3 w-full rounded border p-3"
                 >
                 <input
-                    type="email"
+                    type="text"
                     name="email"
                     x-model="email"
                     placeholder="Email"
@@ -407,16 +434,16 @@
                         class="min-h-[80px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2"
                         :class="selectedKategori !== '' ? 'cursor-pointer hover:border-gray-400' : 'cursor-not-allowed bg-gray-50 opacity-60'"
                     >
-                        <div class="flex flex-wrap gap-2">
+                        <div class="flex flex-col gap-2">
                             <template x-for="body in selectedBodyObjects" :key="body.id">
-                                <span class="inline-flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
+                                <div class="flex items-center justify-between gap-1 rounded-md bg-red-100 px-3 py-2 text-xs font-medium text-red-800">
                                     <span x-text="body.nama_badan"></span>
                                     <button
                                         type="button"
                                         @click.stop="removeBody(body.id)"
-                                        class="ml-0.5 font-bold leading-none text-red-400 hover:text-red-700"
+                                        class="font-bold text-red-400 hover:text-red-700"
                                     >×</button>
-                                </span>
+                                </div>
                             </template>
                             <template x-if="selectedKategori === ''">
                                 <span class="text-sm text-gray-400">Pilih kategori terlebih dahulu...</span>

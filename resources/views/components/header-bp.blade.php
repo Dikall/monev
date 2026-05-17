@@ -16,8 +16,15 @@
         <!-- Menu Navigasi -->
         <nav id="menu" class="hidden sm:flex flex-col sm:flex-row sm:space-x-10 text-lg font-medium text-gray-700 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-6 sm:px-0 py-4 sm:py-0 shadow sm:shadow-none z-40">
             <a href="{{ route('badanpublik/beranda') }}" class="block py-2 sm:py-0 hover:text-red-600">Beranda</a>
-            <a href="{{ route('kuesioner.tab') }}" class="block py-2 sm:py-0 hover:text-red-600">Kuisioner</a>
-            <a href="{{ route('badanpublik/beranda') }}" class="block py-2 sm:py-0 hover:text-red-600">Notifikasi</a>
+            <a href="{{ route('kuesioner.tab') }}" class="block py-2 sm:py-0 hover:text-red-600">Kuesioner</a>
+            <a href="{{ route('notifications.index') }}" class="block py-2 sm:py-0 hover:text-red-600 flex items-center relative">
+                Notifikasi
+                @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                    <span class="ml-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                        {{ $unreadNotificationsCount }}
+                    </span>
+                @endif
+            </a>
 
             <!-- Dropdown Profil -->
             <div class="relative group">

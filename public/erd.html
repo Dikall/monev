@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD - E-Monev</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1a2e; font-family: 'Segoe UI', sans-serif; overflow: auto; }
+  h1 { text-align: center; color: #e0e0ff; padding: 18px 0 6px; font-size: 1.5rem; letter-spacing: 2px; }
+  p.sub { text-align: center; color: #7878aa; font-size: 0.8rem; margin-bottom: 12px; }
+  #canvas { position: relative; width: 2400px; height: 1700px; }
+  svg#lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  .table { position: absolute; background: #16213e; border: 2px solid #4a4a8a; border-radius: 8px; min-width: 210px; box-shadow: 0 4px 24px #0008; }
+  .table-header { background: #0f3460; color: #e0e0ff; font-weight: 700; font-size: 0.82rem; padding: 7px 12px; border-radius: 6px 6px 0 0; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+  .table-header.pivot { background: #2d1b69; }
+  .table-header.standalone { background: #1a4a3a; }
+  table.fields { width: 100%; border-collapse: collapse; }
+  table.fields td { font-size: 0.72rem; padding: 4px 10px; color: #c0c0e0; border-bottom: 1px solid #2a2a4a; white-space: nowrap; }
+  table.fields td.badge { width: 32px; }
+  table.fields tr:last-child td { border-bottom: none; }
+  .pk { background: #e8b800; color: #1a1a2e; border-radius: 3px; font-size: 0.6rem; font-weight: 700; padding: 1px 4px; }
+  .fk { background: #3a8fd4; color: #fff; border-radius: 3px; font-size: 0.6rem; font-weight: 700; padding: 1px 4px; }
+  .uk { background: #2ea86a; color: #fff; border-radius: 3px; font-size: 0.6rem; font-weight: 700; padding: 1px 4px; }
+  line.rel { stroke: #4a6fa5; stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.7; }
+</style>
+</head>
+<body>
+<h1>🗄️ Entity Relationship Diagram — E-Monev</h1>
+<p class="sub">Seluruh tabel database beserta relasi antar entitas</p>
+<div style="overflow:auto; width:100%; height:calc(100vh - 70px);">
+<div id="canvas">
+<svg id="lines"></svg>
+
+<!-- tahuns -->
+<div class="table" id="t_tahuns" style="left:30px;top:30px;">
+  <div class="table-header">tahuns</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>tahun : integer</td></tr>
+    <tr><td></td><td>bobot_saq : decimal(5,2)</td></tr>
+    <tr><td></td><td>bobot_presentasi : decimal(5,2)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- kategoris -->
+<div class="table" id="t_kategoris" style="left:30px;top:230px;">
+  <div class="table-header">kategoris</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>tahun_id → tahuns</td></tr>
+    <tr><td></td><td>name : varchar(255)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- indikators -->
+<div class="table" id="t_indikators" style="left:30px;top:410px;">
+  <div class="table-header">indikators</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>tahun_id → tahuns</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>kategori_id → kategoris</td></tr>
+    <tr><td></td><td>no : integer</td></tr>
+    <tr><td></td><td>nama_indikator : varchar(255)</td></tr>
+    <tr><td></td><td>bobot : integer</td></tr>
+    <tr><td></td><td>keterangan : text|null</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- pertanyaans -->
+<div class="table" id="t_pertanyaans" style="left:30px;top:680px;">
+  <div class="table-header">pertanyaans</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>tahun_id → tahuns</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>kategori_id → kategoris</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>indikator_id → indikators</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>parent_id → pertanyaans|null</td></tr>
+    <tr><td></td><td>is_parent : boolean</td></tr>
+    <tr><td></td><td>level : enum(judul,subjudul,pertanyaan)</td></tr>
+    <tr><td></td><td>nomor : varchar(255)</td></tr>
+    <tr><td></td><td>pertanyaan_kuisioner : text|null</td></tr>
+    <tr><td></td><td>bobot : integer</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- public_bodies -->
+<div class="table" id="t_public_bodies" style="left:580px;top:30px;">
+  <div class="table-header">public_bodies</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>kategori_id → kategoris</td></tr>
+    <tr><td></td><td>nama_badan : varchar(255)</td></tr>
+    <tr><td></td><td>is_registered : boolean</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- users -->
+<div class="table" id="t_users" style="left:580px;top:260px;">
+  <div class="table-header">users</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>public_body_id → public_bodies|null</td></tr>
+    <tr><td></td><td>name : varchar(255)|null</td></tr>
+    <tr><td class="badge"><span class="uk">UK</span></td><td>username : varchar(100)|null</td></tr>
+    <tr><td></td><td>email : varchar(255)|null</td></tr>
+    <tr><td></td><td>password : varchar(255)</td></tr>
+    <tr><td></td><td>alamat / telepon / website</td></tr>
+    <tr><td></td><td>nama_responden / jabatan_responden</td></tr>
+    <tr><td></td><td>nohp_responden / email_responden</td></tr>
+    <tr><td></td><td>nama_ppid / nohp_ppid / email_ppid</td></tr>
+    <tr><td></td><td>is_aktif : boolean</td></tr>
+    <tr><td></td><td>type : tinyint (0=BP,1=admin,2=super)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- roles (Spatie) -->
+<div class="table" id="t_roles" style="left:580px;top:690px;">
+  <div class="table-header">roles</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>name : varchar(255)</td></tr>
+    <tr><td></td><td>guard_name : varchar(255)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- permissions -->
+<div class="table" id="t_permissions" style="left:580px;top:850px;">
+  <div class="table-header">permissions</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>name : varchar(255)</td></tr>
+    <tr><td></td><td>guard_name : varchar(255)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- model_has_roles -->
+<div class="table" id="t_model_has_roles" style="left:580px;top:1010px;">
+  <div class="table-header pivot">model_has_roles</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="fk">FK</span></td><td>role_id → roles</td></tr>
+    <tr><td></td><td>model_type : varchar</td></tr>
+    <tr><td></td><td>model_id : bigint</td></tr>
+  </table>
+</div>
+
+<!-- role_has_permissions -->
+<div class="table" id="t_role_has_permissions" style="left:580px;top:1130px;">
+  <div class="table-header pivot">role_has_permissions</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="fk">FK</span></td><td>permission_id → permissions</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>role_id → roles</td></tr>
+  </table>
+</div>
+
+<!-- admin_public_body -->
+<div class="table" id="t_admin_public_body" style="left:1100px;top:30px;">
+  <div class="table-header pivot">admin_public_body</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>user_id → users</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>public_body_id → public_bodies</td></tr>
+    <tr><td class="badge"><span class="uk">UK</span></td><td>unique(user_id, public_body_id)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- jawabans -->
+<div class="table" id="t_jawabans" style="left:1100px;top:250px;">
+  <div class="table-header">jawabans</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>user_id → users</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>public_body_id → public_bodies</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>pertanyaan_id → pertanyaans</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>tahun_id → tahuns</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>verified_by → users|null</td></tr>
+    <tr><td></td><td>jawaban : tinyint|null (1=Ya,0=Tidak)</td></tr>
+    <tr><td></td><td>links : text|null (JSON)</td></tr>
+    <tr><td></td><td>dokumen_path : varchar|null</td></tr>
+    <tr><td></td><td>is_submitted : boolean</td></tr>
+    <tr><td></td><td>submitted_at : timestamp|null</td></tr>
+    <tr><td></td><td>is_verified : boolean|null</td></tr>
+    <tr><td></td><td>catatan_verifikasi : text|null</td></tr>
+    <tr><td></td><td>verified_at : timestamp|null</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- penilaians -->
+<div class="table" id="t_penilaians" style="left:1100px;top:740px;">
+  <div class="table-header">penilaians</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>public_body_id → public_bodies</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>tahun_id → tahuns</td></tr>
+    <tr><td></td><td>nilai_presentasi : decimal(8,2)|null</td></tr>
+    <tr><td></td><td>file_bukti_presentasi : varchar|null</td></tr>
+    <tr><td></td><td>is_published : boolean</td></tr>
+    <tr><td></td><td>tanggal_publish : timestamp|null</td></tr>
+    <tr><td></td><td>catatan : text|null</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- tenggats -->
+<div class="table" id="t_tenggats" style="left:1100px;top:1010px;">
+  <div class="table-header">tenggats</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>kategori_id → kategoris</td></tr>
+    <tr><td></td><td>waktu_aktif : datetime</td></tr>
+    <tr><td></td><td>waktu_nonaktif : datetime</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- notifications -->
+<div class="table" id="t_notifications" style="left:1700px;top:30px;">
+  <div class="table-header">notifications</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="fk">FK</span></td><td>user_id → users</td></tr>
+    <tr><td></td><td>title : varchar(255)</td></tr>
+    <tr><td></td><td>message : text</td></tr>
+    <tr><td></td><td>url : varchar(255)|null</td></tr>
+    <tr><td></td><td>read_at : timestamp|null</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- laporans -->
+<div class="table" id="t_laporans" style="left:1700px;top:250px;" >
+  <div class="table-header standalone">laporans</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>file_name : varchar(255)</td></tr>
+    <tr><td></td><td>file_data : LONGBLOB</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- kuemonevs -->
+<div class="table" id="t_kuemonevs" style="left:1700px;top:410px;">
+  <div class="table-header standalone">kuemonevs</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>file_name : varchar(255)</td></tr>
+    <tr><td></td><td>file_data : binary|null</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- pedomen -->
+<div class="table" id="t_pedomen" style="left:1700px;top:560px;">
+  <div class="table-header standalone">pedomen</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>file_name : varchar(255)</td></tr>
+    <tr><td></td><td>file_data : LONGBLOB</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- geo_areas -->
+<div class="table" id="t_geo_areas" style="left:1700px;top:700px;">
+  <div class="table-header standalone">geo_areas</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td></td><td>name : varchar(255)</td></tr>
+    <tr><td></td><td>geojson : json</td></tr>
+    <tr><td></td><td>color : varchar(255)</td></tr>
+    <tr><td></td><td>kategori : varchar(255)</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+<!-- app_settings -->
+<div class="table" id="t_app_settings" style="left:1700px;top:870px;">
+  <div class="table-header standalone">app_settings</div>
+  <table class="fields">
+    <tr><td class="badge"><span class="pk">PK</span></td><td>id : bigint</td></tr>
+    <tr><td class="badge"><span class="uk">UK</span></td><td>key : varchar(255)</td></tr>
+    <tr><td></td><td>value : text|null</td></tr>
+    <tr><td></td><td>created_at / updated_at</td></tr>
+  </table>
+</div>
+
+</div><!-- #canvas -->
+</div>
+
+<!-- Legend -->
+<div style="position:fixed;bottom:12px;right:16px;background:#16213e;border:1px solid #4a4a8a;border-radius:8px;padding:10px 16px;color:#c0c0e0;font-size:0.72rem;line-height:1.8;">
+  <b style="color:#e0e0ff">Legend</b><br>
+  <span class="pk">PK</span> Primary Key &nbsp;
+  <span class="fk">FK</span> Foreign Key &nbsp;
+  <span class="uk">UK</span> Unique Key<br>
+  <span style="display:inline-block;width:30px;border-top:2px dashed #4a6fa5;vertical-align:middle;"></span> Relasi FK<br>
+  <span style="background:#0f3460;color:#e0e0ff;padding:1px 6px;border-radius:3px;">■</span> Tabel utama &nbsp;
+  <span style="background:#2d1b69;color:#e0e0ff;padding:1px 6px;border-radius:3px;">■</span> Pivot &nbsp;
+  <span style="background:#1a4a3a;color:#e0e0ff;padding:1px 6px;border-radius:3px;">■</span> Standalone
+</div>
+
+<script>
+// Draw relationship lines between tables
+const relations = [
+  // [fromId, toId]
+  ['t_kategoris','t_tahuns'],
+  ['t_indikators','t_tahuns'],
+  ['t_indikators','t_kategoris'],
+  ['t_pertanyaans','t_tahuns'],
+  ['t_pertanyaans','t_kategoris'],
+  ['t_pertanyaans','t_indikators'],
+  ['t_pertanyaans','t_pertanyaans'],
+  ['t_public_bodies','t_kategoris'],
+  ['t_users','t_public_bodies'],
+  ['t_model_has_roles','t_roles'],
+  ['t_role_has_permissions','t_roles'],
+  ['t_role_has_permissions','t_permissions'],
+  ['t_admin_public_body','t_users'],
+  ['t_admin_public_body','t_public_bodies'],
+  ['t_jawabans','t_users'],
+  ['t_jawabans','t_public_bodies'],
+  ['t_jawabans','t_pertanyaans'],
+  ['t_jawabans','t_tahuns'],
+  ['t_penilaians','t_public_bodies'],
+  ['t_penilaians','t_tahuns'],
+  ['t_tenggats','t_kategoris'],
+  ['t_notifications','t_users'],
+];
+
+function getCenter(el) {
+  const r = el.getBoundingClientRect();
+  const canvas = document.getElementById('canvas').getBoundingClientRect();
+  return {
+    x: r.left - canvas.left + r.width / 2,
+    y: r.top - canvas.top + r.height / 2
+  };
+}
+function getEdge(el, target) {
+  const r = el.getBoundingClientRect();
+  const canvas = document.getElementById('canvas').getBoundingClientRect();
+  const tc = getCenter(target);
+  const cx = r.left - canvas.left + r.width / 2;
+  const cy = r.top - canvas.top + r.height / 2;
+  let x, y;
+  if (Math.abs(tc.x - cx) > Math.abs(tc.y - cy)) {
+    x = tc.x > cx ? r.right - canvas.left : r.left - canvas.left;
+    y = cy;
+  } else {
+    x = cx;
+    y = tc.y > cy ? r.bottom - canvas.top : r.top - canvas.top;
+  }
+  return { x, y };
+}
+
+window.addEventListener('load', () => {
+  const svg = document.getElementById('lines');
+  relations.forEach(([fromId, toId]) => {
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+    if (!from || !to) return;
+    const p1 = getEdge(from, to);
+    const p2 = getEdge(to, from);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+    line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
+    line.setAttribute('class','rel');
+    svg.appendChild(line);
+  });
+});
+</script>
+</body>
+</html>

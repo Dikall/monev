@@ -1,7 +1,7 @@
 @extends('components.layouts.app')
 
 @section('content')
-<div class="max-w-8xl mx-auto mt-10 mb-20 px-16">
+<div class="max-w-8xl mx-auto mt-10 mb-20 px-6">
     <h1 class="text-xl font-bold mb-6">Kuesioner Monev</h1>
     <div class="flex items-center mb-6">
         <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg text-sm font-semibold">
@@ -52,7 +52,7 @@
         <h2 class="text-center text-lg font-semibold mb-4">Tambah Dokumen</h2>
         <hr class="mb-4">
 
-        <form action="{{ route('lapmonev.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('kuemonev.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <!-- Dropzone Style -->
             <div class="flex items-center justify-center w-full mb-4">

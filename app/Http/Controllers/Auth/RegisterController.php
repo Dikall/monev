@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Models\Notification;
+use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
@@ -44,9 +46,7 @@ class RegisterController extends Controller
         $data = request()->all();
 
         $validator = Validator::make($data, [
-
             'kategori_id' => ['required','exists:kategoris,id'],
-
             'public_body_id' => [
                 'required',
                 Rule::exists('public_bodies', 'id')
@@ -56,20 +56,13 @@ class RegisterController extends Controller
                     ),
             ],
 
-            'alamat' => ['required','string','max:255'],
-            'telepon' => ['nullable','string','max:20'],
-            'website' => ['nullable','url','max:255'],
-
             'nama_responden' => ['required','string','max:255'],
             'jabatan_responden' => ['required','string','max:255'],
             'nohp_responden' => ['required','string','max:20'],
             'email_responden' => ['required','email','max:255'],
 
-            'nama_ppid' => ['nullable','string','max:255'],
-            'nohp_ppid' => ['nullable','string','max:20'],
-            'email_ppid' => ['nullable','email','max:255'],
-
-            'email' => ['required','email','unique:users,email'],
+            'username' => ['required', 'string', 'max:100', 'unique:users,username'],
+            'email' => ['nullable','email','unique:users,email'],
             'password' => ['required','min:8','confirmed'],
         ]);
 
@@ -81,21 +74,14 @@ class RegisterController extends Controller
 
             $user = User::create([
                 'public_body_id' => $data['public_body_id'],
-                'alamat' => $data['alamat'],
-                'telepon' => $data['telepon'] ?? null,
-                'website' => $data['website'] ?? null,
-
-                'email' => $data['email'],
+                'username' => $data['username'],
+                'email' => $data['email'] ?? null,
                 'password' => Hash::make($data['password']),
 
                 'nama_responden' => $data['nama_responden'],
                 'jabatan_responden' => $data['jabatan_responden'],
                 'nohp_responden' => $data['nohp_responden'],
                 'email_responden' => $data['email_responden'],
-
-                'nama_ppid' => $data['nama_ppid'] ?? null,
-                'nohp_ppid' => $data['nohp_ppid'] ?? null,
-                'email_ppid' => $data['email_ppid'] ?? null,
             ]);
 
             // assign role
@@ -104,6 +90,17 @@ class RegisterController extends Controller
             // tandai badan publik sudah register
             PublicBody::where('id', $data['public_body_id'])
                 ->update(['is_registered' => true]);
+
+            // NOTIFIKASI KE SUPER ADMIN
+            $pb = PublicBody::find($data['public_body_id']);
+            $superAdmins = User::role('Super Admin')->get();
+            foreach ($superAdmins as $sa) {
+                Notification::create([
+                    'user_id' => $sa->id,
+                    'title' => 'PENDAFTARAN BARU',
+                    'message' => "Badan Publik {$pb->nama_badan} sudah mendaftar dan perlu diverifikasi.",
+                ]);
+            }
         });
 
         return redirect('/login')->with('success','Registrasi berhasil, silakan login.');

@@ -23,12 +23,23 @@
                 type="text"
                 x-model="search"
                 placeholder="Filter Badan Publik..."
-                class="w-full md:w-1/3 border rounded-lg p-3"
+                class="w-full md:w-1/3 border rounded-lg p-2"
             >
 
-            <button
+            <button 
                 @click="openTambah = true"
-                class="ml-4 px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="h-5 w-5" fill="none" 
+                     viewBox="0 0 24 24" 
+                     stroke="currentColor">
+                    <path stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M12 4v16m8-8H4"/>
+                </svg>
+
                 Tambah Badan Publik
             </button>
         </div>
@@ -62,28 +73,28 @@
                         {{ $item->nama_badan }}
                     </td>
 
-                    <td class="px-6 py-4 text-center space-x-2">
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex flex-col gap-1 items-center">
+                            <button
+                                @click="
+                                    openEdit = true;
+                                    bodyId = {{ $item->id }};
+                                    bodyNama = '{{ $item->nama_badan }}';
+                                    bodyKategori = '{{ $item->kategori_id }}';
+                                "
+                                class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                Edit
+                            </button>
 
-                        <button
-                            @click="
-                                openEdit = true;
-                                bodyId = {{ $item->id }};
-                                bodyNama = '{{ $item->nama_badan }}';
-                                bodyKategori = '{{ $item->kategori_id }}';
-                            "
-                            class="px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
-                            Edit
-                        </button>
-
-                        <button
-                            @click="
-                                openDelete = true;
-                                bodyId = {{ $item->id }};
-                            "
-                            class="px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
-                            Hapus
-                        </button>
-
+                            <button
+                                @click="
+                                    openDelete = true;
+                                    bodyId = {{ $item->id }};
+                                "
+                                class="w-28 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                Hapus
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -179,7 +190,10 @@
          class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
 
         <div class="bg-white rounded-xl w-1/2 p-8">
-            <h2 class="text-xl font-bold mb-6">Edit</h2>
+            <div class="flex justify-between mb-6">
+                <h2 class="text-2xl font-bold">Edit Badan Publik</h2>
+                <button @click="openEdit=false">✕</button>
+            </div>
 
             <form :action="'/superadmin/bpublik/' + bodyId" method="POST">
                 @csrf

@@ -19,8 +19,11 @@ use App\Http\Controllers\TenggatController;
 use App\Http\Controllers\PublicBodyController;
 use App\Http\Controllers\IndikatorController;
 use App\Http\Controllers\PertanyaanController;
+use App\Http\Controllers\ImportPertanyaanController;
+use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\AkunBpublikController;
 use App\Http\Controllers\KuesionerController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +96,9 @@ Route::resources([
 // 'permissions' => PermissionController::class,
     ]);
 
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+
     Route::middleware(['auth', 'role:Super Admin'])
         ->prefix('superadmin')
         ->as('superadmin.')
@@ -107,10 +113,11 @@ Route::resources([
             Route::resource('bpublik', PublicBodyController::class);
             Route::resource('indikator', IndikatorController::class);
             Route::resource('pertanyaan', PertanyaanController::class);
+            Route::get('pertanyaan/import/template',[ImportPertanyaanController::class, 'downloadTemplate'])->name('pertanyaan.import.template');
+            Route::post('pertanyaan/import',[ImportPertanyaanController::class, 'import'])->name('pertanyaan.import');
             
             Route::resource('verifikator', AdminController::class);
-            Route::post('verifikator/set/{id}', [AdminController::class, 'setPublicBody'])
-            ->name('verifikator.set');
+            Route::post('verifikator/set/{id}', [AdminController::class, 'setPublicBody'])->name('verifikator.set');
             
             Route::resource('akunbpublik', AkunBpublikController::class);
             Route::patch('akunbpublik/{id}/aktifkan',       [AkunBpublikController::class, 'aktifkan'])
@@ -122,18 +129,35 @@ Route::resources([
             Route::patch('akunbpublik/{id}/reset-password', [AkunBpublikController::class, 'resetPassword'])
                 ->name('akunbpublik.resetPassword');
             
+            // REKAP NILAI
+            Route::get('rekap-nilai', [SuperAdminController::class, 'rekapNilai'])->name('rekap-nilai.index');
+            Route::post('rekap-nilai/update-bobot', [SuperAdminController::class, 'updateBobot'])->name('rekap-nilai.update-bobot');
+            Route::post('rekap-nilai/update-presentasi/{publicBodyId}', [SuperAdminController::class, 'updatePresentasi'])->name('rekap-nilai.update-presentasi');
+            Route::get('rekap-nilai/export-detail/{publicBodyId}', [SuperAdminController::class, 'exportDetailExcel'])->name('rekap-nilai.export-detail');
+            Route::post('rekap-nilai/reset-publish/{publicBodyId}', [SuperAdminController::class, 'resetPublish'])->name('rekap-nilai.reset-publish');
+
+            // PENGATURAN TAMPILAN
+            Route::get('settings', [AppSettingController::class, 'index'])->name('settings.index');
+            Route::post('settings', [AppSettingController::class, 'update'])->name('settings.update');
+
         });
 
     
-    Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::middleware(['auth', 'role:Admin|Super Admin'])->group(function () {
         Route::get('/admin/beranda', [AdminController::class, 'dashboard'])->name('admin/beranda');
+        Route::get('/admin/export-excel', [AdminController::class, 'exportExcel'])->name('admin.export-excel');
+        Route::get('/admin/kategori/{kategori}/list-akun', [AdminController::class, 'listAkun'])->name('admin.list-akun');
+        Route::patch('/admin/publish-nilai/{publicBody}', [AdminController::class, 'publishNilai'])->name('admin.publish-nilai');
+        Route::get('/admin/verifikasi/{publicBody}', [AdminController::class, 'verifikasiPage'])->name('admin.verifikasi');
+        Route::post('/admin/verifikasi/{publicBody}/simpan', [AdminController::class, 'simpanVerifikasi'])->name('admin.simpan-verifikasi');
+        Route::post('/admin/verifikasi/autosave', [AdminController::class, 'autoSaveVerifikasi'])->name('admin.autosave-verifikasi');
     });
 
 
     Route::middleware(['auth', 'role:Badan Publik'])->group(function () {
         Route::get('/badanpublik/beranda', [BadanPublikController::class, 'dashboard'])->name('badanpublik/beranda');
 
-        Route::get('badanpublik/kuesioner', [KuesionerController::class, 'index'])->name('kuesioner.index');
+        Route::get('badanpublik/kuesioner/isi', [KuesionerController::class, 'index'])->name('kuesioner.index');
         Route::post('badanpublik/kuesioner/simpan', [KuesionerController::class, 'store'])->name('kuesioner.store');
 
         Route::get('badanpublik/kuesioner', [BadanPublikController::class, 'kuesionerTab'])->name('kuesioner.tab');

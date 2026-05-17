@@ -8,6 +8,7 @@ use App\Models\Kategori;
 use App\Models\PublicBody;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Notification;
 
 class AkunBpublikController extends Controller
 {
@@ -40,6 +41,13 @@ public function aktifkan(string $id): RedirectResponse
 
     $user->update([
         'is_aktif' => true
+    ]);
+
+    // NOTIFIKASI KE BADAN PUBLIK
+    Notification::create([
+        'user_id' => $user->id,
+        'title' => 'AKUN TERVERIFIKASI',
+        'message' => 'Akun Anda sudah terverifikasi dan sekarang Anda dapat mengakses sistem.',
     ]);
 
     return redirect()->route('superadmin.akunbpublik.index')

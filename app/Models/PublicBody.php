@@ -33,4 +33,14 @@ class PublicBody extends Model
     {
         return $this->belongsTo(Kategori::class);
     }
+
+    public function penilaians()
+    {
+        return $this->hasMany(Penilaian::class);
+    }
+
+    public function jawabans()
+    {
+        return $this->hasMany(Jawaban::class);
+    }
 }

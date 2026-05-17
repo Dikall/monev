@@ -6,7 +6,7 @@
 
     {{-- HEADER KEMBALI --}}
     <div class="mb-8">
-        <a href="{{ route('badanpublik/beranda') }}"
+        <a href="{{ route('kuesioner.tab') }}"
            class="inline-flex items-center gap-1 text-red-700 font-semibold hover:text-red-900 text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">

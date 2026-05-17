@@ -41,121 +41,117 @@
 
     @else
 
-    {{-- INFORMASI BADAN PUBLIK --}}
-    <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden mb-6">
-        <div class="px-8 py-5 border-b border-gray-100">
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                Informasi Responden
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12">
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400 font-medium">Nama Badan Publik</span>
-                    <span class="text-sm font-semibold text-gray-800">
-                        {{ $publicBody->nama_badan_publik ?? '-' }}
-                    </span>
+    {{-- INFORMASI BADAN PUBLIK & SKOR TOTAL --}}
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden mb-8">
+        <div class="p-8">
+            <div class="flex flex-col lg:flex-row gap-10 lg:divide-x lg:divide-gray-100">
+                
+                {{-- Kiri: Informasi Responden --}}
+                <div class="flex-1">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        Informasi Responden
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10">
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Nama Badan Publik</p>
+                            <p class="text-sm font-semibold text-gray-800">
+                                {{ $publicBody->nama_badan ?? '-' }}
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Nama Badan Publik</p>
+                            <p class="text-sm font-semibold text-gray-800">
+                                {{ $kategoriAktif->name  ?? '-' }}
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Nama Badan Publik</p>
+                            <p class="text-sm font-semibold text-gray-800">
+                                {{ $tahun->tahun ?? '-' }}
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Nama Badan Publik</p>
+                            <p class="text-sm font-semibold text-gray-800">
+                                {{ $user->nama_responden }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400 font-medium">Kategori</span>
-                    <span class="text-sm font-semibold text-gray-800">
-                        {{ $kategoriAktif->nama_kategori ?? '-' }}
-                    </span>
+
+                {{-- Kanan: Skor Total (Jika sudah dinilai) --}}
+                @if($sudahDinilai && $penilaian)
+                <div class="lg:pl-10 lg:w-[400px] flex-shrink-0">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        Skor Total Penilaian
+                    </h3>
+
+                    <div class="flex items-center gap-6">
+                        {{-- Gauge Skor --}}
+                        <div class="relative w-24 h-24 flex-shrink-0">
+                            <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#f1f5f9" stroke-width="12"/>
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#b91c1c" stroke-width="12"
+                                        stroke-dasharray="{{ round(($penilaian->skor_total / 100) * 339.29, 2) }} 339.29"
+                                        stroke-linecap="round" class="transition-all duration-1000 ease-out"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-xl font-bold text-gray-900 leading-none">
+                                    {{ number_format($penilaian->skor_total, 2) }}
+                                </span>
+                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter mt-0.5">Skor</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <p class="text-2xl font-bold text-red-700 leading-tight uppercase">
+                                {{ $penilaian->predikat ?? '-' }}
+                            </p>
+                            <p class="text-[10px] font-medium text-gray-500 italic">
+                                Sesuai Standar Keterbukaan Informasi Publik
+                            </p>
+                        </div>
+                    </div>
+
+                    @if($penilaian->catatan)
+                        <div class="mt-6 p-3 bg-red-50 border-l-4 border-red-700 rounded-r-lg">
+                            <p class="text-[10px] font-black text-red-900 uppercase tracking-widest mb-1">Catatan Verifikator</p>
+                            <p class="text-xs text-red-800 leading-relaxed italic">"{{ $penilaian->catatan }}"</p>
+                        </div>
+                    @endif
                 </div>
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400 font-medium">Tahun Penilaian</span>
-                    <span class="text-sm font-semibold text-gray-800">
-                        {{ $tahun->tahun ?? '-' }}
-                    </span>
+                @else
+                <div class="lg:pl-10 lg:w-[400px] flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <div class="text-center p-6">
+                        <svg class="w-10 h-10 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Menunggu Penilaian</p>
+                    </div>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400 font-medium">Nama Responden</span>
-                    <span class="text-sm font-semibold text-gray-800">
-                        {{ $user->name }}
-                    </span>
-                </div>
+                @endif
             </div>
         </div>
     </div>
 
-    {{-- PENILAIAN BELUM ADA --}}
+    {{-- PENILAIAN BELUM ADA ALERT --}}
     @if(!$sudahDinilai)
-        <div class="flex flex-col items-center justify-center py-20 text-center">
-            <div class="bg-white rounded-2xl shadow-sm border border-yellow-100 px-12 py-16 max-w-lg">
-
-                {{-- Ikon animasi loading/proses --}}
-                <div class="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-yellow-500"
-                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-
-                <h3 class="text-xl font-bold text-gray-800 mb-3">
-                    Sedang Dalam Proses Penilaian
-                </h3>
-                <p class="text-gray-500 leading-relaxed text-sm">
-                    Kuesioner Anda telah berhasil di-submit dan sedang dalam proses penilaian
-                    oleh administrator. Hasil penilaian akan ditampilkan di sini setelah
-                    proses selesai.
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-8 mb-8 flex items-start gap-4">
+            <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-blue-900 mb-1">Proses Verifikasi Sedang Berlangsung</h3>
+                <p class="text-sm text-blue-800 leading-relaxed max-w-2xl">
+                    Kuesioner Anda telah berhasil dikirim. Saat ini tim verifikator sedang melakukan penilaian terhadap jawaban dan bukti yang Anda berikan. 
+                    Hasil skor rincian akan muncul di bawah ini setelah proses verifikasi selesai.
                 </p>
-                <p class="text-gray-400 text-xs mt-4">
-                    Silakan kunjungi halaman ini kembali secara berkala untuk mengecek
-                    status penilaian Anda.
-                </p>
-
             </div>
         </div>
-
     @else
-    {{-- ══════════════════════════════════════════════════════ --}}
-    {{-- PENILAIAN SUDAH ADA — Tampilkan hasil                 --}}
-    {{-- ══════════════════════════════════════════════════════ --}}
-
-        {{-- Skor Total --}}
-        @if($penilaian)
-        <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden mb-6">
-            <div class="px-8 py-6">
-                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-5">
-                    Skor Total Penilaian
-                </h3>
-                <div class="flex items-center gap-8">
-                    {{-- Lingkaran skor --}}
-                    <div class="relative w-28 h-28 flex-shrink-0">
-                        <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
-                            <circle cx="60" cy="60" r="50"
-                                    fill="none" stroke="#f3f4f6" stroke-width="10"/>
-                            <circle cx="60" cy="60" r="50"
-                                    fill="none" stroke="#b91c1c" stroke-width="10"
-                                    stroke-dasharray="{{ round(($penilaian->skor_total / 100) * 314.16, 2) }} 314.16"
-                                    stroke-linecap="round"/>
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-2xl font-bold text-red-700">
-                                {{ number_format($penilaian->skor_total, 2) }}
-                            </span>
-                            <span class="text-xs text-gray-400">/ 100</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <p class="text-3xl font-bold text-gray-900 mb-1">
-                            {{ $penilaian->predikat ?? '-' }}
-                        </p>
-                        <p class="text-sm text-gray-500">
-                            Predikat Informatif sesuai standar KIP
-                        </p>
-                        @if($penilaian->catatan)
-                            <p class="mt-3 text-sm text-gray-600 bg-gray-50 border border-gray-200
-                                      rounded-lg px-4 py-2 max-w-md">
-                                <span class="font-medium text-gray-700">Catatan: </span>
-                                {{ $penilaian->catatan }}
-                            </p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 
         {{-- Tabel per Indikator --}}
         <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden mb-6">

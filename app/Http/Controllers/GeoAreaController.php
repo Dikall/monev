@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\geo_area;
+use App\Models\GeoArea;
 use Illuminate\Http\Request;
 
 class GeoAreaController extends Controller

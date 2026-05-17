@@ -4,6 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\PublicBody;
+use App\Models\Kategori;
+use App\Models\Jawaban;
+use App\Models\Tahun;
+use App\Models\Indikator;
+use App\Models\Pertanyaan;
+use App\Models\Penilaian;
+use App\Models\Tenggat;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -11,31 +18,585 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
+use App\Models\Notification;
 
 class AdminController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('permission:view-beranda', ['only' => ['dashboard', 'show']]);
-        $this->middleware('permission:view-verifikator')->only('index');
-        $this->middleware('permission:create-verifikator')->only('store');
-        $this->middleware('permission:edit-verifikator')->only('update');
-        $this->middleware('permission:delete-verifikator')->only('destroy');
-    }
-
     public function index(): View
     {
+        $users = User::role('Admin')->with('publicBodies.kategori')->get();
+        
+        // Ambil semua ID badan publik yang sudah di-set ke verifikator (admin) mana pun
+        $assignedBodyIds = \Illuminate\Support\Facades\DB::table('admin_public_body')
+            ->pluck('public_body_id')
+            ->toArray();
+
         return view('verifikator.index', [
-            'users'    => User::role('Admin')->with('publicBodies.kategori')->get(),
-            'bodies'   => PublicBody::with('kategori')->get(),
-            'kategoris' => \App\Models\Kategori::all(),
+            'users'           => $users,
+            'bodies'          => PublicBody::with('kategori')->get(),
+            'kategoris'       => Kategori::all(),
+            'assignedBodyIds' => $assignedBodyIds,
         ]);
     }
 
+    /**
+     * Beranda Admin (Verifikator)
+     * Menampilkan ringkasan per kategori: jumlah yang harus diverifikasi & sudah mengisi
+     */
     public function dashboard()
     {
-        return view('admin.beranda');
+        $admin = Auth::user();
+
+        // Ambil tahun aktif
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        // Ambil ID badan publik yang di-assign ke admin
+        $assignedBodies = $admin->hasRole('Super Admin') ? PublicBody::all() : $admin->publicBodies;
+        $assignedKategoriIds = $assignedBodies->pluck('kategori_id')->unique();
+
+        // Ambil hanya kategori yang memiliki badan publik yang di-assign ke admin
+        $allKategoris = Kategori::whereIn('id', $assignedKategoriIds)->get();
+
+        $kategoriStats = [];
+
+        foreach ($allKategoris as $kategori) {
+            $bodyIds = $assignedBodies->where('kategori_id', $kategori->id)->pluck('id');
+
+            $totalVerifikasi = 0;
+            $totalMengisi    = 0;
+
+            if ($tahun && $bodyIds->isNotEmpty()) {
+                // Cari public_body yang punya jawaban dengan is_submitted = true
+                $totalVerifikasi = Jawaban::whereIn('public_body_id', $bodyIds)
+                    ->where('tahun_id', $tahun->id)
+                    ->where('is_submitted', true)
+                    ->distinct('public_body_id')
+                    ->count('public_body_id');
+
+                // Cari public_body yang punya jawaban tapi BELUM submit
+                $bodySubmitted = Jawaban::whereIn('public_body_id', $bodyIds)
+                    ->where('tahun_id', $tahun->id)
+                    ->where('is_submitted', true)
+                    ->distinct()
+                    ->pluck('public_body_id');
+
+                $totalMengisi = Jawaban::whereIn('public_body_id', $bodyIds)
+                    ->where('tahun_id', $tahun->id)
+                    ->where('is_submitted', false)
+                    ->whereNotIn('public_body_id', $bodySubmitted)
+                    ->distinct('public_body_id')
+                    ->count('public_body_id');
+            }
+
+            $kategoriStats[] = [
+                'kategori'         => $kategori,
+                'total_verifikasi' => $totalVerifikasi,
+                'total_mengisi'    => $totalMengisi,
+            ];
+        }
+
+        return view('admin.beranda', compact('admin', 'kategoriStats', 'tahun'));
+    }
+
+    /**
+     * Export rekap nilai kuesioner ke Excel (CSV)
+     */
+    public function exportExcel()
+    {
+        $admin = Auth::user();
+
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        if (!$tahun) {
+            return back()->with('error', 'Tahun aktif tidak ditemukan.');
+        }
+
+        // Ambil public bodies yang di-assign ke admin
+        $assignedBodies = $admin->hasRole('Super Admin') 
+            ? PublicBody::with('kategori')->get() 
+            : $admin->publicBodies()->with('kategori')->get();
+        $bodyIds = $assignedBodies->pluck('id');
+
+        // Ambil indikator berdasarkan kategori-kategori yang ada
+        $kategoriIds = $assignedBodies->pluck('kategori_id')->unique();
+
+        $indikators = Indikator::where('tahun_id', $tahun->id)
+            ->whereIn('kategori_id', $kategoriIds)
+            ->orderBy('kategori_id')
+            ->orderBy('no')
+            ->get();
+
+        // Header CSV
+        $headers = ['No', 'Kategori', 'Nama Badan Publik', 'Status Submit'];
+
+        foreach ($indikators as $ind) {
+            $headers[] = $ind->nama_indikator . ' (Bobot: ' . $ind->bobot . ')';
+        }
+        $headers[] = 'Total Nilai';
+
+        // Data rows
+        $rows = [];
+
+        $no = 1;
+        foreach ($assignedBodies as $body) {
+            $row = [
+                $no++,
+                $body->kategori->name ?? '-',
+                $body->nama_badan,
+            ];
+
+            // Cek apakah sudah submit
+            $sudahSubmit = Jawaban::where('public_body_id', $body->id)
+                ->where('tahun_id', $tahun->id)
+                ->where('is_submitted', true)
+                ->exists();
+
+            $row[] = $sudahSubmit ? 'Sudah Submit' : 'Belum Submit';
+
+            $totalNilai = 0;
+
+            // Hitung nilai per indikator
+            $bodyIndikators = Indikator::where('tahun_id', $tahun->id)
+                ->where('kategori_id', $body->kategori_id)
+                ->orderBy('no')
+                ->get();
+
+            foreach ($indikators as $ind) {
+                // Hanya hitung jika indikator sesuai kategori body
+                if ($ind->kategori_id != $body->kategori_id) {
+                    $row[] = '-';
+                    continue;
+                }
+
+                $pertanyaanIds = Pertanyaan::where('level', 'pertanyaan')
+                    ->where('indikator_id', $ind->id)
+                    ->pluck('id');
+
+                $jawabans = Jawaban::where('public_body_id', $body->id)
+                    ->where('tahun_id', $tahun->id)
+                    ->whereIn('pertanyaan_id', $pertanyaanIds)
+                    ->get();
+
+                $totalBobot = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
+                
+                // Effective "Ya" is when original answer was 1 AND it was NOT rejected by admin (is_verified !== false)
+                $bobotYa = Pertanyaan::whereIn('id',
+                    $jawabans->filter(function($j) {
+                        return $j->jawaban == 1 && $j->is_verified !== false;
+                    })->pluck('pertanyaan_id')
+                )->sum('bobot');
+
+                $persentase = $totalBobot > 0 ? round(($bobotYa / $totalBobot) * 100, 2) : 0;
+                $nilaiIndikator = $totalBobot > 0 ? round(($bobotYa / $totalBobot) * $ind->bobot, 2) : 0;
+
+                $row[] = $nilaiIndikator;
+                $totalNilai += $nilaiIndikator;
+            }
+
+            $row[] = round($totalNilai, 2);
+            $rows[] = $row;
+        }
+
+        // Generate CSV
+        $filename = 'rekap_nilai_kuesioner_' . $admin->name . '_' . $tahunSekarang . '.csv';
+
+        $callback = function () use ($headers, $rows) {
+            $file = fopen('php://output', 'w');
+
+            // BOM for UTF-8 Excel
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, $headers, ';');
+            foreach ($rows as $row) {
+                fputcsv($file, $row, ';');
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
+     * List Akun Badan Publik per Kategori
+     * Menampilkan 2 tabel: Mengisi Kuesioner & Tidak Mengisi
+     */
+    public function listAkun($kategoriId)
+    {
+        $admin = Auth::user();
+
+        $kategori = Kategori::findOrFail($kategoriId);
+
+        // Ambil tahun aktif
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        if (!$tahun) {
+            return back()->with('error', 'Tahun aktif tidak ditemukan.');
+        }
+
+        // Ambil indikator untuk kategori ini
+        $indikators = Indikator::where('tahun_id', $tahun->id)
+            ->where('kategori_id', $kategoriId)
+            ->orderBy('no')
+            ->get();
+
+        // Cari ID badan publik yang sudah submit
+        $bodiesSudahSubmitIds = Jawaban::where('tahun_id', $tahun->id)
+            ->where('is_submitted', true)
+            ->pluck('public_body_id')
+            ->unique();
+
+        // ID Badan Publik yang di-assign ke admin ini:
+        $assignedBodiesIds = $admin->hasRole('Super Admin') 
+            ? PublicBody::where('kategori_id', $kategoriId)->pluck('id') 
+            : $admin->publicBodies()->pluck('public_bodies.id');
+
+        // Ambil semua public bodies di kategori ini yang di-assign ke admin (untuk auto-submit)
+        $allBodies = PublicBody::where('kategori_id', $kategoriId)
+            ->whereIn('id', $assignedBodiesIds)
+            ->get();
+
+        // Ambil tenggat untuk kategori ini
+        $tenggat = Tenggat::where('kategori_id', $kategoriId)->first();
+
+        // FITUR AUTO SUBMIT
+        if ($tenggat && now()->gt($tenggat->waktu_nonaktif)) {
+            Jawaban::where('tahun_id', $tahun->id)
+                ->whereIn('public_body_id', $allBodies->pluck('id'))
+                ->where('is_submitted', false)
+                ->update([
+                    'is_submitted' => true,
+                    'submitted_at' => $tenggat->waktu_nonaktif
+                ]);
+            
+            // Refresh data setelah auto-submit
+            $bodiesSudahSubmitIds = Jawaban::where('tahun_id', $tahun->id)
+                ->where('is_submitted', true)
+                ->pluck('public_body_id')
+                ->unique();
+        }
+
+        // 1. Sudah Submit
+        $bodiesMengisiRaw = PublicBody::where('kategori_id', $kategoriId)
+            ->whereIn('id', $assignedBodiesIds)
+            ->whereIn('id', $bodiesSudahSubmitIds)
+            ->get();
+
+        // 2. Belum Submit
+        $bodiesTidakMengisiRaw = PublicBody::where('kategori_id', $kategoriId)
+            ->whereIn('id', $assignedBodiesIds)
+            ->whereNotIn('id', $bodiesSudahSubmitIds)
+            ->get();
+
+        // --- PROSES DATA (HITUNG SKOR) ---
+        $processData = function($bodies) use ($tahun, $indikators) {
+            $data = [];
+            foreach ($bodies as $body) {
+                // Cek apakah sudah submit
+                $isSubmitted = Jawaban::where('public_body_id', $body->id)
+                    ->where('tahun_id', $tahun->id)
+                    ->where('is_submitted', true)
+                    ->exists();
+
+                // Ambil user badan publik (responden)
+                $userBp = $body->users()->role('Badan Publik')->first();
+                $namaResponden = $userBp->nama_responden ?? '-';
+
+                // Hitung nilai per indikator
+                $nilaiPerIndikator = [];
+                $totalNilaiKuesioner = 0;
+
+                foreach ($indikators as $ind) {
+                    $pertanyaanIds = Pertanyaan::where('level', 'pertanyaan')
+                        ->where('indikator_id', $ind->id)
+                        ->pluck('id');
+
+                    $jawabans = Jawaban::where('public_body_id', $body->id)
+                        ->where('tahun_id', $tahun->id)
+                        ->whereIn('pertanyaan_id', $pertanyaanIds)
+                        ->get();
+
+                    $totalBobotPertanyaan = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
+                    
+                    // Effective "Ya" is when original answer was 1 AND it was NOT rejected by admin (is_verified !== false)
+                    $bobotYa = Pertanyaan::whereIn('id',
+                        $jawabans->filter(function($j) {
+                            return $j->jawaban == 1 && $j->is_verified !== false;
+                        })->pluck('pertanyaan_id')
+                    )->sum('bobot');
+
+                    $nilaiIndikator = $totalBobotPertanyaan > 0 ? round(($bobotYa / $totalBobotPertanyaan) * $ind->bobot, 2) : 0;
+                    $nilaiPerIndikator[$ind->id] = $nilaiIndikator;
+                    $totalNilaiKuesioner += $nilaiIndikator;
+                }
+
+                $penilaian = Penilaian::where('public_body_id', $body->id)->where('tahun_id', $tahun->id)->first();
+                $nilaiPresentasi = $penilaian->nilai_presentasi ?? null;
+                $isPublished = $penilaian->is_published ?? false;
+
+                $totalScore = null;
+                if ($nilaiPresentasi !== null) {
+                    $totalScore = round(($totalNilaiKuesioner * 0.7) + ($nilaiPresentasi * 0.3), 2);
+                }
+
+                $unverifiedCount = Jawaban::where('public_body_id', $body->id)
+                    ->where('tahun_id', $tahun->id)
+                    ->whereNull('is_verified')
+                    ->count();
+                $isFullyVerified = ($unverifiedCount === 0);
+                $canPublish = $isFullyVerified && ($nilaiPresentasi !== null);
+
+                $data[] = [
+                    'id'                  => $body->id,
+                    'nama_badan'          => $body->nama_badan,
+                    'nama_responden'      => $namaResponden,
+                    'nilai_per_indikator' => $nilaiPerIndikator,
+                    'total_kuesioner'     => round($totalNilaiKuesioner, 2),
+                    'nilai_presentasi'    => $nilaiPresentasi,
+                    'total_score'         => $totalScore,
+                    'is_published'        => $isPublished,
+                    'can_publish'         => $canPublish,
+                    'penilaian_id'        => $penilaian->id ?? null,
+                    'is_submitted'        => $isSubmitted,
+                    'body'                => $body, // Keep for potential use in view
+                ];
+            }
+            return $data;
+        };
+
+        $bodiesMengisi      = $processData($bodiesMengisiRaw);
+        $bodiesTidakMengisi = $processData($bodiesTidakMengisiRaw);
+
+        return view('admin.list-akun', compact(
+            'admin', 'kategori', 'tahun', 'indikators',
+            'bodiesMengisi', 'bodiesTidakMengisi'
+        ));
+    }
+
+    /**
+     * Toggle publish nilai untuk badan publik
+     */
+    public function publishNilai(Request $request, PublicBody $publicBody)
+    {
+        $admin = Auth::user();
+        if (!$admin->hasRole('Super Admin') && !$admin->publicBodies->contains($publicBody->id)) {
+            abort(403, 'Anda tidak memiliki akses ke badan publik ini.');
+        }
+
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->firstOrFail();
+
+        $penilaian = Penilaian::firstOrCreate(
+            ['public_body_id' => $publicBody->id, 'tahun_id' => $tahun->id]
+        );
+
+        // Jika akan dipublish, periksa kelengkapan
+        if (!$penilaian->is_published) {
+            $unverifiedCount = Jawaban::where('public_body_id', $publicBody->id)
+                ->where('tahun_id', $tahun->id)
+                ->whereNull('is_verified')
+                ->count();
+            
+            if ($unverifiedCount > 0 || $penilaian->nilai_presentasi === null) {
+                return back()->with('error', 'Gagal publish: Verifikasi belum selesai atau nilai presentasi belum diisi.');
+            }
+        }
+
+        $penilaian->is_published = !$penilaian->is_published;
+        $penilaian->tanggal_publish = $penilaian->is_published ? now() : null;
+        $penilaian->save();
+
+        if ($penilaian->is_published) {
+            // NOTIFIKASI KE BADAN PUBLIK (semua user di bawah BP ini)
+            $bpUsers = $publicBody->users;
+            foreach ($bpUsers as $u) {
+                Notification::create([
+                    'user_id' => $u->id,
+                    'title' => 'NILAI TERPUBLISH',
+                    'message' => 'Hasil penilaian kuesioner Anda sudah dipublish dan dapat dilihat.',
+                ]);
+            }
+
+            // NOTIFIKASI KE SUPER ADMIN
+            $superAdmins = User::role('Super Admin')->get();
+            foreach ($superAdmins as $sa) {
+                Notification::create([
+                    'user_id' => $sa->id,
+                       'title' => 'PUBLISH NILAI',
+                    'message' => "Admin mempublish nilai untuk Badan Publik {$publicBody->nama_badan}.",
+                ]);
+            }
+        }
+
+        $status = $penilaian->is_published ? 'dipublish' : 'di-unpublish';
+        return back()->with('success', "Nilai berhasil {$status}.");
+    }
+
+    /**
+     * Halaman verifikasi jawaban per badan publik
+     */
+    public function verifikasiPage($publicBodyId)
+    {
+        $admin = Auth::user();
+
+        if (!$admin->hasRole('Super Admin') && !$admin->publicBodies->contains($publicBodyId)) {
+            abort(403, 'Anda tidak memiliki akses ke badan publik ini.');
+        }
+
+        $publicBody = PublicBody::with('kategori')->findOrFail($publicBodyId);
+        $kategori   = $publicBody->kategori;
+
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+        if (!$tahun) {
+            return back()->with('error', 'Tahun aktif tidak ditemukan.');
+        }
+
+        // Ambil indikator untuk kategori ini
+        $indikators = Indikator::where('tahun_id', $tahun->id)
+            ->where('kategori_id', $kategori->id)
+            ->orderBy('no')
+            ->get();
+
+        // Ambil pertanyaan per indikator (hierarki)
+        $pertanyaanPerIndikator = [];
+        foreach ($indikators as $ind) {
+            $pertanyaans = Pertanyaan::where('indikator_id', $ind->id)
+                ->where('level', 'judul')
+                ->with('childrenRecursive')
+                ->orderBy('nomor')
+                ->get();
+            $pertanyaanPerIndikator[$ind->id] = $pertanyaans;
+        }
+
+        // Ambil jawaban
+        $jawabans = Jawaban::with('verifikator')->where('public_body_id', $publicBody->id)
+            ->where('tahun_id', $tahun->id)
+            ->get()
+            ->keyBy('pertanyaan_id');
+
+        // Ambil user badan publik (responden)
+        $userBp = $publicBody->users()->role('Badan Publik')->first();
+
+        // Ambil data penilaian (untuk status publish)
+        $penilaian = Penilaian::where('public_body_id', $publicBody->id)
+            ->where('tahun_id', $tahun?->id)
+            ->first();
+
+        return view('admin.verifikasi', compact(
+            'admin', 'publicBody', 'kategori', 'tahun',
+            'indikators', 'pertanyaanPerIndikator', 'jawabans', 'userBp', 'penilaian'
+        ));
+    }
+
+    /**
+     * Auto-save verifikasi (AJAX)
+     */
+    public function autoSaveVerifikasi(Request $request)
+    {
+        if (!$request->ajax() && !$request->wantsJson()) {
+            return response()->json(['status' => 'error', 'message' => 'Bukan request AJAX.'], 400);
+        }
+
+        $admin = Auth::user();
+        $publicBodyId = $request->input('public_body_id');
+
+        if (!$admin->hasRole('Super Admin') && !$admin->publicBodies->contains($publicBodyId)) {
+            return response()->json(['status' => 'error', 'message' => 'Anda tidak memiliki akses ke badan publik ini.'], 403);
+        }
+
+        $verifikasi   = $request->input('verifikasi', []);
+        $catatan      = $request->input('catatan', []);
+
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        $allPertanyaanIds = array_unique(array_merge(array_keys($verifikasi), array_keys($catatan)));
+
+        $count = 0;
+        foreach ($allPertanyaanIds as $pertanyaanId) {
+            $jawaban = Jawaban::where('pertanyaan_id', $pertanyaanId)
+                ->where('public_body_id', $publicBodyId)
+                ->where('tahun_id', $tahun?->id)
+                ->first();
+
+            if (!$jawaban) continue;
+
+            // Update is_verified if present in request
+            if (isset($verifikasi[$pertanyaanId])) {
+                $isVerified = $verifikasi[$pertanyaanId];
+                $jawaban->is_verified = ($isVerified === '1' || $isVerified === 1) ? true : (($isVerified === '0' || $isVerified === 0) ? false : null);
+            }
+            
+            // Update catatan if present in request
+            if (isset($catatan[$pertanyaanId])) {
+                $jawaban->catatan_verifikasi = $catatan[$pertanyaanId];
+            }
+
+            $jawaban->verified_by = $admin->id;
+            $jawaban->verified_at = now();
+            $jawaban->save();
+            $count++;
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Auto-save berhasil ({$count} jawaban).",
+        ]);
+    }
+
+    /**
+     * Simpan verifikasi (full submit)
+     */
+    public function simpanVerifikasi(Request $request, $publicBodyId)
+    {
+        $admin = Auth::user();
+
+        $publicBodyId = $publicBodyId; // passed via URL
+        if (!$admin->hasRole('Super Admin') && !$admin->publicBodies->contains($publicBodyId)) {
+            abort(403, 'Anda tidak memiliki akses ke badan publik ini.');
+        }
+
+        $verifikasi   = $request->input('verifikasi', []);
+        $catatan      = $request->input('catatan', []);
+        
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        $allPertanyaanIds = array_unique(array_merge(array_keys($verifikasi), array_keys($catatan)));
+
+        foreach ($allPertanyaanIds as $pertanyaanId) {
+            $jawaban = Jawaban::where('pertanyaan_id', $pertanyaanId)
+                ->where('public_body_id', $publicBodyId)
+                ->where('tahun_id', $tahun?->id)
+                ->first();
+                
+            if (!$jawaban) continue;
+
+            if (isset($verifikasi[$pertanyaanId])) {
+                $isVerified = $verifikasi[$pertanyaanId];
+                $jawaban->is_verified = ($isVerified === '1' || $isVerified === 1) ? true : (($isVerified === '0' || $isVerified === 0) ? false : null);
+            }
+
+            if (isset($catatan[$pertanyaanId])) {
+                $jawaban->catatan_verifikasi = $catatan[$pertanyaanId];
+            }
+
+            $jawaban->verified_by = $admin->id;
+            $jawaban->verified_at = now();
+            $jawaban->save();
+        }
+
+        return redirect()
+            ->route('admin.list-akun', $request->input('kategori_id'))
+            ->with('success', 'Verifikasi berhasil disimpan.');
     }
 
     public function create()
@@ -53,7 +614,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'email'    => 'nullable|email|unique:users,email',
             'username' => 'required|string|max:100|unique:users,username',
             'password' => 'required|min:6',
         ]);
@@ -98,7 +659,7 @@ class AdminController extends Controller
             'name'     => 'nullable|string|max:255',
             'telepon'  => 'nullable|string|max:20',
             'username' => 'required|string|max:100|unique:users,username,' . $id,
-            'email'    => 'required|email|unique:users,email,' . $id,
+            'email'    => 'nullable|email|unique:users,email,' . $id,
             'password' => 'nullable|min:6|confirmed',
         ]);
 
@@ -132,15 +693,15 @@ class AdminController extends Controller
     public function setPublicBody(Request $request, $id)
     {
         $request->validate([
-            'public_body_ids' => 'required|array',
+            'public_body_ids' => 'nullable|array',
         ]);
 
         $user = User::findOrFail($id);
 
-        // sync() otomatis hapus yang lama dan insert yang baru — tidak akan double
-        $user->publicBodies()->sync($request->public_body_ids);
+        // Jika tidak ada yang dipilih (dikosongkan), sync dengan array kosong
+        $user->publicBodies()->sync($request->input('public_body_ids', []));
 
-        return back()->with('success', 'Badan publik berhasil diset');
+        return back()->with('success', 'Badan publik berhasil diperbarui');
     }
 
     public function destroy($id)

@@ -3,7 +3,7 @@
     <div class="max-w-screen-xl mx-auto flex items-center justify-between px-2 py-4">
         <!-- Kiri: Logo & Judul -->
         <div class="flex items-center space-x-5">
-            <img src="{{ asset('images/logo_header.png') }}" alt="Logo" class="h-12 w-auto">
+            <img src="{{ $appSettings['logo'] ?? asset('images/logo_header.png') }}" alt="Logo" class="h-12 w-auto">
         </div>
 
         <!-- Tombol Hamburger (hanya tampil di layar kecil) -->

@@ -3,8 +3,8 @@
 @section('content')
 <div class="bg-[#fdfdfd] flex flex-col items-center min-h-screen overflow-x-hidden">
 
-  <div class="relative w-full h-screen flex items-center justify-center overflow-hidden mb-10 z-0">
-    <img src="{{ asset('images/cover.png') }}" 
+  <div class="relative w-full h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden mb-10 z-0">
+    <img src="{{ $appSettings['cover'] ?? asset('images/cover.png') }}" 
        alt="COVER E-MONEV KALIMANTAN BARAT" 
        class="absolute top-0 left-0 w-full h-full object-cover z-10" />
   </div>

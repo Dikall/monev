@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('telepon')->nullable(); // hanya digunakan badan publik
             $table->string('website')->nullable(); // hanya digunakan badan publik
 
-            $table->string('email')->unique(); // email login
+            $table->string('email')->nullable(); // email login
             $table->string('password');
 
             // Khusus untuk badan publik

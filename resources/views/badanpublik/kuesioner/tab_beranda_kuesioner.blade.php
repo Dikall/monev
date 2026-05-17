@@ -64,96 +64,86 @@
                 <div class="flex flex-col gap-1">
                     <span class="text-xs text-gray-400 font-medium">Nama Responden</span>
                     <span class="text-sm font-semibold text-gray-800">
-                        {{ $user->name }}
+                        {{ $user->nama_responden }}
                     </span>
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <span class="text-xs text-gray-400 font-medium">Nama Badan Publik</span>
                     <span class="text-sm font-semibold text-gray-800">
-                        {{ $publicBody->nama_badan_publik ?? '-' }}
+                        {{ $publicBody->nama_badan ?? '-' }}
                     </span>
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <span class="text-xs text-gray-400 font-medium">Kategori</span>
                     <span class="text-sm font-semibold text-gray-800">
-                        {{ $kategoriAktif->nama_kategori ?? '-' }}
+                        {{ $kategoriAktif->name ?? '-' }}
                     </span>
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400 font-medium">Tahun Penilaian</span>
-                    <span class="text-sm font-semibold text-gray-800">
-                        {{ $tahun->tahun ?? '-' }}
+                    <span class="text-xs text-gray-400 font-medium">Batas Waktu</span>
+                    <span class="text-sm font-semibold">
+                        @if($tenggat)
+                            @if($isClosed)
+                                <div class="flex items-center gap-3 text-sm font-semibold text-gray-700">
+                                    <svg class="w-5 h-5 text-gray-500 flex-shrink-0" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6
+                                                a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                    <span>
+                                        Periode pengisian telah berakhir pada
+                                        <strong>
+                                            {{ \Carbon\Carbon::parse($tenggat->waktu_nonaktif)
+                                                ->translatedFormat('d F Y H:i') }}
+                                        </strong>.
+                                    </span>
+                                </div>
+                            @elseif($isOpen)
+                                <div class="flex items-center gap-3 text-sm font-semibold text-green-800">
+                                    <svg class="w-5 h-5 text-green-800 flex-shrink-0" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>
+                                        Periode pengisian aktif hingga
+                                        <em>
+                                            <strong>
+                                                {{ \Carbon\Carbon::parse($tenggat->waktu_nonaktif)
+                                                    ->translatedFormat('d F Y H:i') }}
+                                            </strong>
+                                        </em>
+                                    </span>
+                                </div>
+                            @else
+                                <div class="flex items-center gap-3 text-sm font-semibold text-yellow-700">
+                                    <svg class="w-5 h-5 text-yellow-600 flex-shrink-0" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>
+                                        Periode pengisian belum dibuka. Akan dibuka pada
+                                        <strong>
+                                            {{ \Carbon\Carbon::parse($tenggat->waktu_aktif)
+                                                ->translatedFormat('d F Y H:i') }}
+                                        </strong>.
+                                    </span>
+                                </div>
+                            @endif
+                        @else
+                            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm">
+                                Belum ada tenggat pengisian untuk kategori ini.
+                            </div>
+                        @endif
                     </span>
                 </div>
 
             </div>
-        </div>
-
-        {{-- STATUS TENGGAT --}}
-        <div class="px-8 py-5 border-b border-gray-100">
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                Tenggat Pengisian
-            </h3>
-
-            @if($tenggat)
-                @if($isClosed)
-                    <div class="flex items-center gap-3 bg-gray-100 border border-gray-300
-                                text-gray-700 px-4 py-3 rounded-lg text-sm">
-                        <svg class="w-5 h-5 text-gray-500 flex-shrink-0" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6
-                                     a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        <span>
-                            Periode pengisian telah berakhir pada
-                            <strong>
-                                {{ \Carbon\Carbon::parse($tenggat->waktu_nonaktif)
-                                    ->translatedFormat('d F Y H:i') }}
-                            </strong>.
-                        </span>
-                    </div>
-                @elseif($isOpen)
-                    <div class="flex items-center gap-3 bg-green-50 border border-green-200
-                                text-green-800 px-4 py-3 rounded-lg text-sm">
-                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>
-                            Periode pengisian aktif hingga
-                            <strong>
-                                {{ \Carbon\Carbon::parse($tenggat->waktu_nonaktif)
-                                    ->translatedFormat('d F Y H:i') }}
-                            </strong>.
-                        </span>
-                    </div>
-                @else
-                    <div class="flex items-center gap-3 bg-yellow-50 border border-yellow-200
-                                text-yellow-800 px-4 py-3 rounded-lg text-sm">
-                        <svg class="w-5 h-5 text-yellow-600 flex-shrink-0" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>
-                            Periode pengisian belum dibuka. Akan dibuka pada
-                            <strong>
-                                {{ \Carbon\Carbon::parse($tenggat->waktu_aktif)
-                                    ->translatedFormat('d F Y H:i') }}
-                            </strong>.
-                        </span>
-                    </div>
-                @endif
-            @else
-                <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm">
-                    Belum ada tenggat pengisian untuk kategori ini.
-                </div>
-            @endif
         </div>
 
         {{-- PROGRESS PENGISIAN --}}

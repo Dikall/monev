@@ -9,6 +9,8 @@ class Pertanyaan extends Model
 {
     use HasFactory;
 
+    protected $table = 'pertanyaans';
+
     protected $fillable = [
         'tahun_id', 'kategori_id', 'indikator_id',
         'is_parent', 'parent_id', 'level',
@@ -39,9 +41,10 @@ class Pertanyaan extends Model
     public function kategori() { return $this->belongsTo(Kategori::class); }
     public function indikator(){ return $this->belongsTo(Indikator::class); }
 
-    #Bobot ternormalisasi terhadap bobot indikator.
-    #bobot_pertanyaan / total_bobot_indikator * bobot_indikator
-    
+    /**
+     * Bobot ternormalisasi terhadap bobot indikator.
+     * Formula: (bobot_pertanyaan / total_bobot_indikator) * bobot_indikator
+     */
     public function getBobotNormalisasiAttribute(): float
     {
         $totalBobot = self::where('indikator_id', $this->indikator_id)
@@ -50,6 +53,14 @@ class Pertanyaan extends Model
 
         if ($totalBobot == 0) return 0;
 
-        return round(($this->bobot / $totalBobot) * $this->indikator->bobot, 4);
+        #return round(($this->bobot / $totalBobot) * $this->indikator->bobot, 4);
+
+        $indikator = $this->relationLoaded('indikator')
+            ? $this->indikator
+            : $this->indikator()->first();
+
+        if (! $indikator) return 0;
+
+        return round(($this->bobot / $totalBobot) * $indikator->bobot, 4);
     }
 }

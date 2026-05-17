@@ -1,28 +1,26 @@
-{{--
-    Partial: _baris_pertanyaan.blade.php
-    Path: resources/views/badanpublik/kuesioner/_baris_pertanyaan.blade.php
---}}
-
 @php
     $jawaban     = $jawabans[$pertanyaan->id] ?? null;
     $disabled    = $isClosed || !$isOpen;
     $indentClass = $indent ?? 'pl-8';
 
     // Nilai jawaban: cast ke int agar perbandingan konsisten
-    // DB bisa return string "0"/"1", nullable, atau integer
     $nilaiJawaban = $jawaban ? (int) $jawaban->jawaban : null;
 
-    // Links: sudah di-cast array di model, tinggal join
-    $linksString = '';
-    if ($jawaban && !empty($jawaban->links) && is_array($jawaban->links)) {
-        $linksString = implode(', ', $jawaban->links);
-    }
+    // Links: array dari model
+    $links = ($jawaban && !empty($jawaban->links) && is_array($jawaban->links)) ? $jawaban->links : [];
+    if (empty($links)) $links = [''];
 
     // Nama file dokumen yang sudah ada
     $namaFile = $jawaban?->dokumen_path ? basename($jawaban->dokumen_path) : '';
 @endphp
 
-<tr class="hover:bg-gray-50 transition-colors">
+<tr class="hover:bg-gray-50 transition-colors"
+    x-data="{ 
+        jawaban: '{{ $nilaiJawaban }}',
+        links: {{ json_encode($links) }},
+        hasFile: {{ $jawaban?->dokumen_path ? 'true' : 'false' }},
+        fileName: '{{ $namaFile }}'
+    }">
 
     {{-- NOMOR --}}
     <td class="px-4 py-3 text-gray-600 align-top {{ $indentClass }}">
@@ -44,6 +42,7 @@
                 <input type="radio"
                        name="jawaban[{{ $pertanyaan->id }}]"
                        value="1"
+                       x-model="jawaban"
                        @checked($nilaiJawaban === 1)
                        @disabled($disabled)
                        class="text-red-700 focus:ring-red-700">
@@ -56,6 +55,7 @@
                 <input type="radio"
                        name="jawaban[{{ $pertanyaan->id }}]"
                        value="0"
+                       x-model="jawaban"
                        @checked($nilaiJawaban === 0 && $jawaban !== null)
                        @disabled($disabled)
                        class="text-red-700 focus:ring-red-700">
@@ -67,22 +67,51 @@
 
     {{-- DATA PENDUKUNG: LINK --}}
     <td class="px-3 py-3 align-top border-l border-gray-100">
-        <input type="text"
-               name="links[{{ $pertanyaan->id }}]"
-               value="{{ $linksString }}"
-               placeholder="Masukkan Link..."
-               @disabled($disabled)
-               class="w-full border border-gray-200 rounded-md px-3 py-1.5 text-xs text-gray-700
-                      placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-red-400
-                      {{ $disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white' }}">
-        @if(!$disabled)
-            <p class="text-xs text-gray-400 mt-1">Pisahkan dengan koma atau spasi</p>
-        @endif
+        <div class="space-y-2">
+            <template x-for="(link, index) in links" :key="index">
+                <div class="flex items-center gap-1 mb-1">
+                    <input type="text"
+                           :name="'links[' + {{ $pertanyaan->id }} + '][]'"
+                           x-model="links[index]"
+                           placeholder="Masukkan Link..."
+                           @disabled($disabled)
+                           class="flex-1 border border-gray-200 rounded-md px-3 py-1.5 text-xs text-gray-700
+                                  placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-red-400
+                                  {{ $disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white' }}">
+                    
+                    @if(!$disabled)
+                    <button type="button" @click="links.splice(index, 1)" x-show="links.length > 1"
+                            class="text-red-500 hover:text-red-700 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    @endif
+                </div>
+            </template>
+            
+            @if(!$disabled)
+            <button type="button" @click="links.push('')"
+                    class="text-[10px] font-bold text-red-700 hover:text-red-900 flex items-center gap-1 mt-1 bg-red-50 px-2 py-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah Link
+            </button>
+            @endif
+
+            {{-- Warning untuk Jawaban YA tanpa Bukti --}}
+            <div x-show="jawaban == '1' && !hasFile && !links.some(l => l && l.trim() !== '')"
+                 class="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                <p class="text-[10px] text-red-600 font-bold leading-tight">
+                    ⚠ Wajib mengisi Link atau Upload Dokumen jika menjawab YA agar terhitung dalam progres.
+                </p>
+            </div>
+        </div>
     </td>
 
     {{-- DATA PENDUKUNG: UPLOAD DOKUMEN --}}
-    <td class="px-3 py-3 align-top border-l border-gray-100"
-        x-data="{ fileName: '{{ $namaFile }}' }">
+    <td class="px-3 py-3 align-top border-l border-gray-100">
 
         <div class="flex items-start gap-2">
 
@@ -101,14 +130,14 @@
                        name="dokumen[{{ $pertanyaan->id }}]"
                        accept="application/pdf"
                        class="hidden"
-                       @change="fileName = $event.target.files[0]?.name || ''">
+                       @change="fileName = $event.target.files[0]?.name || ''; hasFile = !!$event.target.files[0]">
             </label>
             @endif
 
             <div class="min-w-0">
                 <p class="text-xs text-gray-500 break-all"
                    x-text="fileName || 'Tidak ada file dipilih'"></p>
-                <p class="text-xs text-red-400 mt-0.5">Maksimum ukuran file 5MB</p>
+                <p class="text-xs text-red-400 mt-0.5">Maksimum ukuran file 2MB</p>
 
                 @if($jawaban?->dokumen_path)
                 <a href="{{ Storage::url($jawaban->dokumen_path) }}"

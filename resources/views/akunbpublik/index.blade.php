@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="ml-64 p-6"
+<div class="p-6"
      x-data="{
         openDetail: false,
         openDelete: false,

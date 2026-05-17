@@ -37,6 +37,11 @@ return new class extends Migration
             $table->boolean('is_submitted')->default(false);
             $table->timestamp('submitted_at')->nullable();
 
+            $table->boolean('is_verified')->nullable();
+            $table->text('catatan_verifikasi')->nullable();
+            $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('verified_at')->nullable();
+
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
 
