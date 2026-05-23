@@ -9,8 +9,36 @@
         openResetPassword: false,
 
         selectedUser: null,
+        newPassword: '',
+        confirmPassword: '',
+        showNewPassword: false,
+        showConfirmPassword: false,
+        passwordError: '',
 
         searchQuery: '',
+
+        openReset(user) {
+            this.selectedUser = user;
+            this.newPassword = '';
+            this.confirmPassword = '';
+            this.passwordError = '';
+            this.showNewPassword = false;
+            this.showConfirmPassword = false;
+            this.openResetPassword = true;
+        },
+
+        validatePasswords() {
+            if (this.newPassword.length < 8) {
+                this.passwordError = 'Password minimal 8 karakter.';
+                return false;
+            }
+            if (this.newPassword !== this.confirmPassword) {
+                this.passwordError = 'Konfirmasi password tidak cocok.';
+                return false;
+            }
+            this.passwordError = '';
+            return true;
+        },
 
         setDetail(user) {
             this.selectedUser = user;
@@ -48,8 +76,20 @@
         </form>
 
         {{-- HEADER TABEL --}}
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">Daftar Badan Publik</h2>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <h2 class="text-lg font-semibold">Daftar Badan Publik</h2>
+                <div class="flex items-center gap-2 whitespace-nowrap">
+                    <span class="text-xs text-gray-500">Tampilkan:</span>
+                    <select onchange="window.location.href = this.value" class="border rounded-lg p-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-red-700">
+                        <option value="{{ request()->fullUrlWithQuery(['per_page' => 10, 'page' => 1]) }}" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="{{ request()->fullUrlWithQuery(['per_page' => 25, 'page' => 1]) }}" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="{{ request()->fullUrlWithQuery(['per_page' => 50, 'page' => 1]) }}" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="{{ request()->fullUrlWithQuery(['per_page' => 100, 'page' => 1]) }}" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                    <span class="text-xs text-gray-500">data</span>
+                </div>
+            </div>
 
             {{-- SEARCH --}}
             <div class="relative">
@@ -139,10 +179,7 @@
 
                             {{-- RESET PASSWORD --}}
                             <button
-                                @click="
-                                    selectedUser = {{ json_encode(['id' => $user->id, 'nama' => $user->name]) }};
-                                    openResetPassword = true;
-                                "
+                                @click="openReset({{ json_encode(['id' => $user->id, 'nama' => optional($user->publicBody)->nama_badan ?? $user->name]) }})"
                                 class="w-32 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
                                 Reset Password
                             </button>
@@ -169,6 +206,37 @@
                 @endforelse
             </tbody>
         </table>
+
+        {{-- Pagination --}}
+        <div class="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-t text-sm text-gray-600">
+            <div>
+                Menampilkan {{ $users->firstItem() ?? 0 }} sampai {{ $users->lastItem() ?? 0 }} dari {{ $users->total() }} data
+            </div>
+            <div class="flex items-center gap-1 text-sm">
+                {{-- PREV --}}
+                @if ($users->onFirstPage())
+                    <span class="px-3 py-1 border rounded text-gray-400">Prev</span>
+                @else
+                    <a href="{{ $users->previousPageUrl() }}" class="px-3 py-1 border rounded hover:bg-gray-100">Prev</a>
+                @endif
+
+                {{-- NUMBER --}}
+                @for ($i = max(1, $users->currentPage() - 2); $i <= min($users->lastPage(), $users->currentPage() + 2); $i++)
+                    @if ($i == $users->currentPage())
+                        <span class="px-3 py-1 bg-red-700 text-white rounded">{{ $i }}</span>
+                    @else
+                        <a href="{{ $users->url($i) }}" class="px-3 py-1 border rounded hover:bg-gray-100">{{ $i }}</a>
+                    @endif
+                @endfor
+
+                {{-- NEXT --}}
+                @if ($users->hasMorePages())
+                    <a href="{{ $users->nextPageUrl() }}" class="px-3 py-1 border rounded hover:bg-gray-100">Next</a>
+                @else
+                    <span class="px-3 py-1 border rounded text-gray-400">Next</span>
+                @endif
+            </div>
+        </div>
     </div>
 
 
@@ -306,33 +374,107 @@
     <div x-show="openResetPassword" x-cloak x-transition
          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 
-        <div class="bg-white rounded-xl w-11/12 md:w-1/3 p-8">
+        <div class="bg-white rounded-xl w-11/12 md:w-[480px] p-8">
 
-            <div class="flex justify-between mb-6">
-                <h2 class="text-2xl font-bold">Reset Password</h2>
-                <button @click="openResetPassword = false">✕</button>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Reset Password</h2>
+                <button @click="openResetPassword = false" class="text-gray-500 hover:text-gray-700 text-lg">✕</button>
             </div>
+            <hr class="mb-6">
 
-            <p class="mb-8 text-lg">
-                Yakin ingin mereset password akun
-                <span class="font-semibold" x-text="selectedUser ? selectedUser.nama : ''"></span>?
+            <p class="mb-6 text-sm text-gray-600">
+                Atur password baru untuk akun
+                <span class="font-semibold text-gray-800" x-text="selectedUser ? selectedUser.nama : ''"></span>.
             </p>
 
-            <div class="flex justify-end gap-4">
-                <button @click="openResetPassword = false"
-                    class="px-8 py-2 border border-red-700 text-red-700 rounded-lg hover:bg-red-50">
-                    Batal
-                </button>
+            <form :action="'{{ url('superadmin/akunbpublik') }}/' + (selectedUser ? selectedUser.id : '') + '/reset-password'"
+                  method="POST"
+                  @submit.prevent="if(validatePasswords()) $el.submit()">
+                @csrf
+                @method('PATCH')
 
-                <form :action="'{{ url('superadmin/akunbpublik') }}/' + (selectedUser ? selectedUser.id : '') + '/reset-password'"
-                      method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <button class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
-                        Reset Password
+                <div class="space-y-4">
+
+                    {{-- Password Baru --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Password Baru <span class="text-red-600">*</span>
+                        </label>
+                        <div class="relative">
+                            <input
+                                :type="showNewPassword ? 'text' : 'password'"
+                                name="password"
+                                x-model="newPassword"
+                                placeholder="Masukkan password baru"
+                                class="w-full border rounded-lg px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                                required
+                            />
+                            <button type="button"
+                                    @click="showNewPassword = !showNewPassword"
+                                    class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg x-show="!showNewPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                <svg x-show="showNewPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Ulangi Password Baru --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Ulangi Password Baru <span class="text-red-600">*</span>
+                        </label>
+                        <div class="relative">
+                            <input
+                                :type="showConfirmPassword ? 'text' : 'password'"
+                                name="password_confirmation"
+                                x-model="confirmPassword"
+                                placeholder="Ulangi password baru"
+                                class="w-full border rounded-lg px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                                required
+                            />
+                            <button type="button"
+                                    @click="showConfirmPassword = !showConfirmPassword"
+                                    class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg x-show="!showConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                <svg x-show="showConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Error Message --}}
+                    <p x-show="passwordError" x-text="passwordError"
+                       class="text-sm text-red-600 font-medium"></p>
+
+                </div>
+
+                <div class="flex justify-end gap-3 mt-8">
+                    <button type="button" @click="openResetPassword = false"
+                        class="px-6 py-2 border border-red-700 text-red-700 rounded-lg hover:bg-red-50 text-sm font-medium">
+                        Batal
                     </button>
-                </form>
-            </div>
+                    <button type="submit"
+                        class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 text-sm font-medium">
+                        Simpan Password
+                    </button>
+                </div>
+
+            </form>
 
         </div>
     </div>

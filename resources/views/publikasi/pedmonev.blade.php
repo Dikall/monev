@@ -4,7 +4,7 @@
 <div class="max-w-8xl mx-auto mt-10 mb-20 px-6">
     <h1 class="text-xl font-bold mb-6">Pedoman Monev</h1>
     <div class="flex items-center mb-6">
-        <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+        <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-red-700 hover:bg-red-800 text-black px-4 py-2 rounded-lg text-sm font-semibold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -86,7 +86,7 @@
                 <button type="button" onclick="closeModal()" class="border border-red-700 text-red-800 px-6 py-2 rounded hover:bg-red-50">
                     Batal
                 </button>
-                <button type="submit" class="bg-red-700 text-white px-6 py-2 rounded hover:bg-red-800">
+                <button type="submit" class="bg-red-700 text-black px-6 py-2 rounded hover:bg-red-800">
                     Tambah
                 </button>
             </div>
@@ -107,7 +107,7 @@
                 <button type="button" onclick="closeDeleteModal()" class="border border-red-700 text-red-800 px-6 py-2 rounded hover:bg-red-50">
                     Batal
                 </button>
-                <button type="submit" class="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded">
+                <button type="submit" class="bg-red-700 hover:bg-red-800 text-black px-6 py-2 rounded">
                     Hapus
                 </button>
             </div>

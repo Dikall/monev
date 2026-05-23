@@ -9,46 +9,42 @@ use Illuminate\Http\Request;
 class PublicBodyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tampilkan semua badan publik dengan pilihan kategori global.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tahunSekarang = now()->year;
+        $perPage = $request->input('per_page', 10);
+        if (!in_array($perPage, [10, 25, 50, 100])) {
+            $perPage = 10;
+        }
 
-        $publicBodies = PublicBody::with('kategori')->paginate(10);
+        $publicBodies = PublicBody::with('kategori')->paginate($perPage)->withQueryString();
 
-        // FILTER kategori berdasarkan tahun sekarang
-        $kategoris = Kategori::whereHas('tahun', function ($query) use ($tahunSekarang) {
-                $query->where('tahun', $tahunSekarang);
-            })
-            ->with('tahun')
-            ->get();
+        // Semua kategori global (tidak difilter per tahun)
+        $kategoris = Kategori::orderBy('name')->get();
 
         return view('bpublik.index', compact('publicBodies', 'kategoris'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan badan publik baru.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'nama_badan' => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategoris,id'
+            'nama_badan'  => 'required|string|max:255',
+            'kategori_id' => 'required|exists:kategoris,id',
         ]);
 
         PublicBody::create([
-            'nama_badan' => $request->nama_badan,
-            'kategori_id' => $request->kategori_id,
-            'is_registered' => false
+            'nama_badan'    => $request->nama_badan,
+            'kategori_id'   => $request->kategori_id,
+            'is_registered' => false,
         ]);
 
         return redirect()
@@ -56,36 +52,30 @@ class PublicBodyController extends Controller
             ->with('success', 'Badan publik berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(public_body $public_body)
+    public function show(PublicBody $bpublik)
+    {
+        //
+    }
+
+    public function edit(PublicBody $bpublik)
     {
         //
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(public_body $public_body)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update badan publik.
      */
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_badan' => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategoris,id'
+            'nama_badan'  => 'required|string|max:255',
+            'kategori_id' => 'required|exists:kategoris,id',
         ]);
 
         $publicBody = PublicBody::findOrFail($id);
 
         $publicBody->update([
-            'nama_badan' => $request->nama_badan,
+            'nama_badan'  => $request->nama_badan,
             'kategori_id' => $request->kategori_id,
         ]);
 
@@ -95,7 +85,8 @@ class PublicBodyController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus badan publik dari master data.
+     * Akun user yang terhubung TIDAK ikut dihapus (biarkan null).
      */
     public function destroy($id)
     {
@@ -104,6 +95,6 @@ class PublicBodyController extends Controller
 
         return redirect()
             ->route('superadmin.bpublik.index')
-            ->with('success', 'Badan publik berhasil dihapus');
+            ->with('success', 'Badan publik berhasil dihapus dari master data');
     }
 }

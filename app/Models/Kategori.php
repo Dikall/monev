@@ -13,13 +13,7 @@ class Kategori extends Model
 
     protected $fillable = [
         'name',
-        'tahun_id',
     ];
-
-    public function tahun()
-    {
-        return $this->belongsTo(Tahun::class, 'tahun_id');
-    }
 
     public function tenggat()
     {
@@ -30,7 +24,4 @@ class Kategori extends Model
     {
         return $this->hasMany(PublicBody::class, 'kategori_id');
     }
-
 }
-
-

@@ -41,6 +41,11 @@
             {{ session('success') }}
         </div>
     @endif
+    @if(session('error'))
+        <div class="mb-4 bg-red-50 text-red-700 px-4 py-2 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
 
     {{-- TABLE --}}
     <div class="bg-white border shadow rounded-lg overflow-hidden">
@@ -49,18 +54,14 @@
                 <tr>
                     <th class="px-6 py-3 text-left">No</th>
                     <th class="px-6 py-3 text-left">Nama Kategori</th>
-                    <th class="px-6 py-3 text-left">Tahun</th>
                     <th class="px-6 py-3 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
                 @forelse ($kategoris as $item)
-                <tr>
+                <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                    <td class="px-6 py-4">{{ $item->name }}</td>
-                    <td class="px-6 py-4">
-                        {{ $item->tahun->tahun ?? '-' }}
-                    </td>
+                    <td class="px-6 py-4 font-medium">{{ $item->name }}</td>
                     <td class="px-4 py-3 text-center">
                         <div class="flex flex-col gap-1 items-center">
                             {{-- EDIT --}}
@@ -68,8 +69,7 @@
                                 @click="
                                     openEdit = true;
                                     kategoriId = {{ $item->id }};
-                                    kategoriNama = '{{ $item->name }}';
-                                    kategoriTahun = '{{ $item->tahun_id }}';
+                                    kategoriNama = '{{ addslashes($item->name) }}';
                                 "
                                 class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
                                 Edit
@@ -89,7 +89,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="px-6 py-6 text-center text-gray-500">
+                    <td colspan="3" class="px-6 py-6 text-center text-gray-500">
                         Belum ada data kategori
                     </td>
                 </tr>
@@ -114,23 +114,14 @@
             <form action="{{ route('superadmin.kategori.store') }}" method="POST">
                 @csrf
 
-                <label class="block mb-2 font-medium">Nama Kategori</label>
+                <label class="block mb-2 font-medium">
+                    Nama Kategori <span class="text-red-600">*</span>
+                </label>
                 <input type="text"
                     name="name"
-                    class="w-full border rounded-lg p-3 mb-6"
+                    class="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-1 focus:ring-red-500"
+                    placeholder="Contoh: Pemerintah Kabupaten/Kota"
                     required>
-
-                <label class="block mb-2 font-medium">Tahun</label>
-                <select name="tahun_id"
-                        class="w-full border rounded-lg p-3 mb-6"
-                        required>
-                    <option value="">Pilih Tahun</option>
-                    @foreach ($tahuns as $tahun)
-                        <option value="{{ $tahun->id }}">
-                            {{ $tahun->tahun }}
-                        </option>
-                    @endforeach
-                </select>
 
                 <div class="flex justify-end">
                     <button type="submit"
@@ -159,25 +150,14 @@
                 @csrf
                 @method('PUT')
 
-                <label class="block mb-2 font-medium">Nama Kategori</label>
+                <label class="block mb-2 font-medium">
+                    Nama Kategori <span class="text-red-600">*</span>
+                </label>
                 <input type="text"
                     name="name"
                     x-model="kategoriNama"
-                    class="w-full border rounded-lg p-3 mb-6"
+                    class="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-1 focus:ring-red-500"
                     required>
-
-                <label class="block mb-2 font-medium">Tahun</label>
-                <select name="tahun_id"
-                        x-model="kategoriTahun"
-                        class="w-full border rounded-lg p-3 mb-6"
-                        required>
-                    <option value="">Pilih Tahun</option>
-                    @foreach ($tahuns as $tahun)
-                        <option value="{{ $tahun->id }}">
-                            {{ $tahun->tahun }}
-                        </option>
-                    @endforeach
-                </select>
 
                 <div class="flex justify-end">
                     <button type="submit"
@@ -205,6 +185,7 @@
 
             <p class="mb-8 text-lg">
                 Apakah Anda yakin ingin menghapus kategori ini?
+                Badan publik yang terkait dengan kategori ini juga akan terpengaruh.
             </p>
 
             <div class="flex justify-end gap-4">

@@ -25,7 +25,12 @@ class AkunBpublikController extends Controller
             });
         }
 
-        $users = $query->orderBy('name')->get();
+        $perPage = $request->input('per_page', 10);
+        if (!in_array($perPage, [10, 25, 50, 100])) {
+            $perPage = 10;
+        }
+
+        $users = $query->orderBy('name')->paginate($perPage)->withQueryString();
 
         return view('akunbpublik.index', compact('users', 'kategoris', 'kategoriId'));
     }
@@ -67,28 +72,48 @@ public function aktifkan(string $id): RedirectResponse
     }
  
     /**
-     * Reset password ke default (misal: 'password123' atau nomor telepon).
+     * Reset password badan publik dengan password baru yang diinput admin.
      */
-    public function resetPassword(string $id): RedirectResponse
+    public function resetPassword(Request $request, string $id): RedirectResponse
     {
+        $request->validate([
+            'password'              => ['required', 'string', 'min:8', 'confirmed'],
+            'password_confirmation' => ['required', 'string'],
+        ], [
+            'password.required'              => 'Password baru wajib diisi.',
+            'password.min'                   => 'Password minimal 8 karakter.',
+            'password.confirmed'             => 'Konfirmasi password tidak cocok.',
+            'password_confirmation.required' => 'Konfirmasi password wajib diisi.',
+        ]);
+
         $user = User::findOrFail($id);
- 
-        // Default password: 'password123' (bisa disesuaikan)
-        $user->update(['password' => Hash::make('password123')]);
- 
+        $user->update(['password' => Hash::make($request->password)]);
+
         return redirect()->route('superadmin.akunbpublik.index')
-            ->with('success', 'Password berhasil direset menjadi: password123');
+            ->with('success', 'Password akun ' . ($user->publicBody->nama_badan ?? $user->name) . ' berhasil diperbarui.');
     }
  
     /**
      * Hapus akun badan publik.
+     * Data PublicBody TIDAK ikut dihapus agar:
+     * 1. Badan publik bisa mendaftar kembali (is_registered = false)
+     * 2. Data rekap jawaban tetap dapat diidentifikasi (public_body_id tetap ada)
      */
     public function destroy(string $id): RedirectResponse
     {
         $user = User::findOrFail($id);
+
+        // Reset status registrasi agar badan publik bisa daftar ulang
+        if ($user->public_body_id) {
+            \App\Models\PublicBody::where('id', $user->public_body_id)
+                ->update(['is_registered' => false]);
+        }
+
+        $namaBadan = optional($user->publicBody)->nama_badan ?? $user->name;
+
         $user->delete();
- 
+
         return redirect()->route('superadmin.akunbpublik.index')
-            ->with('success', 'Akun badan publik berhasil dihapus.');
+            ->with('success', 'Akun ' . $namaBadan . ' berhasil dihapus. Badan publik dapat mendaftar kembali.');
     }
 }

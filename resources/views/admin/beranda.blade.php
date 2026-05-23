@@ -13,14 +13,15 @@
         <h2 class="text-base font-semibold text-gray-700">Kategori Kuesioner</h2>
     </div>
 
-    {{-- Tombol Download Excel --}}
-    <div class="flex justify-end mb-6">
-        <a href="{{ route('admin.export-excel') }}"
+    {{-- Tombol Download --}}
+    <div class="flex justify-end gap-3 mb-6">
+        {{-- Export Excel Terformat (baru) --}}
+        <a href="{{ route('admin.export-excel-formatted') }}"
            class="inline-flex items-center gap-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 transition-colors duration-200">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            Download Excel
+            Download Excel (.xlsx)
         </a>
     </div>
 

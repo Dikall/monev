@@ -46,6 +46,11 @@
             {{ session('success') }}
         </div>
     @endif
+    @if(session('error'))
+        <div class="mb-4 bg-red-50 text-red-700 px-4 py-2 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
 
     {{-- TABLE --}}
     <div class="bg-white border rounded-lg shadow overflow-hidden">
@@ -54,7 +59,6 @@
                 <tr>
                     <th class="px-4 py-3 text-left">No</th>
                     <th class="px-4 py-3 text-left">Kategori</th>
-                    <th class="px-4 py-3 text-left">Tahun</th>
                     <th class="px-4 py-3 text-left">Waktu Aktif</th>
                     <th class="px-4 py-3 text-left">Waktu Nonaktif</th>
                     <th class="px-4 py-3 text-left">Status</th>
@@ -63,10 +67,9 @@
             </thead>
             <tbody class="divide-y">
                 @forelse($tenggats as $item)
-                <tr>
+                <tr class="hover:bg-gray-50">
                     <td class="px-4 py-3">{{ $loop->iteration }}</td>
-                    <td class="px-4 py-3">{{ $item->kategori->name }}</td>
-                    <td class="px-4 py-3">{{ $item->kategori->tahun->tahun }}</td>
+                    <td class="px-4 py-3 font-medium">{{ $item->kategori->name ?? '-' }}</td>
                     <td class="px-4 py-3">
                         {{ \Carbon\Carbon::parse($item->waktu_aktif)->format('d M Y H:i') }}
                     </td>
@@ -75,11 +78,11 @@
                     </td>
                     <td class="px-4 py-3">
                         @if($item->status == 'Aktif')
-                            <span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+                            <span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full font-medium">
                                 Aktif
                             </span>
                         @else
-                            <span class="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded-full">
+                            <span class="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded-full font-medium">
                                 Tidak Aktif
                             </span>
                         @endif
@@ -92,7 +95,7 @@
                                     openEdit=true;
                                     tenggatId={{ $item->id }};
                                     kategoriId={{ $item->kategori_id }};
-                                    kategoriName='{{ $item->kategori->name }} - {{ optional($item->kategori->tahun)->tahun }}';
+                                    kategoriName='{{ addslashes($item->kategori->name ?? '') }}';
                                     tanggalAktif='{{ \Carbon\Carbon::parse($item->waktu_aktif)->format('Y-m-d') }}';
                                     jamAktif='{{ \Carbon\Carbon::parse($item->waktu_aktif)->format('H:i:s') }}';
                                     tanggalNonaktif='{{ \Carbon\Carbon::parse($item->waktu_nonaktif)->format('Y-m-d') }}';
@@ -113,7 +116,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="px-4 py-6 text-center text-gray-500">
+                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">
                         Belum ada data tenggat
                     </td>
                 </tr>
@@ -139,15 +142,16 @@
             <form action="{{ route('superadmin.tenggat.store') }}" method="POST">
                 @csrf
 
-                <label class="block mb-2 font-medium">Nama Kategori</label>
-
+                <label class="block mb-2 font-medium">
+                    Kategori <span class="text-red-600">*</span>
+                </label>
                 <select name="kategori_id"
                     class="w-full border rounded-lg p-3 mb-6"
                     required>
                     <option value="">Pilih Kategori</option>
                     @foreach($kategoris as $kategori)
                         <option value="{{ $kategori->id }}">
-                            {{ $kategori->name }} - {{ optional($kategori->tahun)->tahun }}
+                            {{ $kategori->name }}
                         </option>
                     @endforeach
                 </select>
@@ -198,107 +202,100 @@
                     <button @click="openEdit = false">✕</button>
                 </div>
 
-                <form :action="'/superadmin/tenggat/' + tenggatId" method="POST">
-                    @csrf
-                    @method('PUT')
+            <form :action="'/superadmin/tenggat/' + tenggatId" method="POST">
+                @csrf
+                @method('PUT')
 
-                    <label class="block mb-2 font-medium">Nama Kategori</label>
+                <label class="block mb-2 font-medium">Kategori</label>
 
-                    <input type="hidden" name="kategori_id" :value="kategoriId">
+                <input type="hidden" name="kategori_id" :value="kategoriId">
 
-                    <input type="text"
-                        x-model="kategoriName"
-                        class="w-full border rounded-lg p-3 mb-6 bg-gray-100"
-                        readonly>
+                <input type="text"
+                    x-model="kategoriName"
+                    class="w-full border rounded-lg p-3 mb-6 bg-gray-100"
+                    readonly>
 
-                    <label class="block mb-2 font-medium">Waktu Aktif</label>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <input type="date" name="tanggal_aktif"
-                            x-model="tanggalAktif"
-                            class="border rounded-lg p-3" required>
+                <label class="block mb-2 font-medium">Waktu Aktif</label>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <input type="date" name="tanggal_aktif"
+                        x-model="tanggalAktif"
+                        class="border rounded-lg p-3" required>
 
-                        <input type="text" name="jam_aktif"
-                            id="jam_aktif_edit"
-                            x-model="jamAktif"
-                            placeholder="HH:MM:SS"
-                            class="border rounded-lg p-3" required>
-                    </div>
+                    <input type="text" name="jam_aktif"
+                        id="jam_aktif_edit"
+                        x-model="jamAktif"
+                        placeholder="HH:MM:SS"
+                        class="border rounded-lg p-3" required>
+                </div>
 
-                    <label class="block mb-2 font-medium">Waktu Nonaktif</label>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <input type="date" name="tanggal_nonaktif"
-                            x-model="tanggalNonaktif"
-                            class="border rounded-lg p-3" required>
+                <label class="block mb-2 font-medium">Waktu Nonaktif</label>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <input type="date" name="tanggal_nonaktif"
+                        x-model="tanggalNonaktif"
+                        class="border rounded-lg p-3" required>
 
-                        <input type="text" name="jam_nonaktif"
-                            id="jam_nonaktif_edit"
-                            x-model="jamNonaktif"
-                            placeholder="HH:MM:SS"
-                            class="border rounded-lg p-3" required>
-                    </div>
+                    <input type="text" name="jam_nonaktif"
+                        id="jam_nonaktif_edit"
+                        x-model="jamNonaktif"
+                        placeholder="HH:MM:SS"
+                        class="border rounded-lg p-3" required>
+                </div>
 
-                    <div class="flex justify-end">
-                        <button type="submit"
-                            class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
-                            Simpan
-                        </button>
-                    </div>
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        Simpan
+                    </button>
+                </div>
 
-                </form>
-            </div>
+            </form>
         </div>
+    </div>
 
     {{-- MODAL DELETE --}}
-        <div x-show="openDelete"
-            x-cloak
-            x-transition
-            class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div x-show="openDelete"
+        x-cloak
+        x-transition
+        class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
 
-            <div @click.away="openDelete = false"
-                class="bg-white rounded-xl w-11/12 md:w-1/2 p-8">
+        <div @click.away="openDelete = false"
+            class="bg-white rounded-xl w-11/12 md:w-1/2 p-8">
 
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Hapus Tenggat</h2>
-                    <button @click="openDelete = false">✕</button>
-                </div>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Hapus Tenggat</h2>
+                <button @click="openDelete = false">✕</button>
+            </div>
 
-                <p class="mb-8 text-lg">
-                    Apakah Anda yakin ingin menghapus tenggat ini?
-                </p>
+            <p class="mb-8 text-lg">
+                Apakah Anda yakin ingin menghapus tenggat ini?
+            </p>
 
-                <div class="flex justify-end gap-4">
-                    <button @click="openDelete = false"
-                        class="px-8 py-2 border border-red-700 text-red-700 rounded-lg">
-                        Batal
+            <div class="flex justify-end gap-4">
+                <button @click="openDelete = false"
+                    class="px-8 py-2 border border-red-700 text-red-700 rounded-lg">
+                    Batal
+                </button>
+
+                <form :action="'/superadmin/tenggat/' + tenggatId" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        Hapus
                     </button>
-
-                    <form :action="'/superadmin/tenggat/' + tenggatId" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                            class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
-                            Hapus
-                        </button>
-                    </form>
-                </div>
-
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-        // Paksa semua input time ke format 24 jam
         document.addEventListener('DOMContentLoaded', function () {
             function force24Hour(input) {
-                // Gunakan locale id-ID untuk memastikan format 24 jam
                 input.setAttribute('lang', 'id-ID');
-                
-                // Override jika browser masih pakai AM/PM dengan menambahkan locale
                 if (input._x_model === undefined) {
                     input.addEventListener('change', function () {
                         const val = this.value;
                         if (val && val.includes('M')) {
-                            // Konversi AM/PM ke 24 jam jika browser mengirim format salah
                             const [time, period] = val.split(' ');
                             let [hours, minutes, seconds] = time.split(':');
                             hours = parseInt(hours);
@@ -312,12 +309,13 @@
 
             document.querySelectorAll('input[type="time"]').forEach(force24Hour);
 
-            // Untuk Alpine.js yang render modal setelah load
             const observer = new MutationObserver(() => {
                 document.querySelectorAll('input[type="time"]').forEach(force24Hour);
             });
             observer.observe(document.body, { childList: true, subtree: true });
         });
     </script>
+
+</div>
 
 @endsection

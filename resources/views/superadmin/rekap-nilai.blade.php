@@ -1,6 +1,25 @@
 @extends('components.layouts.app')
 
 @section('content')
+@php
+    $toRoman = function($num) {
+        $n = intval($num);
+        $res = '';
+        $romanNumber_Array = [
+            'X'  => 10,
+            'IX' => 9,
+            'V'  => 5,
+            'IV' => 4,
+            'I'  => 1
+        ];
+        foreach ($romanNumber_Array as $roman => $number){
+            $matches = intval($n / $number);
+            $res .= str_repeat($roman, $matches);
+            $n = $n % $number;
+        }
+        return $res;
+    };
+@endphp
 <div class="mx-auto mt-10 mb-10 px-2 sm:px-10 lg:px-6"
      x-data="{
         showModalBobot: false,
@@ -113,7 +132,7 @@
                        class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2.5 focus:ring-red-500 focus:border-red-500 text-gray-500">
             </div>
             <div>
-                <button type="submit" class="w-full bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition-colors shadow-md">
+                <button type="submit" class="w-full bg-red-700 text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition-colors shadow-md">
                     Tampilkan Pertanyaan
                 </button>
             </div>
@@ -123,21 +142,33 @@
     {{-- Table Section --}}
     <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         {{-- Table Header Bar --}}
-        <div class="px-6 pt-5 pb-4 flex items-end justify-between gap-4">
+        <div class="px-6 pt-5 pb-4 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
             {{-- Kiri: Judul + Search --}}
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2 w-full sm:w-auto">
                 <h2 class="text-base font-bold text-gray-800">Rekap Nilai Badan Publik</h2>
-                <div class="relative">
-                    <input type="text" x-model="search" placeholder="Cari badan publik..."
-                           class="w-72 rounded-lg border border-gray-300 pl-9 pr-4 py-2 text-sm focus:ring-red-500 focus:border-red-500">
-                    <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="relative w-full sm:w-auto">
+                        <input type="text" x-model="search" placeholder="Cari badan publik..."
+                               class="w-full sm:w-72 rounded-lg border border-gray-300 pl-9 pr-4 py-2 text-sm focus:ring-red-500 focus:border-red-500">
+                        <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 whitespace-nowrap">
+                        <span class="text-xs text-gray-500">Tampilkan:</span>
+                        <select x-model.number="perPage" @change="page = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-red-500 focus:border-red-500 bg-white">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="text-xs text-gray-500">data</span>
+                    </div>
                 </div>
             </div>
             {{-- Kanan: Set Bobot --}}
             <button @click="showModalBobot = true"
-                    class="inline-flex items-center gap-2 bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-800 transition-all shadow-sm whitespace-nowrap mb-0.5">
+                    class="inline-flex items-center gap-2 bg-red-700 text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-800 transition-all shadow-sm whitespace-nowrap mb-0.5 w-full sm:w-auto justify-center">
                 Set Bobot Nilai
             </button>
         </div>
@@ -146,25 +177,27 @@
             <table class="w-full text-sm text-left">
                 <thead class="bg-red-700 text-white text-xs font-bold">
                     <tr>
-                        <th class="px-4 py-3 whitespace-nowrap">Nama Badan Publik</th>
-                        <th class="px-4 py-3 whitespace-nowrap">Nama Responden</th>
-                        <th class="px-4 py-3 text-center whitespace-nowrap">Nilai SAQ</th>
+                        <th class="px-4 py-3 min-w-[150px] leading-tight align-middle">Nama Badan Publik</th>
+                        <th class="px-4 py-3 min-w-[150px] leading-tight align-middle">Nama Responden</th>
+                        <th class="px-4 py-3 text-center min-w-[120px] leading-tight align-middle">Nilai SAQ<br>(Sebelum Verifikasi)</th>
 
                         @if(request('kategori_id'))
                             @foreach($indikators as $ind)
-                                <th class="px-4 py-3 text-center whitespace-nowrap">
-                                    Indikator {{ $ind->no }}
+                                <th class="px-4 py-3 text-center min-w-[100px] leading-tight align-middle" title="{{ $ind->nama_indikator }}">
+                                    Indikator {{ $toRoman($ind->no) }}<br>(Terverifikasi)
                                 </th>
                             @endforeach
-                            <th class="px-4 py-3 text-center whitespace-nowrap">Nilai Juri</th>
+                            <th class="px-4 py-3 text-center min-w-[80px] leading-tight align-middle">Nilai Juri</th>
+                        @else
+                            <th class="px-4 py-3 text-left min-w-[200px] leading-tight align-middle">Indikator (Terverifikasi)</th>
                         @endif
 
-                        <th class="px-4 py-3 text-center whitespace-nowrap">Presentasi</th>
-                        <th class="px-4 py-3 text-center whitespace-nowrap">Total</th>
-                        <th class="px-4 py-3 text-center whitespace-nowrap">Total Score</th>
-                        <th class="px-4 py-3 text-center whitespace-nowrap">Kualifikasi</th>
-                        <th class="px-4 py-3 text-center whitespace-nowrap">Waktu Publish</th>
-                        <th class="px-3 py-3 text-center whitespace-nowrap w-28">Aksi</th>
+                        <th class="px-4 py-3 text-center min-w-[80px] leading-tight align-middle">Presentasi</th>
+                        <th class="px-4 py-3 text-center min-w-[120px] leading-tight align-middle">Total SAQ<br>Terverifikasi</th>
+                        <th class="px-4 py-3 text-center min-w-[100px] leading-tight align-middle">Total Score<br>(Akhir)</th>
+                        <th class="px-4 py-3 text-center min-w-[100px] leading-tight align-middle">Kualifikasi</th>
+                        <th class="px-4 py-3 text-center min-w-[100px] leading-tight align-middle">Waktu Publish</th>
+                        <th class="px-3 py-3 text-center whitespace-nowrap w-28 align-middle">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 bg-white">
@@ -178,10 +211,21 @@
                             @if(request('kategori_id'))
                                 @foreach($indikators as $ind)
                                     <td class="px-4 py-4 text-center text-gray-600">
-                                        {{ $row['nilai_per_ind'][$ind->id] ?? 0 }}
+                                        {{ $row['nilai_per_ind'][$ind->id]['nilai'] ?? 0 }}
                                     </td>
                                 @endforeach
                                 <td class="px-4 py-4 text-center text-gray-600">{{ $row['nilai_juri'] ?? 0 }}</td>
+                            @else
+                                <td class="px-4 py-4 text-left text-gray-600">
+                                    <div class="flex flex-wrap gap-1.5 text-[11px] leading-tight max-w-[280px]">
+                                        @foreach($row['body_indikators'] as $ind)
+                                            <span class="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 px-2 py-1 rounded shadow-sm whitespace-nowrap" title="{{ $ind->nama_indikator }}">
+                                                <span class="font-bold text-gray-700">{{ $toRoman($ind->no) }}:</span>
+                                                <span class="font-semibold text-red-700">{{ $row['nilai_per_ind'][$ind->id]['nilai'] ?? 0 }}</span>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </td>
                             @endif
 
                             <td class="px-4 py-4 text-center">
@@ -201,8 +245,8 @@
                                 @endif
                             </td>
 
-                            {{-- Total (sama dengan nilai SAQ jika belum ada presentasi) --}}
-                            <td class="px-4 py-4 text-center text-gray-700 font-semibold">{{ $row['total_score'] }}</td>
+                            {{-- Total SAQ Terverifikasi --}}
+                            <td class="px-4 py-4 text-center text-gray-700 font-semibold">{{ $row['nilai_saq_verified'] }}</td>
 
                             <td class="px-4 py-4 text-center font-bold text-gray-900">{{ $row['total_score'] }}</td>
 
@@ -244,7 +288,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ 11 + (request('kategori_id') ? count($indikators) + 1 : 0) }}" class="px-6 py-12 text-center text-gray-400 italic">
+                            <td colspan="{{ 10 + (request('kategori_id') ? count($indikators) : 0) }}" class="px-6 py-12 text-center text-gray-400 italic">
                                 Tidak ada data yang ditemukan.
                             </td>
                         </tr>

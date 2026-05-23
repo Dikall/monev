@@ -7,6 +7,17 @@
     x-init="
         @if(old('mode') === 'tambah') openTambah = true @endif
         @if(old('mode') === 'edit')   openEdit   = true @endif
+        kategoris = kategorisAll;
+        @if(request('tahun_id'))
+            tahun = '{{ request('tahun_id') }}';
+            @if(request('kategori_id'))
+                kategori = '{{ request('kategori_id') }}';
+                filterIndikator();
+                @if(request('indikator_id'))
+                    indikator = '{{ request('indikator_id') }}';
+                @endif
+            @endif
+        @endif
     ">
 
     {{-- ================= FILTER ================= --}}
@@ -69,6 +80,19 @@
         </div>
     @endif
 
+    {{-- Info peringatan bobot (data tetap tersimpan) --}}
+    @if(session('import_warnings'))
+        <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded">
+            <p class="font-semibold mb-2">ℹ️ Catatan pembobotan (data tetap tersimpan):</p>
+            <ul class="list-disc list-inside text-sm space-y-0.5">
+                @foreach(session('import_warnings') as $warn)
+                    <li>{{ $warn }}</li>
+                @endforeach
+            </ul>
+            <p class="text-xs mt-2 text-red-600">Total bobot per indikator yang melebihi 100 tetap akan dihitung sebagai 100 saat rekap nilai.</p>
+        </div>
+    @endif
+
     {{-- HEADER --}}
     <div class="flex justify-between mb-6">
         <h1 class="text-xl font-bold">Data Pertanyaan</h1>
@@ -82,7 +106,7 @@
                 Import Excel
             </button>
             <button @click="openTambah = true; resetForm();"
-                class="bg-red-700 text-white px-4 py-2 rounded">
+                class="bg-red-700 text-black px-4 py-2 rounded">
                 + Tambah Pertanyaan
             </button>
         </div>
@@ -143,7 +167,7 @@
                                     pertanyaan    = `{{ addslashes($p->pertanyaan_kuisioner) }}`;
                                     bobot         = "{{ $p->bobot }}";
                                 '
-                                class="bg-red-700 text-white px-3 py-1 rounded">
+                                class="bg-red-700 text-black px-3 py-1 rounded">
                                 Edit
                             </button>
                             <button @click="openDelete = true; pertanyaanDeleteId = {{ $p->id }}"
@@ -225,13 +249,12 @@
                     <label class="font-semibold block mb-2">Upload File Excel</label>
 
                     {{-- Drop zone --}}
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-4 transition-colors"
+                    <div class="border-2 border-dashed rounded-lg p-6 text-center mb-4 transition-colors"
                          :class="importFileName ? 'border-green-400 bg-green-50' : 'border-gray-300'"
-                         @dragover.prevent="$el.classList.add('border-blue-400','bg-blue-50')"
-                         @dragleave.prevent="$el.classList.remove('border-blue-400','bg-blue-50')"
-                         @drop.prevent="handleFileDrop($event); $el.classList.remove('border-blue-400','bg-blue-50')">
-
-                        <template x-if="!importFileName">
+                         @dragover.prevent="$el.classList.add('border-blue-400','bg-red-50')"
+                         @dragleave.prevent="$el.classList.remove('border-blue-400','bg-red-50')"
+                         @drop.prevent="handleFileDrop($event); $el.classList.remove('border-blue-400','bg-red-50')">
+                        <div x-show="!importFileName">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                      class="w-10 h-10 mx-auto text-gray-400 mb-2"
@@ -248,9 +271,9 @@
                                 </label>
                                 <p class="text-xs text-gray-400 mt-2">Format: .xlsx atau .xls · Maks. 5 MB</p>
                             </div>
-                        </template>
-
-                        <template x-if="importFileName">
+                        </div>
+ 
+                        <div x-show="importFileName" style="display: none;">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                      class="w-10 h-10 mx-auto text-green-500 mb-2"
@@ -263,7 +286,7 @@
                                 <button type="button" @click="resetImportForm()"
                                     class="text-xs text-red-500 underline">Ganti file</button>
                             </div>
-                        </template>
+                        </div>
                     </div>
 
                     @error('file_excel')
@@ -512,7 +535,7 @@
                     </div>
 
                     <div class="flex justify-end">
-                        <button class="bg-red-700 text-white px-6 py-2 rounded hover:bg-red-800">
+                        <button class="bg-red-700 text-black px-6 py-2 rounded hover:bg-red-800">
                             Update
                         </button>
                     </div>
@@ -582,7 +605,7 @@ function pertanyaanComponent() {
         parentSubJudulAll: @js($parentSubJudul),
         bobotPerIndikator: @js($bobotPerIndikator),
 
-        kategoris:  [],
+        kategoris:  @js($kategoris),
         indikators: [],
 
         get totalBobotAwal()    { return parseInt(this.bobotPerIndikator[this.indikatorForm] ?? 0); },
@@ -598,21 +621,21 @@ function pertanyaanComponent() {
         },
 
         filterKategori() {
-            this.kategoris  = this.kategorisAll.filter(k => k.tahun_id == this.tahun);
+            this.kategoris  = this.kategorisAll;
             this.kategori   = '';
             this.indikator  = '';
             this.indikators = [];
         },
         filterIndikator() {
-            this.indikators = this.indikatorsAll.filter(i => i.kategori_id == this.kategori);
+            this.indikators = this.indikatorsAll.filter(i => i.kategori_id == this.kategori && i.tahun_id == this.tahun);
             this.indikator  = '';
         },
         filterKategoriForm(reset = true) {
-            this.kategoris = this.kategorisAll.filter(k => k.tahun_id == this.tahunForm);
+            this.kategoris = this.kategorisAll;
             if (reset) { this.kategoriForm = ''; this.indikators = []; this.indikatorForm = ''; this.parent_id = ''; }
         },
         filterIndikatorForm(reset = true) {
-            this.indikators = this.indikatorsAll.filter(i => i.kategori_id == this.kategoriForm);
+            this.indikators = this.indikatorsAll.filter(i => i.kategori_id == this.kategoriForm && i.tahun_id == this.tahunForm);
             if (reset) { this.indikatorForm = ''; this.parent_id = ''; }
         },
 
@@ -620,7 +643,7 @@ function pertanyaanComponent() {
             this.tahunForm = ''; this.kategoriForm = ''; this.indikatorForm = '';
             this.levelForm = 'judul'; this.parent_id = ''; this.nomor = '';
             this.pertanyaan = ''; this.bobot = ''; this.bobotInput = 0;
-            this.kategoris = []; this.indikators = [];
+            this.kategoris = this.kategorisAll; this.indikators = [];
         },
 
         handleFileSelect(event) {

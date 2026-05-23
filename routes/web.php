@@ -145,8 +145,9 @@ Route::resources([
     
     Route::middleware(['auth', 'role:Admin|Super Admin'])->group(function () {
         Route::get('/admin/beranda', [AdminController::class, 'dashboard'])->name('admin/beranda');
-        Route::get('/admin/export-excel', [AdminController::class, 'exportExcel'])->name('admin.export-excel');
+        Route::get('/admin/export-excel-formatted', [AdminController::class, 'exportExcelFormatted'])->name('admin.export-excel-formatted');
         Route::get('/admin/kategori/{kategori}/list-akun', [AdminController::class, 'listAkun'])->name('admin.list-akun');
+        Route::get('/admin/kategori/{kategori}/export-excel', [AdminController::class, 'exportListAkun'])->name('admin.export-list-akun');
         Route::patch('/admin/publish-nilai/{publicBody}', [AdminController::class, 'publishNilai'])->name('admin.publish-nilai');
         Route::get('/admin/verifikasi/{publicBody}', [AdminController::class, 'verifikasiPage'])->name('admin.verifikasi');
         Route::post('/admin/verifikasi/{publicBody}/simpan', [AdminController::class, 'simpanVerifikasi'])->name('admin.simpan-verifikasi');

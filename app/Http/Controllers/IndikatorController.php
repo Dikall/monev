@@ -9,22 +9,25 @@ use Illuminate\Http\Request;
 
 class IndikatorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $tahuns = Tahun::all();
-        $kategoris = Kategori::all();
+        $tahuns = Tahun::orderBy('tahun', 'desc')->get();
+        $kategoris = Kategori::orderBy('name')->get();
 
-        $tahunId = $request->tahun_id ?? $tahuns->first()?->id;
+        $defaultTahun = $tahuns->firstWhere('tahun', now()->year) ?? $tahuns->first();
+        $tahunId = $request->tahun_id ?? ($defaultTahun?->id ?? null);
 
-        $indikators = Indikator::with('tahun','kategori')
+        $indikators = Indikator::with(['tahun', 'kategori'])
             ->where('tahun_id', $tahunId)
-            ->orderBy('no')
-            ->get();
+            ->get()
+            ->sortBy(function ($item) {
+                $kategoriName = $item->kategori->name ?? '';
+                $noPad = str_pad($item->no, 5, '0', STR_PAD_LEFT);
+                return strtolower($kategoriName) . '-' . $noPad;
+            })
+            ->values();
 
-        return view('indikator.index', compact('indikators','tahuns','kategoris','tahunId'));
+        return view('indikator.index', compact('indikators', 'tahuns', 'kategoris', 'tahunId'));
     }
 
     /**

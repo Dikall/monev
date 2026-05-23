@@ -18,19 +18,10 @@
         indikatorKategori:'',
 
         kategorisAll: @js($kategoris),
-        kategoris: [],
+        kategoris: @js($kategoris),
 
         filterKategori(reset = true) {
-            if (!this.indikatorTahun) {
-                this.kategoris = [];
-                this.indikatorKategori = '';
-                return;
-            }
-
-            this.kategoris = this.kategorisAll.filter(
-                k => k.tahun_id == this.indikatorTahun
-            );
-
+            this.kategoris = this.kategorisAll;
             if (reset) {
                 this.indikatorKategori = '';
             }

@@ -224,6 +224,145 @@ class AdminController extends Controller
     }
 
     /**
+     * Export rekap nilai kuesioner ke Excel XLSX terformat (via Python/openpyxl)
+     */
+    public function exportExcelFormatted()
+    {
+        $admin = Auth::user();
+
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        if (!$tahun) {
+            return back()->with('error', 'Tahun aktif tidak ditemukan.');
+        }
+
+        // Ambil public bodies yang di-assign ke admin
+        $assignedBodies = $admin->hasRole('Super Admin')
+            ? PublicBody::with('kategori')->get()
+            : $admin->publicBodies()->with('kategori')->get();
+
+        $kategoriIds = $assignedBodies->pluck('kategori_id')->unique();
+
+        $indikators = Indikator::where('tahun_id', $tahun->id)
+            ->whereIn('kategori_id', $kategoriIds)
+            ->orderBy('kategori_id')
+            ->orderBy('no')
+            ->get();
+
+        // Bangun data baris
+        $rows = [];
+        $no = 1;
+
+        foreach ($assignedBodies as $body) {
+            $userBp        = $body->users()->role('Badan Publik')->first();
+            $namaResponden = $userBp->nama_responden ?? '-';
+            $isSubmitted   = Jawaban::where('public_body_id', $body->id)
+                ->where('tahun_id', $tahun->id)
+                ->where('is_submitted', true)
+                ->exists();
+
+            $nilaiPerIndikator   = [];
+            $totalNilaiKuesioner = 0;
+
+            foreach ($indikators as $ind) {
+                if ($ind->kategori_id != $body->kategori_id) {
+                    $nilaiPerIndikator[$ind->id] = null; // beda kategori
+                    continue;
+                }
+
+                $pertanyaanIds = Pertanyaan::where('level', 'pertanyaan')
+                    ->where('indikator_id', $ind->id)
+                    ->pluck('id');
+
+                $jawabans = Jawaban::where('public_body_id', $body->id)
+                    ->where('tahun_id', $tahun->id)
+                    ->whereIn('pertanyaan_id', $pertanyaanIds)
+                    ->get();
+
+                $totalBobot = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
+
+                $bobotYa = Pertanyaan::whereIn('id',
+                    $jawabans->filter(fn($j) => $j->jawaban == 1 && $j->is_verified !== false)
+                        ->pluck('pertanyaan_id')
+                )->sum('bobot');
+
+                $nilaiIndikator = $totalBobot > 0
+                    ? round(($bobotYa / $totalBobot) * $ind->bobot, 2)
+                    : 0;
+
+                $nilaiPerIndikator[$ind->id] = $nilaiIndikator;
+                $totalNilaiKuesioner += $nilaiIndikator;
+            }
+
+            $penilaian       = Penilaian::where('public_body_id', $body->id)
+                ->where('tahun_id', $tahun->id)->first();
+            $nilaiPresentasi = $penilaian->nilai_presentasi ?? null;
+            $isPublished     = $penilaian->is_published ?? false;
+
+            $totalScore = $nilaiPresentasi !== null
+                ? round(($totalNilaiKuesioner * 0.7) + ($nilaiPresentasi * 0.3), 2)
+                : null;
+
+            $rows[] = [
+                'no'                  => $no++,
+                'nama_badan'          => $body->nama_badan,
+                'kategori'            => $body->kategori->name ?? '-',
+                'nama_responden'      => $namaResponden,
+                'nilai_per_indikator' => $nilaiPerIndikator,
+                'total_kuesioner'     => round($totalNilaiKuesioner, 2),
+                'nilai_presentasi'    => $nilaiPresentasi,
+                'total_score'         => $totalScore,
+                'is_submitted'        => $isSubmitted,
+                'is_published'        => $isPublished,
+            ];
+        }
+
+        // Serialisasi data ke JSON agar bisa dikirim ke Python
+        $dataJson = json_encode([
+            'verifikator_name' => $admin->name ?? $admin->username,
+            'tahun'            => $tahunSekarang,
+            'tanggal_cetak'    => now()->translatedFormat('d F Y'),
+            'indikators'       => $indikators->map(fn($i) => [
+                'id'             => $i->id,
+                'no'             => $i->no,
+                'nama_indikator' => strtoupper($i->nama_indikator),
+                'bobot'          => $i->bobot,
+            ])->values()->toArray(),
+            'rows' => $rows,
+        ]);
+
+        // Tulis JSON ke file temp
+        $tmpJson = tempnam(sys_get_temp_dir(), 'monev_') . '.json';
+        $tmpXlsx = tempnam(sys_get_temp_dir(), 'monev_') . '.xlsx';
+
+        file_put_contents($tmpJson, $dataJson);
+
+        // Path ke script Python
+        $scriptPath = base_path('app/Console/Scripts/generate_rekap_excel.py');
+
+        // Windows: gunakan "python", Linux/Mac: "python3"
+        $pythonBin = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
+        $cmd = $pythonBin . ' ' . escapeshellarg($scriptPath)
+             . ' ' . escapeshellarg($tmpJson)
+             . ' ' . escapeshellarg($tmpXlsx);
+
+        exec($cmd, $output, $exitCode);
+
+        @unlink($tmpJson);
+
+        if ($exitCode !== 0 || !file_exists($tmpXlsx)) {
+            return back()->with('error', 'Gagal membuat file Excel: ' . implode("\n", $output));
+        }
+
+        $filename = 'Rekap_Nilai_' . ($admin->name ?? $admin->username) . '_' . $tahunSekarang . '.xlsx';
+
+        return Response::download($tmpXlsx, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
+    }
+
+    /**
      * List Akun Badan Publik per Kategori
      * Menampilkan 2 tabel: Mengisi Kuesioner & Tidak Mengisi
      */
@@ -702,6 +841,186 @@ class AdminController extends Controller
         $user->publicBodies()->sync($request->input('public_body_ids', []));
 
         return back()->with('success', 'Badan publik berhasil diperbarui');
+    }
+
+    /**
+     * Export rekap nilai per kategori (sudah & belum mengisi) ke Excel XLSX
+     */
+    public function exportListAkun($kategoriId)
+    {
+        $admin = Auth::user();
+
+        $kategori = Kategori::findOrFail($kategoriId);
+
+        $tahunSekarang = now()->year;
+        $tahun = Tahun::where('tahun', $tahunSekarang)->first();
+
+        if (!$tahun) {
+            return back()->with('error', 'Tahun aktif tidak ditemukan.');
+        }
+
+        // Ambil indikator untuk kategori ini
+        $indikators = Indikator::where('tahun_id', $tahun->id)
+            ->where('kategori_id', $kategoriId)
+            ->orderBy('no')
+            ->get();
+
+        // Cari ID badan publik yang sudah submit
+        $bodiesSudahSubmitIds = Jawaban::where('tahun_id', $tahun->id)
+            ->where('is_submitted', true)
+            ->pluck('public_body_id')
+            ->unique();
+
+        // ID Badan Publik yang di-assign ke admin ini
+        $assignedBodiesIds = $admin->hasRole('Super Admin')
+            ? PublicBody::where('kategori_id', $kategoriId)->pluck('id')
+            : $admin->publicBodies()->pluck('public_bodies.id');
+
+        // Ambil semua public bodies di kategori ini (untuk auto-submit)
+        $allBodies = PublicBody::where('kategori_id', $kategoriId)
+            ->whereIn('id', $assignedBodiesIds)
+            ->get();
+
+        // FITUR AUTO SUBMIT
+        $tenggat = Tenggat::where('kategori_id', $kategoriId)->first();
+        if ($tenggat && now()->gt($tenggat->waktu_nonaktif)) {
+            Jawaban::where('tahun_id', $tahun->id)
+                ->whereIn('public_body_id', $allBodies->pluck('id'))
+                ->where('is_submitted', false)
+                ->update([
+                    'is_submitted' => true,
+                    'submitted_at' => $tenggat->waktu_nonaktif
+                ]);
+
+            $bodiesSudahSubmitIds = Jawaban::where('tahun_id', $tahun->id)
+                ->where('is_submitted', true)
+                ->pluck('public_body_id')
+                ->unique();
+        }
+
+        // 1. Sudah Submit
+        $bodiesMengisiRaw = PublicBody::where('kategori_id', $kategoriId)
+            ->whereIn('id', $assignedBodiesIds)
+            ->whereIn('id', $bodiesSudahSubmitIds)
+            ->get();
+
+        // 2. Belum Submit
+        $bodiesTidakMengisiRaw = PublicBody::where('kategori_id', $kategoriId)
+            ->whereIn('id', $assignedBodiesIds)
+            ->whereNotIn('id', $bodiesSudahSubmitIds)
+            ->get();
+
+        // --- Fungsi proses data ---
+        $processData = function ($bodies, $status) use ($tahun, $indikators) {
+            $data = [];
+            $no = 1;
+            foreach ($bodies as $body) {
+                $userBp = $body->users()->role('Badan Publik')->first();
+                $namaResponden = $userBp->nama_responden ?? '-';
+
+                $nilaiPerIndikator = [];
+                $totalNilaiKuesioner = 0;
+
+                foreach ($indikators as $ind) {
+                    $pertanyaanIds = Pertanyaan::where('level', 'pertanyaan')
+                        ->where('indikator_id', $ind->id)
+                        ->pluck('id');
+
+                    $jawabans = Jawaban::where('public_body_id', $body->id)
+                        ->where('tahun_id', $tahun->id)
+                        ->whereIn('pertanyaan_id', $pertanyaanIds)
+                        ->get();
+
+                    $totalBobot = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
+
+                    $bobotYa = Pertanyaan::whereIn('id',
+                        $jawabans->filter(fn($j) => $j->jawaban == 1 && $j->is_verified !== false)
+                            ->pluck('pertanyaan_id')
+                    )->sum('bobot');
+
+                    $nilaiIndikator = $totalBobot > 0
+                        ? round(($bobotYa / $totalBobot) * $ind->bobot, 2)
+                        : 0;
+
+                    $nilaiPerIndikator[$ind->id] = $nilaiIndikator;
+                    $totalNilaiKuesioner += $nilaiIndikator;
+                }
+
+                $penilaian = Penilaian::where('public_body_id', $body->id)
+                    ->where('tahun_id', $tahun->id)
+                    ->first();
+                $nilaiPresentasi = $penilaian->nilai_presentasi ?? null;
+
+                $totalScore = $nilaiPresentasi !== null
+                    ? round(($totalNilaiKuesioner * 0.7) + ($nilaiPresentasi * 0.3), 2)
+                    : null;
+
+                // Status detail untuk "belum mengisi"
+                if ($status === 'tidak') {
+                    $hasAnyJawaban = collect($nilaiPerIndikator)->sum() > 0;
+                    $statusLabel = $hasAnyJawaban ? 'Sedang Mengisi' : 'Belum Mulai';
+                } else {
+                    $statusLabel = 'Sudah Submit';
+                }
+
+                $data[] = [
+                    'no'                  => $no++,
+                    'nama_badan'          => $body->nama_badan,
+                    'nama_responden'      => $namaResponden,
+                    'status'              => $statusLabel,
+                    'nilai_per_indikator' => $nilaiPerIndikator,
+                    'total_kuesioner'     => round($totalNilaiKuesioner, 2),
+                    'nilai_presentasi'    => $nilaiPresentasi,
+                    'total_score'         => $totalScore,
+                ];
+            }
+            return $data;
+        };
+
+        $rowsMengisi = $processData($bodiesMengisiRaw, 'mengisi');
+        $rowsTidak   = $processData($bodiesTidakMengisiRaw, 'tidak');
+
+        // Serialisasi ke JSON untuk Python
+        $dataJson = json_encode([
+            'verifikator_name' => $admin->name ?? $admin->username,
+            'tahun'            => $tahunSekarang,
+            'tanggal_cetak'    => now()->translatedFormat('d F Y'),
+            'kategori'         => $kategori->name,
+            'indikators'       => $indikators->map(fn($i) => [
+                'id'             => $i->id,
+                'no'             => $i->no,
+                'nama_indikator' => strtoupper($i->nama_indikator),
+                'bobot'          => $i->bobot,
+            ])->values()->toArray(),
+            'rows_mengisi' => $rowsMengisi,
+            'rows_tidak'   => $rowsTidak,
+        ]);
+
+        $tmpJson = tempnam(sys_get_temp_dir(), 'monev_list_') . '.json';
+        $tmpXlsx = tempnam(sys_get_temp_dir(), 'monev_list_') . '.xlsx';
+
+        file_put_contents($tmpJson, $dataJson);
+
+        $scriptPath = base_path('app/Console/Scripts/generate_list_akun_excel.py');
+        $pythonBin  = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
+        $cmd = $pythonBin . ' ' . escapeshellarg($scriptPath)
+             . ' ' . escapeshellarg($tmpJson)
+             . ' ' . escapeshellarg($tmpXlsx);
+
+        exec($cmd, $output, $exitCode);
+
+        @unlink($tmpJson);
+
+        if ($exitCode !== 0 || !file_exists($tmpXlsx)) {
+            return back()->with('error', 'Gagal membuat file Excel: ' . implode("\n", $output));
+        }
+
+        $safeKategori = preg_replace('/[\/\\\\]/', '-', $kategori->name);
+        $namaFile = 'Rekap_Nilai_' . $safeKategori . '_' . $tahunSekarang . '.xlsx';
+
+        return Response::download($tmpXlsx, $namaFile, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
     }
 
     public function destroy($id)

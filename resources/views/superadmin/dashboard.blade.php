@@ -32,10 +32,10 @@
     </div>
 
     <!-- Category List -->
-    <div class="mx-auto max-w-6xl px-6 py-4">
+    <div class="mx-auto max-w-6xl px-4 py-2">
         <div class="divide-y divide-gray-100">
             @foreach($stats as $item)
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between py-8 gap-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between py-4 gap-2">
 
                 <!-- Category Name -->
                 <div class="lg:w-2/5">

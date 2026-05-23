@@ -36,7 +36,7 @@
                     <form action="{{ route('superadmin.rekap-nilai.reset-publish', $publicBody->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan publikasi nilai ini?')">
                         @csrf
                         <button type="submit" 
-                                class="inline-flex items-center gap-2 bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-700 transition-all shadow-sm">
+                                class="inline-flex items-center gap-2 bg-red-700 text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-700 transition-all shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                             </svg>

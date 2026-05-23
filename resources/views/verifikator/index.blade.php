@@ -168,7 +168,7 @@
                                         email         = '{{ $item->email }}';
                                         username      = '{{ $item->username }}';
                                     "
-                                    class="w-full rounded bg-blue-600 px-4 py-2 text-xs text-white text-center"
+                                    class="w-full rounded bg-leafy px-4 py-2 text-xs text-white text-center"
                                 >Edit</button>
 
                                 {{-- Set Badan Publik --}}

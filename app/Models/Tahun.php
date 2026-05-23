@@ -10,15 +10,12 @@ class Tahun extends Model
     use HasFactory;
 
     protected $table = 'tahuns';
-    
-    protected $fillable = ['tahun',
-                            'bobot_saq', 
-                            'bobot_presentasi'];
 
-    public function kategoris()
-    {
-        return $this->hasMany(Kategori::class, 'tahun_id');
-    }
+    protected $fillable = [
+        'tahun',
+        'bobot_saq',
+        'bobot_presentasi',
+    ];
 
     public function indikators()
     {

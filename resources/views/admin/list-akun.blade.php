@@ -7,7 +7,7 @@
         searchTidakMengisi: '',
         pageMengisi: 1,
         pageTidakMengisi: 1,
-        perPage: 7,
+        perPage: 10,
         
         itemsMengisi: {{ json_encode($bodiesMengisi) }},
         itemsTidak: {{ json_encode($bodiesTidakMengisi) }},
@@ -50,10 +50,24 @@
             </svg>
             Kembali ke Beranda
         </a>
-        <h1 class="text-xl font-semibold text-gray-800">
-            List Akun — {{ $kategori->name }}
-        </h1>
-        <p class="text-sm text-gray-500 mt-1">Tahun {{ $tahun->tahun }}</p>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+                <h1 class="text-xl font-semibold text-gray-800">
+                    List Akun — {{ $kategori->name }}
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">Tahun {{ $tahun->tahun }}</p>
+            </div>
+            {{-- Tombol Unduh Rekap Excel --}}
+            <a href="{{ route('admin.export-list-akun', $kategori->id) }}"
+               id="btn-unduh-rekap-excel"
+               class="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 active:scale-95 transition-all duration-150">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Unduh Rekap Excel
+            </a>
+        </div>
     </div>
 
     {{-- Alert --}}
@@ -73,22 +87,34 @@
          ==================================================================== --}}
     <div class="mb-10">
         <div class="bg-green-50 border border-grey-200 rounded-xl p-6">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">
                     Rekapan Nilai — Sudah Submit
                     <span class="ml-2 inline-flex items-center rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-medium text-green-800">
                         {{ count($bodiesMengisi) }}
                     </span>
                 </h2>
-                {{-- Search --}}
-                <div class="relative">
-                    <input type="text"
-                           x-model="searchMengisi"
-                           placeholder="Cari nama badan publik..."
-                           class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none">
-                    <svg class="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                <div class="flex flex-wrap items-center gap-3">
+                    {{-- Search --}}
+                    <div class="relative">
+                        <input type="text"
+                               x-model="searchMengisi"
+                               placeholder="Cari nama badan publik..."
+                               class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        <svg class="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 whitespace-nowrap">
+                        <span class="text-xs text-gray-500">Tampilkan:</span>
+                        <select x-model.number="perPage" @change="pageMengisi = 1; pageTidakMengisi = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-red-500 focus:border-red-500 bg-white">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="text-xs text-gray-500">data</span>
+                    </div>
                 </div>
             </div>
 
@@ -220,22 +246,34 @@
          ==================================================================== --}}
     <div class="mb-10">
         <div class="bg-red-50 border border-red-200 rounded-xl p-6">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                 <h2 class="text-lg font-semibold text-red-800">
                     Rekapan Nilai — Tidak Mengisi Kuesioner
                     <span class="ml-2 inline-flex items-center rounded-full bg-red-200 px-2.5 py-0.5 text-xs font-medium text-red-800">
                         {{ count($bodiesTidakMengisi) }}
                     </span>
                 </h2>
-                {{-- Search --}}
-                <div class="relative">
-                    <input type="text"
-                           x-model="searchTidakMengisi"
-                           placeholder="Cari nama badan publik..."
-                           class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none">
-                    <svg class="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                <div class="flex flex-wrap items-center gap-3">
+                    {{-- Search --}}
+                    <div class="relative">
+                        <input type="text"
+                               x-model="searchTidakMengisi"
+                               placeholder="Cari nama badan publik..."
+                               class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        <svg class="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 whitespace-nowrap">
+                        <span class="text-xs text-gray-500">Tampilkan:</span>
+                        <select x-model.number="perPage" @change="pageMengisi = 1; pageTidakMengisi = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-red-500 focus:border-red-500 bg-white">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="text-xs text-gray-500">data</span>
+                    </div>
                 </div>
             </div>
 
