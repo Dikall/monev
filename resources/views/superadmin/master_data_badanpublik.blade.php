@@ -24,11 +24,11 @@
                     type="text"
                     x-model="search"
                     placeholder="Filter Badan Publik..."
-                    class="w-full md:w-64 border rounded-lg p-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-700"
+                    class="w-full md:w-64 border rounded-lg p-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-dark"
                 >
                 <div class="flex items-center gap-2 whitespace-nowrap">
                     <span class="text-xs text-gray-500">Tampilkan:</span>
-                    <select onchange="window.location.href = this.value" class="border rounded-lg p-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-red-700">
+                    <select onchange="window.location.href = this.value" class="border rounded-lg p-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-primary-dark">
                         <option value="{{ request()->fullUrlWithQuery(['per_page' => 10, 'page' => 1]) }}" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                         <option value="{{ request()->fullUrlWithQuery(['per_page' => 25, 'page' => 1]) }}" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="{{ request()->fullUrlWithQuery(['per_page' => 50, 'page' => 1]) }}" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
@@ -40,7 +40,7 @@
 
             <button 
                 @click="openTambah = true"
-                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2 w-full md:w-auto justify-center">
+                class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark flex items-center gap-2 w-full md:w-auto justify-center">
 
                 <svg xmlns="http://www.w3.org/2000/svg" 
                      class="h-5 w-5" fill="none" 
@@ -63,14 +63,14 @@
         </div>
     @endif
     @if(session('error'))
-        <div class="mb-4 bg-red-50 text-red-700 px-4 py-2 rounded">
+        <div class="mb-4 bg-primary-light text-primary-dark px-4 py-2 rounded">
             {{ session('error') }}
         </div>
     @endif
 
     <div class="bg-white border shadow rounded-lg overflow-hidden">
         <table class="min-w-full text-sm">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-primary-dark text-white">
                 <tr>
                     <th class="px-6 py-3 text-left">Kategori</th>
                     <th class="px-6 py-3 text-left">Nama Badan Publik</th>
@@ -113,7 +113,7 @@
                                     bodyNama = '{{ addslashes($item->nama_badan) }}';
                                     bodyKategori = '{{ $item->kategori_id }}';
                                 "
-                                class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                class="w-28 px-4 py-1 bg-primary-dark text-white rounded hover:bg-primary-dark">
                                 Edit
                             </button>
 
@@ -122,7 +122,7 @@
                                     openDelete = true;
                                     bodyId = {{ $item->id }};
                                 "
-                                class="w-28 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                class="w-28 px-4 py-1 border border-primary-dark text-primary-dark rounded hover:bg-primary-light">
                                 Hapus
                             </button>
                         </div>
@@ -159,7 +159,7 @@
                     $i++)
 
                 @if ($i == $publicBodies->currentPage())
-                    <span class="px-3 py-1 bg-red-700 text-white rounded">
+                    <span class="px-3 py-1 bg-primary-dark text-white rounded">
                         {{ $i }}
                     </span>
                 @else
@@ -198,7 +198,7 @@
                 @csrf
 
                 <label class="block mb-2 font-medium">
-                    Kategori <span class="text-red-600">*</span>
+                    Kategori <span class="text-primary-main">*</span>
                 </label>
                 <select name="kategori_id" class="w-full border p-3 mb-4 rounded-lg" required>
                     <option value="">Pilih Kategori</option>
@@ -210,7 +210,7 @@
                 </select>
 
                 <label class="block mb-2 font-medium">
-                    Nama Badan Publik <span class="text-red-600">*</span>
+                    Nama Badan Publik <span class="text-primary-main">*</span>
                 </label>
                 <input type="text" name="nama_badan"
                        class="w-full border p-3 mb-4 rounded-lg"
@@ -218,7 +218,7 @@
                        required>
 
                 <div class="text-right">
-                    <button class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>
@@ -258,7 +258,7 @@
                        class="w-full border p-3 mb-4 rounded-lg">
 
                 <div class="text-right">
-                    <button class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Update
                     </button>
                 </div>
@@ -279,7 +279,7 @@
 
             <div class="flex justify-end gap-4">
                 <button @click="openDelete=false"
-                        class="px-4 py-2 border border-red-700 text-red-700 rounded-lg hover:bg-red-50">
+                        class="px-4 py-2 border border-primary-dark text-primary-dark rounded-lg hover:bg-primary-light">
                     Batal
                 </button>
 
@@ -287,7 +287,7 @@
                     @csrf
                     @method('DELETE')
 
-                    <button class="px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-4 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus
                     </button>
                 </form>

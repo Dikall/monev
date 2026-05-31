@@ -3,13 +3,13 @@
 @section('content')
 <div class="flex justify-center items-center min-h-screen bg-gray-100">
     <div class="w-full bg-white shadow-lg rounded-lg p-8 md:px-20">
-        <h2 class="text-xl font-bold text-red-700 mb-6">
+        <h2 class="text-xl font-bold text-primary-dark mb-6">
             Registrasi Badan Publik
         </h2>
 
         {{-- ERROR MESSAGE --}}
         @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div class="bg-primary-light border border-primary-main text-primary-dark px-4 py-3 rounded mb-6">
             <ul class="list-disc pl-5">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -38,7 +38,7 @@
                     </label>
                     <select name="kategori_id" id="kategori_id"
                         class="w-full h-10 px-4 border rounded-lg
-                        @error('kategori_id') border-red-500 @else border-gray-400 @enderror"
+                        @error('kategori_id') border-primary-main @else border-gray-400 @enderror"
                         required>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoris as $kategori)
@@ -50,7 +50,7 @@
                     </select>
 
                     @error('kategori_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -59,7 +59,7 @@
                         Nama Badan Publik*
                     </label>
                     <select name="public_body_id" id="public_body_id"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-red-500 focus:ring focus:ring-red-200"
+                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
                         required>
                         <option value="">Pilih kategori dulu</option>
                     </select>
@@ -75,7 +75,7 @@
                         Nama Responden*
                     </label>
                     <input type="text" name="nama_responden" value="{{ old('nama_responden') }}"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-red-500 focus:ring focus:ring-red-200"
+                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
                         required>
                 </div>
 
@@ -84,7 +84,7 @@
                         No Telepon / HP*
                     </label>
                     <input type="text" name="nohp_responden" value="{{ old('nohp_responden') }}"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-red-500 focus:ring focus:ring-red-200"
+                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
                         required>
                 </div>
 
@@ -93,7 +93,7 @@
                         Jabatan*
                     </label>
                     <input type="text" name="jabatan_responden" value="{{ old('jabatan_responden') }}"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-red-500 focus:ring focus:ring-red-200"
+                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
                         required>
                 </div>
 
@@ -102,7 +102,7 @@
                         Email*
                     </label>
                     <input type="email" name="email_responden" value="{{ old('email_responden') }}"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-red-500 focus:ring focus:ring-red-200"
+                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
                         required>
                 </div>
             </div>
@@ -121,11 +121,11 @@
                         name="username"
                         value="{{ old('username') }}"
                         class="w-full h-10 px-4 border rounded-lg
-                        @error('username') border-red-500 @else border-gray-400 @enderror"
+                        @error('username') border-primary-main @else border-gray-400 @enderror"
                         required>
 
                         @error('username')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
                         @enderror
                 </div>
 
@@ -137,10 +137,10 @@
                         name="email"
                         value="{{ old('email') }}"
                         class="w-full h-10 px-4 border rounded-lg
-                        @error('email') border-red-500 @else border-gray-400 @enderror">
+                        @error('email') border-primary-main @else border-gray-400 @enderror">
 
                         @error('email')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
                         @enderror
                 </div>
 
@@ -151,11 +151,11 @@
                     <input type="password"
                         name="password"
                         class="w-full h-10 px-4 border rounded-lg
-                        @error('password') border-red-500 @else border-gray-400 @enderror"
+                        @error('password') border-primary-main @else border-gray-400 @enderror"
                         required>
 
                         @error('password')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
                         @enderror
                 </div>
 
@@ -164,14 +164,14 @@
                         Ulangi Kata Sandi*
                     </label>
                     <input type="password" name="password_confirmation"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-red-500 focus:ring focus:ring-red-200"
+                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
                         required>
                 </div>
             </div>
 
             <div class="text-right">
                 <button type="submit"
-                    class="bg-red-700 hover:bg-red-800 text-white font-semibold py-2 px-8 rounded-lg shadow">
+                    class="bg-primary-dark hover:bg-primary-dark text-white font-semibold py-2 px-8 rounded-lg shadow">
                     Daftar
                 </button>
             </div>

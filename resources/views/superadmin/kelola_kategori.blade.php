@@ -18,7 +18,7 @@
         <div class="flex justify-end">
             <button 
                 @click="openTambah = true"
-                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+                class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark flex items-center gap-2">
 
                 <svg xmlns="http://www.w3.org/2000/svg" 
                      class="h-5 w-5" fill="none" 
@@ -42,7 +42,7 @@
         </div>
     @endif
     @if(session('error'))
-        <div class="mb-4 bg-red-50 text-red-700 px-4 py-2 rounded">
+        <div class="mb-4 bg-primary-light text-primary-dark px-4 py-2 rounded">
             {{ session('error') }}
         </div>
     @endif
@@ -50,7 +50,7 @@
     {{-- TABLE --}}
     <div class="bg-white border shadow rounded-lg overflow-hidden">
         <table class="min-w-full text-sm">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-primary-dark text-white">
                 <tr>
                     <th class="px-6 py-3 text-left">No</th>
                     <th class="px-6 py-3 text-left">Nama Kategori</th>
@@ -71,7 +71,7 @@
                                     kategoriId = {{ $item->id }};
                                     kategoriNama = '{{ addslashes($item->name) }}';
                                 "
-                                class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                class="w-28 px-4 py-1 bg-primary-dark text-white rounded hover:bg-primary-dark">
                                 Edit
                             </button>
 
@@ -81,7 +81,7 @@
                                     openDelete = true;
                                     kategoriId = {{ $item->id }};
                                 "
-                                class="w-28 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                class="w-28 px-4 py-1 border border-primary-dark text-primary-dark rounded hover:bg-primary-light">
                                 Hapus
                             </button>
                         </div>
@@ -119,13 +119,13 @@
                 </label>
                 <input type="text"
                     name="name"
-                    class="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-1 focus:ring-red-500"
+                    class="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-1 focus:ring-primary-main"
                     placeholder="Contoh: Pemerintah Kabupaten/Kota"
                     required>
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        class="px-10 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>
@@ -151,17 +151,17 @@
                 @method('PUT')
 
                 <label class="block mb-2 font-medium">
-                    Nama Kategori <span class="text-red-600">*</span>
+                    Nama Kategori <span class="text-primary-main">*</span>
                 </label>
                 <input type="text"
                     name="name"
                     x-model="kategoriNama"
-                    class="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-1 focus:ring-red-500"
+                    class="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-1 focus:ring-primary-main"
                     required>
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        class="px-10 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>
@@ -190,7 +190,7 @@
 
             <div class="flex justify-end gap-4">
                 <button @click="openDelete = false"
-                    class="px-8 py-2 border border-red-700 text-red-700 rounded-lg">
+                    class="px-8 py-2 border border-primary-dark text-primary-dark rounded-lg">
                     Batal
                 </button>
 
@@ -198,7 +198,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus
                     </button>
                 </form>

@@ -69,7 +69,7 @@
                 </select>
 
                 <button type="submit"
-                        class="px-6 bg-red-700 text-white rounded-lg hover:bg-red-800 whitespace-nowrap">
+                        class="px-6 bg-primary-dark text-white rounded-lg hover:bg-primary-dark whitespace-nowrap">
                     Tampilkan Badan Publik
                 </button>
             </div>
@@ -81,7 +81,7 @@
                 <h2 class="text-lg font-semibold">Daftar Badan Publik</h2>
                 <div class="flex items-center gap-2 whitespace-nowrap">
                     <span class="text-xs text-gray-500">Tampilkan:</span>
-                    <select onchange="window.location.href = this.value" class="border rounded-lg p-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-red-700">
+                    <select onchange="window.location.href = this.value" class="border rounded-lg p-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-primary-dark">
                         <option value="{{ request()->fullUrlWithQuery(['per_page' => 10, 'page' => 1]) }}" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                         <option value="{{ request()->fullUrlWithQuery(['per_page' => 25, 'page' => 1]) }}" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="{{ request()->fullUrlWithQuery(['per_page' => 50, 'page' => 1]) }}" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
@@ -103,7 +103,7 @@
                     type="text"
                     x-model="searchQuery"
                     placeholder="Filter"
-                    class="border rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-700 w-64"
+                    class="border rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-dark w-64"
                 />
             </div>
         </div>
@@ -112,7 +112,7 @@
     {{-- TABLE --}}
     <div class="bg-white border shadow rounded-lg overflow-x-auto">
         <table class="min-w-[1200px] text-sm table-auto">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-primary-dark text-white">
                 <tr>
                     <th class="px-4 py-3 text-left">Nama Badan Publik</th>
                     <th class="px-4 py-3 text-left">Website</th>
@@ -175,7 +175,7 @@
                         @if($user->is_aktif)
                             <span class="text-green-600 font-semibold">Aktif</span>
                         @else
-                            <span class="text-red-500 font-semibold">Nonaktif</span>
+                            <span class="text-primary-main font-semibold">Nonaktif</span>
                         @endif
                     </td>
 
@@ -200,14 +200,14 @@
                                     'email_ppid'      => $user->email_ppid,
                                     'email_login'     => $user->email,
                                 ]) }})"
-                                class="w-32 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                class="w-32 px-4 py-1 bg-primary-dark text-white rounded hover:bg-primary-dark">
                                 Detail
                             </button>
 
                             {{-- RESET PASSWORD --}}
                             <button
                                 @click="openReset({{ json_encode(['id' => $user->id, 'nama' => optional($user->publicBody)->nama_badan ?? $user->name]) }})"
-                                class="w-32 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                class="w-32 px-4 py-1 border border-primary-dark text-primary-dark rounded hover:bg-primary-light">
                                 Reset Password
                             </button>
 
@@ -217,7 +217,7 @@
                                     selectedUser = {{ json_encode(['id' => $user->id, 'nama' => $user->name]) }};
                                     openDelete = true;
                                 "
-                                class="w-32 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                class="w-32 px-4 py-1 bg-primary-dark text-white rounded hover:bg-primary-dark">
                                 Hapus
                             </button>
 
@@ -250,7 +250,7 @@
                 {{-- NUMBER --}}
                 @for ($i = max(1, $users->currentPage() - 2); $i <= min($users->lastPage(), $users->currentPage() + 2); $i++)
                     @if ($i == $users->currentPage())
-                        <span class="px-3 py-1 bg-red-700 text-white rounded">{{ $i }}</span>
+                        <span class="px-3 py-1 bg-primary-dark text-white rounded">{{ $i }}</span>
                     @else
                         <a href="{{ $users->url($i) }}" class="px-3 py-1 border rounded hover:bg-gray-100">{{ $i }}</a>
                     @endif
@@ -372,7 +372,7 @@
                             @csrf
                             @method('PATCH')
                             <button
-                                class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 font-medium">
+                                class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark font-medium">
                                 Verifikasi Akun
                             </button>
                         </form>
@@ -384,7 +384,7 @@
                             @csrf
                             @method('PATCH')
                             <button
-                                class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 font-medium">
+                                class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark font-medium">
                                 Nonaktifkan Akun
                             </button>
                         </form>
@@ -425,14 +425,14 @@
                     {{-- Password Baru --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Password Baru <span class="text-red-600">*</span>
+                            Password Baru <span class="text-primary-main">*</span>
                         </label>
                         <input
                             type="text"
                             name="password"
                             x-model="newPassword"
                             placeholder="Masukkan password baru"
-                            class="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                            class="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-main"
                             required
                         />
                     </div>
@@ -440,31 +440,31 @@
                     {{-- Ulangi Password Baru --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Ulangi Password Baru <span class="text-red-600">*</span>
+                            Ulangi Password Baru <span class="text-primary-main">*</span>
                         </label>
                         <input
                             type="text"
                             name="password_confirmation"
                             x-model="confirmPassword"
                             placeholder="Ulangi password baru"
-                            class="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                            class="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-main"
                             required
                         />
                     </div>
 
                     {{-- Error Message --}}
                     <p x-show="passwordError" x-text="passwordError"
-                       class="text-sm text-red-600 font-medium"></p>
+                       class="text-sm text-primary-main font-medium"></p>
 
                 </div>
 
                 <div class="flex justify-end gap-3 mt-8">
                     <button type="button" @click="openResetPassword = false"
-                        class="px-6 py-2 border border-red-700 text-red-700 rounded-lg hover:bg-red-50 text-sm font-medium">
+                        class="px-6 py-2 border border-primary-dark text-primary-dark rounded-lg hover:bg-primary-light text-sm font-medium">
                         Batal
                     </button>
                     <button type="submit"
-                        class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 text-sm font-medium">
+                        class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark text-sm font-medium">
                         Simpan Password
                     </button>
                 </div>
@@ -494,7 +494,7 @@
 
             <div class="flex justify-end gap-4">
                 <button @click="openDelete = false"
-                    class="px-8 py-2 border border-red-700 text-red-700 rounded-lg hover:bg-red-50">
+                    class="px-8 py-2 border border-primary-dark text-primary-dark rounded-lg hover:bg-primary-light">
                     Batal
                 </button>
 
@@ -502,7 +502,7 @@
                       method="POST">
                     @csrf
                     @method('DELETE')
-                    <button class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus
                     </button>
                 </form>

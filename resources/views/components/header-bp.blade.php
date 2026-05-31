@@ -15,12 +15,12 @@
 
         <!-- Menu Navigasi -->
         <nav id="menu" class="hidden sm:flex flex-col sm:flex-row sm:space-x-10 text-lg font-medium text-gray-700 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-6 sm:px-0 py-4 sm:py-0 shadow sm:shadow-none z-40">
-            <a href="{{ route('badanpublik/beranda') }}" class="block py-2 sm:py-0 hover:text-red-600">Beranda</a>
-            <a href="{{ route('kuesioner.tab') }}" class="block py-2 sm:py-0 hover:text-red-600">Kuesioner</a>
-            <a href="{{ route('notifications.index') }}" class="block py-2 sm:py-0 hover:text-red-600 flex items-center relative">
+            <a href="{{ route('badanpublik/beranda') }}" class="block py-2 sm:py-0 hover:text-primary-main">Beranda</a>
+            <a href="{{ route('kuesioner.tab') }}" class="block py-2 sm:py-0 hover:text-primary-main">Kuesioner</a>
+            <a href="{{ route('notifications.index') }}" class="block py-2 sm:py-0 hover:text-primary-main flex items-center relative">
                 Notifikasi
                 @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                    <span class="ml-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                    <span class="ml-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary-main text-[10px] font-bold text-white">
                         {{ $unreadNotificationsCount }}
                     </span>
                 @endif
@@ -28,7 +28,7 @@
 
             <!-- Dropdown Profil -->
             <div class="relative group">
-                <a href="#" class="block py-2 sm:py-0 hover:text-red-600 flex items-center">
+                <a href="#" class="block py-2 sm:py-0 hover:text-primary-main flex items-center">
                     Profil
                     <svg class="ml-1 h-4 w-4 transform group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">

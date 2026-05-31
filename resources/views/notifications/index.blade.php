@@ -14,7 +14,7 @@
                                 {{ $notification->title }}
                             </span>
                             @if(!$notification->read_at)
-                                <span class="bg-red-100 text-red-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Baru</span>
+                                <span class="bg-primary-light text-primary-main text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Baru</span>
                             @endif
                         </div>
                         

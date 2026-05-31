@@ -8,14 +8,14 @@
     {{-- Breadcrumb --}}
     <div class="mb-6">
         @if(auth()->user()->hasRole('Super Admin'))
-            <a href="{{ route('superadmin.rekap-nilai.index') }}" class="text-sm text-red-700 hover:text-red-800 inline-flex items-center gap-1">
+            <a href="{{ route('superadmin.rekap-nilai.index') }}" class="text-sm text-primary-dark hover:text-primary-dark inline-flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                 </svg>
                 Kembali ke Rekap Nilai
             </a>
         @else
-            <a href="{{ route('admin.list-akun', $kategori->id) }}" class="text-sm text-red-700 hover:text-red-800 inline-flex items-center gap-1">
+            <a href="{{ route('admin.list-akun', $kategori->id) }}" class="text-sm text-primary-dark hover:text-primary-dark inline-flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -36,7 +36,7 @@
                     <form action="{{ route('superadmin.rekap-nilai.reset-publish', $publicBody->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan publikasi nilai ini?')">
                         @csrf
                         <button type="submit" 
-                                class="inline-flex items-center gap-2 bg-red-700 text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-700 transition-all shadow-sm">
+                                class="inline-flex items-center gap-2 bg-primary-dark text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-700 transition-all shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -61,7 +61,7 @@
             @foreach ($indikators as $i => $ind)
                 <button @click="activeTab = {{ $ind->id }}"
                         :class="activeTab === {{ $ind->id }}
-                            ? 'border-b-2 border-red-700 text-red-700 font-semibold'
+                            ? 'border-b-2 border-primary-dark text-primary-dark font-semibold'
                             : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'"
                         class="px-5 py-3 text-sm transition-colors whitespace-nowrap -mb-px">
                     {{ $ind->nama_indikator }}
@@ -84,7 +84,7 @@
 
     {{-- Auto-save status --}}
     <div x-show="saveStatus !== ''" x-transition
-         :class="saveStatus === 'saving' ? 'bg-yellow-100 text-yellow-800' : (saveStatus === 'saved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')"
+         :class="saveStatus === 'saving' ? 'bg-yellow-100 text-yellow-800' : (saveStatus === 'saved' ? 'bg-green-100 text-green-800' : 'bg-primary-light text-primary-dark')"
          class="mb-4 rounded-lg px-4 py-2 text-sm flex items-center gap-2">
         <template x-if="saveStatus === 'saving'">
             <span>⏳ Menyimpan...</span>
@@ -109,7 +109,7 @@
                 {{-- Tabel Pertanyaan --}}
                 <div class="overflow-x-auto rounded-xl border border-gray-200 mb-6">
                     <table class="w-full text-sm">
-                        <thead class="bg-red-700 text-white">
+                        <thead class="bg-primary-dark text-white">
                             <tr>
                                 <th class="px-3 py-3 text-center" style="width: 3%">No</th>
                                 <th class="px-3 py-3 text-left" style="width: 25%">Pertanyaan</th>
@@ -121,11 +121,11 @@
                                     <th class="px-3 py-3 text-left" style="width: 10%">Verifikator</th>
                                 @endif
                             </tr>
-                            <tr class="bg-red-800 text-white text-xs font-normal">
+                            <tr class="bg-primary-dark text-white text-xs font-normal">
                                 <th class="py-1"></th>
                                 <th class="py-1"></th>
                                 <th class="py-1"></th>
-                                <th class="px-3 py-1 text-center font-normal border-r border-red-600" style="width: 10%">Link</th>
+                                <th class="px-3 py-1 text-center font-normal border-r border-primary-main" style="width: 10%">Link</th>
                                 <th class="px-3 py-1 text-center font-normal" style="width: 10%">Dokumen</th>
                                 <th class="py-1"></th>
                                 <th class="py-1"></th>
@@ -161,7 +161,7 @@
         @if(!auth()->user()->hasRole('Super Admin'))
             <div class="flex justify-end mt-6">
                 <button type="submit"
-                        class="rounded-lg bg-red-700 px-8 py-3 text-sm font-semibold text-white hover:bg-red-800 transition-colors shadow-sm">
+                        class="rounded-lg bg-primary-dark px-8 py-3 text-sm font-semibold text-white hover:bg-primary-dark transition-colors shadow-sm">
                     Simpan
                 </button>
             </div>

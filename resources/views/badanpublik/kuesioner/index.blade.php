@@ -7,7 +7,7 @@
     {{-- HEADER KEMBALI --}}
     <div class="mb-8">
         <a href="{{ route('kuesioner.tab') }}"
-           class="inline-flex items-center gap-1 text-red-700 font-semibold hover:text-red-900 text-sm">
+           class="inline-flex items-center gap-1 text-primary-dark font-semibold hover:text-primary-dark text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -20,9 +20,9 @@
     {{-- NOTIFIKASI AKUN BELUM AKTIF --}}
     @if(isset($tidak_aktif) && $tidak_aktif)
         <div class="flex flex-col items-center justify-center py-32 text-center">
-            <div class="bg-white rounded-2xl shadow-md border border-red-100 px-12 py-16 max-w-lg">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-700"
+            <div class="bg-white rounded-2xl shadow-md border border-primary-light px-12 py-16 max-w-lg">
+                <div class="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-primary-dark"
                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01M12 3C6.477 3 2 7.477 2 12s4.477 9 10 9
@@ -45,7 +45,7 @@
         </div>
     @endif
     @if(session('error'))
-        <div class="mb-4 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg text-sm">
+        <div class="mb-4 bg-primary-light border border-primary-light text-primary-dark px-4 py-3 rounded-lg text-sm">
             {{ session('error') }}
         </div>
     @endif
@@ -72,7 +72,7 @@
                 <a href="{{ route('kuesioner.index', ['indikator_id' => $ind->id]) }}"
                    class="px-5 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors
                           {{ $ind->id == $indikatorId
-                              ? 'border-red-700 text-red-700'
+                              ? 'border-primary-dark text-primary-dark'
                               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                     {{ $ind->nama_indikator }}
                 </a>
@@ -158,12 +158,12 @@
             <table class="min-w-full text-sm">
 
                 <thead>
-                    <tr class="bg-red-700 text-white">
+                    <tr class="bg-primary-dark text-white">
                         <th class="px-4 py-3 text-left w-16">No</th>
                         <th class="px-4 py-3 text-left">Pertanyaan</th>
                         <th class="px-4 py-3 text-left w-40">Pilihan Jawaban</th>
-                        <th class="px-4 py-3 text-center border-l border-red-600 w-48 text-xs font-semibold">Link</th>
-                        <th class="px-4 py-3 text-center border-l border-red-600 w-64 text-xs font-semibold">Upload Dokumen</th>
+                        <th class="px-4 py-3 text-center border-l border-primary-main w-48 text-xs font-semibold">Link</th>
+                        <th class="px-4 py-3 text-center border-l border-primary-main w-64 text-xs font-semibold">Upload Dokumen</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -171,11 +171,11 @@
                     @forelse($pertanyaans as $judul)
 
                         {{-- ── JUDUL (I, II, III) ── --}}
-                        <tr class="bg-red-50 border-t-2 border-red-200">
-                            <td class="px-4 py-3 font-bold text-red-800 align-top">
+                        <tr class="bg-primary-light border-t-2 border-primary-light">
+                            <td class="px-4 py-3 font-bold text-primary-dark align-top">
                                 {{ $judul->nomor }}
                             </td>
-                            <td colspan="4" class="px-4 py-3 font-bold text-red-800 uppercase tracking-wide">
+                            <td colspan="4" class="px-4 py-3 font-bold text-primary-dark uppercase tracking-wide">
                                 {{ $judul->pertanyaan_kuisioner }}
                             </td>
                         </tr>
@@ -258,8 +258,8 @@
         @if($isOpen && !$isClosed)
             <div class="flex justify-end mt-6">
                 <button type="submit"
-                    class="px-10 py-2.5 bg-red-700 text-white font-semibold rounded-lg
-                           hover:bg-red-800 transition-colors shadow-sm">
+                    class="px-10 py-2.5 bg-primary-dark text-white font-semibold rounded-lg
+                           hover:bg-primary-dark transition-colors shadow-sm">
                     Simpan
                 </button>
             </div>

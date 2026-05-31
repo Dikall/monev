@@ -18,7 +18,7 @@
         <div class="flex justify-end">
             <button 
                 @click="openTambah = true"
-                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+                class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark flex items-center gap-2">
 
                 <svg xmlns="http://www.w3.org/2000/svg" 
                      class="h-5 w-5" fill="none" 
@@ -46,7 +46,7 @@
     {{-- TABLE --}}
     <div class="bg-white rounded-lg overflow-hidden shadow">
         <table class="min-w-full text-sm">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-primary-dark text-white">
                 <tr>
                     <th class="px-6 py-3 text-left">No</th>
                     <th class="px-6 py-3 text-left">Tahun</th>
@@ -66,7 +66,7 @@
                                 tahunId = {{ $item->id }};
                                 tahunValue = '{{ $item->tahun }}';
                             "
-                            class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2 mx-auto">
+                            class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark flex items-center gap-2 mx-auto">
 
                             <svg xmlns="http://www.w3.org/2000/svg" 
                                  class="h-5 w-5" fill="none" 
@@ -116,7 +116,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        class="px-10 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>
@@ -148,7 +148,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        class="px-10 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>

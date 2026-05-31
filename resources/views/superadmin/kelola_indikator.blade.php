@@ -48,7 +48,7 @@
                     @endforeach
                 </select>
 
-                <button class="px-6 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                <button class="px-6 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                     Tampilkan
                 </button>
             </div>
@@ -63,7 +63,7 @@
                     indikatorBobot = '';
                     filterKategori(true);
                 "
-                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                 Tambah Indikator
             </button>
         </div>
@@ -79,16 +79,16 @@
     @endif
     @if(session('error'))
         <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition
-             class="mb-4 rounded-lg bg-red-100 px-4 py-3 text-red-800 flex items-center justify-between">
+             class="mb-4 rounded-lg bg-primary-light px-4 py-3 text-primary-dark flex items-center justify-between">
             <span>{{ session('error') }}</span>
-            <button @click="show = false" class="text-red-600 hover:text-red-800">&times;</button>
+            <button @click="show = false" class="text-primary-main hover:text-primary-dark">&times;</button>
         </div>
     @endif
 
     {{-- TABLE --}}
     <div class="bg-white border shadow rounded-lg overflow-hidden">
         <table class="min-w-full text-sm table-auto">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-primary-dark text-white">
                 <tr>
                     <th class="px-4 py-2 text-left">No</th>
                     <th class="px-4 py-2 text-left">Tahun</th>
@@ -129,7 +129,7 @@
                                     filterKategori(false);
                                     indikatorKategori = '{{ $item->kategori_id }}';
                                 "
-                                class="w-28 px-4 py-1 bg-red-700 text-white rounded hover:bg-red-800">
+                                class="w-28 px-4 py-1 bg-primary-dark text-white rounded hover:bg-primary-dark">
                                 Edit
                             </button>
 
@@ -139,7 +139,7 @@
                                     openDelete = true;
                                     indikatorId = {{ $item->id }};
                                 "
-                                class="w-28 px-4 py-1 border border-red-700 text-red-700 rounded hover:bg-red-50">
+                                class="w-28 px-4 py-1 border border-primary-dark text-primary-dark rounded hover:bg-primary-light">
                                 Hapus
                             </button>
                         </div>
@@ -205,7 +205,7 @@
                     <span class="text-gray-500">
                         Total bobot terpasang: <strong x-text="(bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + '%'"></strong>
                     </span>
-                    <span :class="((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + (parseFloat(indikatorBobot) || 0)) > 100 ? 'text-red-600 font-bold' : 'text-green-600 font-medium'">
+                    <span :class="((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + (parseFloat(indikatorBobot) || 0)) > 100 ? 'text-primary-main font-bold' : 'text-green-600 font-medium'">
                         Proyeksi total: <span x-text="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + (parseFloat(indikatorBobot) || 0)).toFixed(2).replace(/\.00$/, '')) + '% / 100%'"></span>
                     </span>
                 </div>
@@ -214,7 +214,7 @@
                     class="w-full border rounded-lg p-3 mb-6"></textarea>
 
                 <div class="flex justify-end">
-                    <button class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-10 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>
@@ -268,7 +268,7 @@
                     <span class="text-gray-500">
                         Bobot indikator lain: <strong x-text="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot).toFixed(2).replace(/\.00$/, '')) + '%'"></strong>
                     </span>
-                    <span :class="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot) + (parseFloat(indikatorBobot) || 0)) > 100 ? 'text-red-600 font-bold' : 'text-green-600 font-medium'">
+                    <span :class="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot) + (parseFloat(indikatorBobot) || 0)) > 100 ? 'text-primary-main font-bold' : 'text-green-600 font-medium'">
                         Proyeksi total: <span x-text="((((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot) + (parseFloat(indikatorBobot) || 0)).toFixed(2).replace(/\.00$/, '')) + '% / 100%'"></span>
                     </span>
                 </div>
@@ -277,7 +277,7 @@
                     class="w-full border rounded-lg p-3 mb-6"></textarea>
 
                 <div class="flex justify-end">
-                    <button class="px-10 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-10 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>
@@ -304,7 +304,7 @@
 
             <div class="flex justify-end gap-4">
                 <button @click="openDelete=false"
-                    class="px-8 py-2 border border-red-700 text-red-700 rounded-lg">
+                    class="px-8 py-2 border border-primary-dark text-primary-dark rounded-lg">
                     Batal
                 </button>
 
@@ -312,7 +312,7 @@
                     @csrf
                     @method('DELETE')
 
-                    <button class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                    <button class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus
                     </button>
                 </form>

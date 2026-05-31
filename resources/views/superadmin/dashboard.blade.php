@@ -22,7 +22,7 @@
 
                     <!-- Tombol Submit -->
                     <button type="submit"
-                        class="w-full bg-red-700 hover:bg-red-800 text-white font-semibold text-base py-3 rounded-lg transition-colors duration-150">
+                        class="w-full bg-primary-dark hover:bg-primary-dark text-white font-semibold text-base py-3 rounded-lg transition-colors duration-150">
                         Tampilkan Kategori
                     </button>
 

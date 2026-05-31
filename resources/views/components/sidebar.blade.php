@@ -43,7 +43,7 @@
     terpisah dari body, sehingga main content tidak bisa membaca sidebarOpen.
 --}}
 <div :class="sidebarOpen ? 'w-72' : 'w-20'"
-     class="bg-red-700 text-white flex flex-col transition-all duration-300 fixed top-0 left-0 h-screen z-50 shadow-xl">
+     class="bg-primary-dark text-white flex flex-col transition-all duration-300 fixed top-0 left-0 h-screen z-50 shadow-xl">
 
     {{-- ===== HEADER: Teks & Hamburger ===== --}}
     <div class="flex items-center justify-between px-4 py-5 border-b border-white border-opacity-15">
@@ -234,7 +234,7 @@
                 </svg>
                 {{-- Badge when sidebar is collapsed --}}
                 @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                    <div x-show="!sidebarOpen" class="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white border-2 border-red-700">
+                    <div x-show="!sidebarOpen" class="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-main text-[9px] font-bold text-white border-2 border-primary-dark">
                         {{ $unreadNotificationsCount > 9 ? '9+' : $unreadNotificationsCount }}
                     </div>
                 @endif

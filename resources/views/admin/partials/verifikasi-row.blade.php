@@ -83,7 +83,7 @@
                                 <img src="{{ Storage::url($jawaban->dokumen_path) }}" class="w-full h-auto rounded shadow-sm mb-2 max-h-32 object-cover">
                             @else
                                 <div class="flex flex-col items-center py-4 bg-gray-50 rounded mb-2">
-                                    <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-10 h-10 text-primary-main" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
                                     </svg>
                                     <span class="text-[10px] font-bold text-gray-500 uppercase mt-2">{{ $ext }} Document</span>
@@ -107,7 +107,7 @@
                         <input type="radio"
                                name="verifikasi[{{ $item->id }}]"
                                value="1"
-                               class="accent-red-700 w-3.5 h-3.5"
+                               class="accent-primary-dark w-3.5 h-3.5"
                                {{ ($jawaban?->is_verified === true) ? 'checked' : '' }}
                                @if(auth()->user()->hasRole('Super Admin')) disabled @else @change="triggerAutoSave()" @endif>
                         Ya
@@ -116,7 +116,7 @@
                         <input type="radio"
                                name="verifikasi[{{ $item->id }}]"
                                value="0"
-                               class="accent-red-700 w-3.5 h-3.5"
+                               class="accent-primary-dark w-3.5 h-3.5"
                                {{ ($jawaban?->is_verified === false) ? 'checked' : '' }}
                                @if(auth()->user()->hasRole('Super Admin')) disabled @else @change="triggerAutoSave()" @endif>
                         Tidak
@@ -131,7 +131,7 @@
                        name="catatan[{{ $item->id }}]"
                        value="{{ $jawaban?->catatan_verifikasi ?? '' }}"
                        placeholder="Catatan"
-                       class="w-full rounded border border-gray-300 px-2 py-1.5 text-xs text-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none mb-2"
+                       class="w-full rounded border border-gray-300 px-2 py-1.5 text-xs text-gray-700 focus:border-primary-main focus:ring-1 focus:ring-primary-main outline-none mb-2"
                        @if(auth()->user()->hasRole('Super Admin')) readonly @else @input="triggerAutoSave()" @endif>
             </td>
 

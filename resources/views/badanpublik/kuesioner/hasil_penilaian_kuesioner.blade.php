@@ -7,7 +7,7 @@
     {{-- HEADER KEMBALI --}}
     <div class="mb-8">
         <a href="{{ route('kuesioner.tab') }}"
-           class="inline-flex items-center gap-1 text-red-700 font-semibold hover:text-red-900 text-sm">
+           class="inline-flex items-center gap-1 text-primary-dark font-semibold hover:text-primary-dark text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -17,14 +17,14 @@
         </a>
     </div>
 
-    <h2 class="text-red-700 font-bold text-lg mb-6">Hasil Penilaian</h2>
+    <h2 class="text-primary-dark font-bold text-lg mb-6">Hasil Penilaian</h2>
 
     {{-- AKUN BELUM AKTIF --}}
     @if(isset($tidak_aktif) && $tidak_aktif)
         <div class="flex flex-col items-center justify-center py-32 text-center">
-            <div class="bg-white rounded-2xl shadow-md border border-red-100 px-12 py-16 max-w-lg">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-700"
+            <div class="bg-white rounded-2xl shadow-md border border-primary-light px-12 py-16 max-w-lg">
+                <div class="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-primary-dark"
                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01M12 3C6.477 3 2 7.477 2 12s4.477 9 10 9
@@ -105,7 +105,7 @@
                         </div>
 
                         <div class="space-y-1">
-                            <p class="text-2xl font-bold text-red-700 leading-tight uppercase">
+                            <p class="text-2xl font-bold text-primary-dark leading-tight uppercase">
                                 {{ $penilaian->predikat ?? '-' }}
                             </p>
                             <p class="text-[10px] font-medium text-gray-500 italic">
@@ -115,9 +115,9 @@
                     </div>
 
                     @if($penilaian->catatan)
-                        <div class="mt-6 p-3 bg-red-50 border-l-4 border-red-700 rounded-r-lg">
-                            <p class="text-[10px] font-black text-red-900 uppercase tracking-widest mb-1">Catatan Verifikator</p>
-                            <p class="text-xs text-red-800 leading-relaxed italic">"{{ $penilaian->catatan }}"</p>
+                        <div class="mt-6 p-3 bg-primary-light border-l-4 border-primary-dark rounded-r-lg">
+                            <p class="text-[10px] font-black text-primary-dark uppercase tracking-widest mb-1">Catatan Verifikator</p>
+                            <p class="text-xs text-primary-dark leading-relaxed italic">"{{ $penilaian->catatan }}"</p>
                         </div>
                     @endif
                 </div>
@@ -137,7 +137,7 @@
 
     {{-- PENILAIAN BELUM ADA ALERT --}}
     @if(!$sudahDinilai)
-        <div class="bg-red-50 border border-blue-100 rounded-2xl p-8 mb-8 flex items-start gap-4">
+        <div class="bg-primary-light border border-blue-100 rounded-2xl p-8 mb-8 flex items-start gap-4">
             <div class="w-10 h-10 bg-leafy text-black rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -164,7 +164,7 @@
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead>
-                        <tr class="bg-red-700 text-white">
+                        <tr class="bg-primary-dark text-white">
                             <th class="px-6 py-3 text-left font-semibold">No</th>
                             <th class="px-6 py-3 text-left font-semibold">Indikator</th>
                             <th class="px-6 py-3 text-center font-semibold">Dijawab Ya</th>
@@ -191,7 +191,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center justify-center w-8 h-8
-                                                 bg-red-100 text-red-700 rounded-full font-semibold text-xs">
+                                                 bg-primary-light text-primary-dark rounded-full font-semibold text-xs">
                                         {{ $item['dijawab_tidak'] }}
                                     </span>
                                 </td>
@@ -206,7 +206,7 @@
                                         $persen = $item['persentase'];
                                         $colorClass = $persen >= 80 ? 'text-green-700 bg-green-50 border-green-200'
                                             : ($persen >= 50 ? 'text-yellow-700 bg-yellow-50 border-yellow-200'
-                                            : 'text-red-700 bg-red-50 border-red-200');
+                                            : 'text-primary-dark bg-primary-light border-primary-light');
                                     @endphp
                                     <span class="inline-block px-2.5 py-1 rounded-full border text-xs font-semibold {{ $colorClass }}">
                                         {{ $persen }}%

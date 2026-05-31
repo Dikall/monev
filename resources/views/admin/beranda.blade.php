@@ -17,7 +17,7 @@
     <div class="flex justify-end gap-3 mb-6">
         {{-- Export Excel Terformat (baru) --}}
         <a href="{{ route('admin.export-excel-formatted') }}"
-           class="inline-flex items-center gap-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 transition-colors duration-200">
+           class="inline-flex items-center gap-2 rounded-lg bg-primary-dark px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-dark transition-colors duration-200">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
@@ -27,7 +27,7 @@
 
     {{-- Alert --}}
     @if (session('error'))
-        <div class="mb-4 rounded-lg bg-red-100 px-4 py-3 text-red-800">
+        <div class="mb-4 rounded-lg bg-primary-light px-4 py-3 text-primary-dark">
             {{ session('error') }}
         </div>
     @endif
@@ -62,7 +62,7 @@
 
                         {{-- Tombol List Akun --}}
                         <a href="{{ route('admin.list-akun', $stat['kategori']->id) }}"
-                           class="inline-flex items-center justify-center rounded-lg bg-red-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-800 transition-colors duration-200 whitespace-nowrap">
+                           class="inline-flex items-center justify-center rounded-lg bg-primary-dark px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-dark transition-colors duration-200 whitespace-nowrap">
                             List Akun
                         </a>
                     </div>

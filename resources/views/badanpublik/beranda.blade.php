@@ -28,7 +28,7 @@
                         <circle cx="64" cy="64" r="58" stroke="currentColor" stroke-width="8" fill="transparent"
                                 stroke-dasharray="364.42"
                                 stroke-dashoffset="{{ 364.42 - (364.42 * $persen / 100) }}"
-                                class="text-red-700 transition-all duration-1000 ease-out" />
+                                class="text-primary-dark transition-all duration-1000 ease-out" />
                     </svg>
                     <span class="absolute text-xl font-bold text-gray-800">{{ $persen }}%</span>
                 @endif
@@ -60,8 +60,8 @@
                     </button>
                 @elseif($sudahSubmit)
                     <a href="{{ route('kuesioner.hasil') }}"
-                   class="inline-flex items-center gap-2 px-8 py-2.5 bg-red-700 text-white
-                          font-semibold rounded-lg hover:bg-red-800 transition-colors shadow-sm text-sm">
+                   class="inline-flex items-center gap-2 px-8 py-2.5 bg-primary-dark text-white
+                          font-semibold rounded-lg hover:bg-primary-dark transition-colors shadow-sm text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,7 +70,7 @@
                     Lihat Hasil Penilaian
                 </a>
                 @elseif($isOpen)
-                    <a href="{{ route('kuesioner.index') }}" class="inline-flex items-center px-6 py-3 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-800 transition-all shadow-sm">
+                    <a href="{{ route('kuesioner.index') }}" class="inline-flex items-center px-6 py-3 bg-primary-dark text-white font-semibold rounded-lg hover:bg-primary-dark transition-all shadow-sm">
                         Lanjutkan Pengisian Kuesioner
                     </a>
                 @else
@@ -87,8 +87,8 @@
         <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
             @if(isset($tidak_aktif) && $tidak_aktif)
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-main" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3C6.477 3 2 7.477 2 12s4.477 9 10 9 10-4.477 10-9S17.523 3 12 3z"/>
                         </svg>
                     </div>
@@ -96,10 +96,10 @@
                 </div>
                 <div class="py-4">
                     <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                        <span class="font-bold text-red-600 text-base block mb-1">Akun Belum Aktif</span>
+                        <span class="font-bold text-primary-main text-base block mb-1">Akun Belum Aktif</span>
                         Akun Anda saat ini belum diverifikasi oleh administrator. Mohon hubungi administrator Badan Publik atau Komisi Informasi untuk proses aktivasi akun.
                     </p>
-                    <a href="mailto:admin@e-monev.id" class="text-sm text-red-700 font-bold hover:underline flex items-center gap-2">
+                    <a href="mailto:admin@e-monev.id" class="text-sm text-primary-dark font-bold hover:underline flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
@@ -147,7 +147,7 @@
                 <li class="flex items-start gap-2 text-sm text-gray-600">
                     <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>
                     <span>Mohon lengkapi kuesioner sebelum 
-                        <strong class="text-red-700">
+                        <strong class="text-primary-dark">
                             {{ isset($tenggat) && $tenggat ? \Carbon\Carbon::parse($tenggat->waktu_nonaktif)->translatedFormat('d F Y') : 'batas waktu ditentukan' }}
                         </strong>
                     </span>

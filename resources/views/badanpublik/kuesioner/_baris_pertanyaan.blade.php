@@ -45,7 +45,7 @@
                        x-model="jawaban"
                        @checked($nilaiJawaban === 1)
                        @disabled($disabled)
-                       class="text-red-700 focus:ring-red-700">
+                       class="text-primary-dark focus:ring-primary-dark">
                 <span class="text-sm text-gray-700">Ya</span>
             </label>
 
@@ -58,7 +58,7 @@
                        x-model="jawaban"
                        @checked($nilaiJawaban === 0 && $jawaban !== null)
                        @disabled($disabled)
-                       class="text-red-700 focus:ring-red-700">
+                       class="text-primary-dark focus:ring-primary-dark">
                 <span class="text-sm text-gray-700">Tidak</span>
             </label>
 
@@ -76,12 +76,12 @@
                            placeholder="Masukkan Link..."
                            @disabled($disabled)
                            class="flex-1 border border-gray-200 rounded-md px-3 py-1.5 text-xs text-gray-700
-                                  placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-red-400
+                                  placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary-main
                                   {{ $disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white' }}">
                     
                     @if(!$disabled)
                     <button type="button" @click="links.splice(index, 1)" x-show="links.length > 1"
-                            class="text-red-500 hover:text-red-700 p-1">
+                            class="text-primary-main hover:text-primary-dark p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -92,7 +92,7 @@
             
             @if(!$disabled)
             <button type="button" @click="links.push('')"
-                    class="text-[10px] font-bold text-red-700 hover:text-red-900 flex items-center gap-1 mt-1 bg-red-50 px-2 py-1 rounded">
+                    class="text-[10px] font-bold text-primary-dark hover:text-primary-dark flex items-center gap-1 mt-1 bg-primary-light px-2 py-1 rounded">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -102,8 +102,8 @@
 
             {{-- Warning untuk Jawaban YA tanpa Bukti --}}
             <div x-show="jawaban == '1' && !hasFile && !links.some(l => l && l.trim() !== '')"
-                 class="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
-                <p class="text-[10px] text-red-600 font-bold leading-tight">
+                 class="mt-2 p-2 bg-primary-light border border-primary-light rounded-md">
+                <p class="text-[10px] text-primary-main font-bold leading-tight">
                     ⚠ Wajib mengisi Link atau Upload Dokumen jika menjawab YA agar terhitung dalam progres.
                 </p>
             </div>
@@ -117,7 +117,7 @@
 
             @if(!$disabled)
             <label class="flex-shrink-0 cursor-pointer">
-                <div class="flex items-center gap-1.5 bg-red-700 hover:bg-red-800 text-white
+                <div class="flex items-center gap-1.5 bg-primary-dark hover:bg-primary-dark text-white
                             text-xs font-medium px-3 py-1.5 rounded-md transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
@@ -137,12 +137,12 @@
             <div class="min-w-0">
                 <p class="text-xs text-gray-500 break-all"
                    x-text="fileName || 'Tidak ada file dipilih'"></p>
-                <p class="text-xs text-red-400 mt-0.5">Maksimum ukuran file 2MB</p>
+                <p class="text-xs text-primary-main mt-0.5">Maksimum ukuran file 2MB</p>
 
                 @if($jawaban?->dokumen_path)
                 <a href="{{ Storage::url($jawaban->dokumen_path) }}"
                    target="_blank"
-                   class="text-xs text-red-700 underline hover:text-red-900 mt-1 block">
+                   class="text-xs text-primary-dark underline hover:text-primary-dark mt-1 block">
                     Lihat Dokumen
                 </a>
                 @endif

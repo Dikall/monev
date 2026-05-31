@@ -50,7 +50,7 @@
                 </select>
 
             </div>
-            <button class="w-full bg-red-700 text-white p-3 rounded">Tampilkan</button>
+            <button class="w-full bg-primary-dark text-white p-3 rounded">Tampilkan</button>
         </form>
     </div>
 
@@ -61,7 +61,7 @@
         </div>
     @endif
     @if(session('error'))
-        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div class="mb-4 p-4 bg-primary-light border border-primary-main text-primary-dark rounded">
             {{ session('error') }}
         </div>
     @endif
@@ -80,14 +80,14 @@
 
     {{-- Info peringatan bobot (data tetap tersimpan) --}}
     @if(session('import_warnings'))
-        <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded">
+        <div class="mb-4 p-4 bg-primary-light border border-primary-light text-primary-dark rounded">
             <p class="font-semibold mb-2">ℹ️ Catatan pembobotan (data tetap tersimpan):</p>
             <ul class="list-disc list-inside text-sm space-y-0.5">
                 @foreach(session('import_warnings') as $warn)
                     <li>{{ $warn }}</li>
                 @endforeach
             </ul>
-            <p class="text-xs mt-2 text-red-600">Total bobot per indikator yang melebihi 100 tetap akan dihitung sebagai 100 saat rekap nilai.</p>
+            <p class="text-xs mt-2 text-primary-main">Total bobot per indikator yang melebihi 100 tetap akan dihitung sebagai 100 saat rekap nilai.</p>
         </div>
     @endif
 
@@ -104,7 +104,7 @@
                 Import Excel
             </button>
             <button @click="openTambah = true; resetForm();"
-                class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                class="bg-primary-dark hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 + Tambah Pertanyaan
             </button>
         </div>
@@ -113,7 +113,7 @@
     {{-- TABLE --}}
     <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-red-700 text-white font-medium">
+            <thead class="bg-primary-dark text-white font-medium">
                 <tr>
                     <th class="p-3 text-left font-medium">Tahun</th>
                     <th class="p-3 text-left font-medium">Kategori</th>
@@ -129,8 +129,8 @@
                 @forelse($pertanyaans as $p)
                 <tr class="transition-colors hover:bg-slate-50/50
                     outline outline-1 outline-slate-200
-                    {{ $p->level === 'judul'    ? 'bg-red-50/40 text-red-950 font-medium' : '' }}
-                    {{ $p->level === 'subjudul' ? 'bg-red-50/10 text-slate-800' : '' }}
+                    {{ $p->level === 'judul'    ? 'bg-primary-light/40 text-primary-dark font-medium' : '' }}
+                    {{ $p->level === 'subjudul' ? 'bg-primary-light/10 text-slate-800' : '' }}
                     {{ $p->level === 'pertanyaan' ? 'bg-white text-slate-600' : '' }}
                 ">
                     <td class="p-3 whitespace-nowrap">{{ $p->tahun->tahun }}</td>
@@ -146,7 +146,7 @@
                     </td>
                     <td class="p-3 whitespace-nowrap">
                         @if($p->level === 'judul')
-                            <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-medium">Judul</span>
+                            <span class="bg-primary-light text-primary-dark px-2 py-0.5 rounded text-xs font-medium">Judul</span>
                         @elseif($p->level === 'subjudul')
                             <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs font-medium">Sub Judul</span>
                         @else
@@ -183,11 +183,11 @@
                                     pertanyaan    = `{{ addslashes($p->pertanyaan_kuisioner) }}`;
                                     bobot         = "{{ $p->bobot }}";
                                 '
-                                class="bg-red-700 hover:bg-red-800 text-white px-2.5 py-1 rounded text-xs font-medium transition-colors">
+                                class="bg-primary-dark hover:bg-primary-dark text-white px-2.5 py-1 rounded text-xs font-medium transition-colors">
                                 Edit
                             </button>
                             <button @click="openDelete = true; pertanyaanDeleteId = {{ $p->id }}"
-                                class="border border-red-700 text-red-700 hover:bg-red-50 px-2.5 py-1 rounded text-xs font-medium transition-colors">
+                                class="border border-primary-dark text-primary-dark hover:bg-primary-light px-2.5 py-1 rounded text-xs font-medium transition-colors">
                                 Hapus
                             </button>
                         </div>
@@ -267,9 +267,9 @@
                     {{-- Drop zone --}}
                     <div class="border-2 border-dashed rounded-lg p-6 text-center mb-4 transition-colors"
                          :class="importFileName ? 'border-green-400 bg-green-50' : 'border-gray-300'"
-                         @dragover.prevent="$el.classList.add('border-blue-400','bg-red-50')"
-                         @dragleave.prevent="$el.classList.remove('border-blue-400','bg-red-50')"
-                         @drop.prevent="handleFileDrop($event); $el.classList.remove('border-blue-400','bg-red-50')">
+                         @dragover.prevent="$el.classList.add('border-blue-400','bg-primary-light')"
+                         @dragleave.prevent="$el.classList.remove('border-blue-400','bg-primary-light')"
+                         @drop.prevent="handleFileDrop($event); $el.classList.remove('border-blue-400','bg-primary-light')">
                         <div x-show="!importFileName">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -300,13 +300,13 @@
                                 <p class="text-green-700 font-semibold text-sm" x-text="importFileName"></p>
                                 <p class="text-xs text-green-600 mb-2">File siap diimport</p>
                                 <button type="button" @click="resetImportForm()"
-                                    class="text-xs text-red-500 underline">Ganti file</button>
+                                    class="text-xs text-primary-main underline">Ganti file</button>
                             </div>
                         </div>
                     </div>
 
                     @error('file_excel')
-                        <p class="text-red-500 text-sm mb-3">{{ $message }}</p>
+                        <p class="text-primary-main text-sm mb-3">{{ $message }}</p>
                     @enderror
 
                     <div class="flex justify-end gap-3 mt-2">
@@ -388,7 +388,7 @@
 
                     <div x-show="levelForm === 'subjudul'" class="mb-4">
                         <label class="font-semibold block mb-1">
-                            Parent Judul <span class="text-red-600">*</span>
+                            Parent Judul <span class="text-primary-main">*</span>
                         </label>
                         <select x-model="parent_id" class="w-full border p-3 rounded">
                             <option value="">-- Pilih Judul --</option>
@@ -396,7 +396,7 @@
                                 <option :value="p.id" x-text="p.nomor + ' - ' + p.pertanyaan_kuisioner"></option>
                             </template>
                         </select>
-                        <p class="text-xs text-red-500 mt-1"
+                        <p class="text-xs text-primary-main mt-1"
                            x-show="levelForm === 'subjudul' && !parent_id">
                             Wajib pilih Judul sebagai parent.
                         </p>
@@ -431,7 +431,7 @@
                         <div class="flex justify-between items-center mb-1">
                             <label class="font-semibold">Bobot Soal</label>
                             <div class="text-sm"
-                                :class="totalBobotSekarang > 100 ? 'text-red-600 font-bold' : 'text-gray-600'">
+                                :class="totalBobotSekarang > 100 ? 'text-primary-main font-bold' : 'text-gray-600'">
                                 Total bobot indikator ini:
                                 <span x-text="totalBobotSekarang"></span> / 100
                                 <span x-show="totalBobotSekarang > 100"> ⚠ Melebihi 100!</span>
@@ -451,7 +451,7 @@
                             :disabled="levelForm === 'pertanyaan' && totalBobotSekarang > 100"
                             :class="(levelForm === 'pertanyaan' && totalBobotSekarang > 100)
                                 ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-red-700 hover:bg-red-800'"
+                                : 'bg-primary-dark hover:bg-primary-dark'"
                             class="text-white px-6 py-2 rounded">
                             Simpan
                         </button>
@@ -512,7 +512,7 @@
 
                     <div x-show="levelForm === 'subjudul'" class="mb-4">
                         <label class="font-semibold block mb-1">
-                            Parent Judul <span class="text-red-600">*</span>
+                            Parent Judul <span class="text-primary-main">*</span>
                         </label>
                         <select x-model="parent_id" class="w-full border p-3 rounded">
                             <option value="">-- Pilih Judul --</option>
@@ -551,7 +551,7 @@
                     </div>
 
                     <div class="flex justify-end">
-                        <button class="bg-red-700 text-black px-6 py-2 rounded hover:bg-red-800">
+                        <button class="bg-primary-dark text-black px-6 py-2 rounded hover:bg-primary-dark">
                             Update
                         </button>
                     </div>
@@ -568,14 +568,14 @@
             <p class="mb-8 text-lg">Apakah Anda yakin ingin menghapus data ini?</p>
             <div class="flex justify-end gap-4">
                 <button @click="openDelete = false"
-                    class="px-8 py-2 border border-red-700 text-red-700 rounded-lg">
+                    class="px-8 py-2 border border-primary-dark text-primary-dark rounded-lg">
                     Batal
                 </button>
                 <form :action="'/superadmin/pertanyaan/' + pertanyaanDeleteId" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="px-8 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
+                        class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus
                     </button>
                 </form>

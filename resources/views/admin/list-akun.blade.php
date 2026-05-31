@@ -44,7 +44,7 @@
 
     {{-- Breadcrumb & Header --}}
     <div class="mb-6">
-        <a href="{{ route('admin/beranda') }}" class="text-sm text-red-700 hover:text-red-800 inline-flex items-center gap-1 mb-3">
+        <a href="{{ route('admin/beranda') }}" class="text-sm text-primary-dark hover:text-primary-dark inline-flex items-center gap-1 mb-3">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -60,7 +60,7 @@
             {{-- Tombol Unduh Rekap Excel --}}
             <a href="{{ route('admin.export-list-akun', $kategori->id) }}"
                id="btn-unduh-rekap-excel"
-               class="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 active:scale-95 transition-all duration-150">
+               class="inline-flex items-center gap-2 rounded-lg bg-primary-dark px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-dark active:scale-95 transition-all duration-150">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -77,7 +77,7 @@
         </div>
     @endif
     @if (session('error'))
-        <div class="mb-4 rounded-lg bg-red-100 px-4 py-3 text-red-800">
+        <div class="mb-4 rounded-lg bg-primary-light px-4 py-3 text-primary-dark">
             {{ session('error') }}
         </div>
     @endif
@@ -108,14 +108,14 @@
                         <input type="text"
                                x-model="searchMengisi"
                                placeholder="Cari nama badan publik..."
-                               class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none">
+                               class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-main focus:ring-1 focus:ring-primary-main focus:outline-none">
                         <svg class="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
                     <div class="flex items-center gap-2 whitespace-nowrap">
                         <span class="text-xs text-gray-500">Tampilkan:</span>
-                        <select x-model.number="perPage" @change="pageMengisi = 1; pageTidakMengisi = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-red-500 focus:border-red-500 bg-white">
+                        <select x-model.number="perPage" @change="pageMengisi = 1; pageTidakMengisi = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-primary-main focus:border-primary-main bg-white">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
@@ -128,7 +128,7 @@
 
             <div class="overflow-x-auto rounded-lg border border-gray-200">
                 <table class="w-full text-sm">
-                    <thead class="bg-red-700 text-white">
+                    <thead class="bg-primary-dark text-white">
                         <tr>
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Badan Publik</th>
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Responden</th>
@@ -189,8 +189,8 @@
                                                 <button type="submit"
                                                         class="rounded px-3 py-1.5 text-xs font-semibold transition-colors
                                                             {{ $row['is_published']
-                                                                ? 'bg-red-700 text-white hover:bg-white hover:text-red-700 border-2 border-red-700'
-                                                                : 'bg-red-700 text-white hover:bg-white hover:text-red-700 border-2 border-red-700' }}"
+                                                                ? 'bg-primary-dark text-white hover:bg-white hover:text-primary-dark border-2 border-primary-dark'
+                                                                : 'bg-primary-dark text-white hover:bg-white hover:text-primary-dark border-2 border-primary-dark' }}"
                                                         title="{{ $row['is_published'] ? 'Unpublish Nilai' : 'Publish Nilai' }}">
                                                     {{ $row['is_published'] ? 'Published' : 'Publish' }}
                                                 </button>
@@ -199,7 +199,7 @@
 
                                         {{-- Lakukan Verifikasi --}}
                                         <a href="{{ route('admin.verifikasi', $row['body']->id) }}"
-                                           class="rounded bg-white px-3 py-1.5 text-xs font-semibold border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-white transition-colors">
+                                           class="rounded bg-white px-3 py-1.5 text-xs font-semibold border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white transition-colors">
                                             Verifikasi
                                         </a>
                                     </div>
@@ -230,7 +230,7 @@
                     </button>
                     <template x-for="p in Math.ceil(filteredMengisi.length / perPage)">
                         <button @click="pageMengisi = p" 
-                                :class="pageMengisi === p ? 'bg-red-700 text-white' : 'hover:bg-gray-100'"
+                                :class="pageMengisi === p ? 'bg-primary-dark text-white' : 'hover:bg-gray-100'"
                                 class="px-2 py-1 text-xs border rounded transition-colors" 
                                 x-text="p"></button>
                     </template>
@@ -253,16 +253,16 @@
          CONTAINER 2: REKAPAN NILAI — TIDAK MENGISI KUESIONER
          ==================================================================== --}}
     <div class="mb-10">
-        <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+        <div class="bg-primary-light border border-primary-light rounded-xl p-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                 <div class="flex items-center gap-4">
-                    <h2 class="text-lg font-semibold text-red-800">
+                    <h2 class="text-lg font-semibold text-primary-dark">
                         Rekapan Nilai — Tidak Mengisi Kuesioner
-                        <span class="ml-2 inline-flex items-center rounded-full bg-red-200 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                        <span class="ml-2 inline-flex items-center rounded-full bg-primary-light px-2.5 py-0.5 text-xs font-medium text-primary-dark">
                             {{ count($bodiesTidakMengisi) }}
                         </span>
                     </h2>
-                    <a href="{{ route('admin.export-list-akun', ['kategori' => $kategori->id, 'type' => 'tidak']) }}" class="inline-flex items-center gap-1 rounded bg-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-800 hover:bg-red-200 transition-colors">
+                    <a href="{{ route('admin.export-list-akun', ['kategori' => $kategori->id, 'type' => 'tidak']) }}" class="inline-flex items-center gap-1 rounded bg-primary-light px-2.5 py-1.5 text-xs font-semibold text-primary-dark hover:bg-primary-light transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>
@@ -275,14 +275,14 @@
                         <input type="text"
                                x-model="searchTidakMengisi"
                                placeholder="Cari nama badan publik..."
-                               class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none">
+                               class="w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-main focus:ring-1 focus:ring-primary-main focus:outline-none">
                         <svg class="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
                     <div class="flex items-center gap-2 whitespace-nowrap">
                         <span class="text-xs text-gray-500">Tampilkan:</span>
-                        <select x-model.number="perPage" @change="pageMengisi = 1; pageTidakMengisi = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-red-500 focus:border-red-500 bg-white">
+                        <select x-model.number="perPage" @change="pageMengisi = 1; pageTidakMengisi = 1" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:ring-primary-main focus:border-primary-main bg-white">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
@@ -295,7 +295,7 @@
 
             <div class="overflow-x-auto rounded-lg border border-gray-200">
                 <table class="w-full text-sm">
-                    <thead class="bg-red-700 text-white">
+                    <thead class="bg-primary-dark text-white">
                         <tr>
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Badan Publik</th>
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Responden</th>
@@ -351,7 +351,7 @@
                                 <td class="px-4 py-3 text-center font-semibold text-gray-800">{{ $row['total_kuesioner'] }}</td>
                                 <td class="px-4 py-3 text-center">
                                     @if($row['total_score'] !== null)
-                                        <span class="font-bold text-red-700">{{ $row['total_score'] }}</span>
+                                        <span class="font-bold text-primary-dark">{{ $row['total_score'] }}</span>
                                     @else
                                         <span class="text-gray-400">-</span>
                                     @endif
@@ -372,8 +372,8 @@
                                                 <button type="submit"
                                                         class="rounded px-3 py-1.5 text-xs font-semibold transition-colors
                                                             {{ $row['is_published']
-                                                                ? 'bg-red-700 text-white hover:bg-white hover:text-red-700 border-2 border-red-700'
-                                                                : 'bg-red-700 text-white hover:bg-white hover:text-red-700 border-2 border-red-700' }}"
+                                                                ? 'bg-primary-dark text-white hover:bg-white hover:text-primary-dark border-2 border-primary-dark'
+                                                                : 'bg-primary-dark text-white hover:bg-white hover:text-primary-dark border-2 border-primary-dark' }}"
                                                         title="{{ $row['is_published'] ? 'Unpublish Nilai' : 'Publish Nilai' }}">
                                                     {{ $row['is_published'] ? 'Published' : 'Publish' }}
                                                 </button>
@@ -382,7 +382,7 @@
 
                                         {{-- Lakukan Verifikasi --}}
                                         <a href="{{ route('admin.verifikasi', $row['body']->id) }}"
-                                           class="rounded bg-white px-3 py-1.5 text-xs font-semibold border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-white transition-colors">
+                                           class="rounded bg-white px-3 py-1.5 text-xs font-semibold border-2 border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white transition-colors">
                                             Verifikasi
                                         </a>
                                     </div>
@@ -413,7 +413,7 @@
                     </button>
                     <template x-for="p in Math.ceil(filteredTidak.length / perPage)">
                         <button @click="pageTidakMengisi = p" 
-                                :class="pageTidakMengisi === p ? 'bg-red-700 text-white' : 'hover:bg-gray-100'"
+                                :class="pageTidakMengisi === p ? 'bg-primary-dark text-white' : 'hover:bg-gray-100'"
                                 class="px-2 py-1 text-xs border rounded transition-colors" 
                                 x-text="p"></button>
                     </template>

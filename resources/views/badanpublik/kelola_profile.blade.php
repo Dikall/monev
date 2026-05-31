@@ -3,8 +3,8 @@
 @section('content')
 <div class="profile-bp p-6" x-data="{ openEdit: false }">
     <!-- Card Atas -->
-    <div class="bg-red-700 text-white rounded-lg p-6 flex items-center gap-6 mb-6">
-        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-red-700 font-bold text-xl">
+    <div class="bg-primary-dark text-white rounded-lg p-6 flex items-center gap-6 mb-6">
+        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-primary-dark font-bold text-xl">
             {{ strtoupper(substr($user->name ?? $user->nama_responden, 0, 1)) }}
         </div>
         <div>
@@ -44,7 +44,7 @@
     <!-- Tombol Edit -->
     <div class="flex justify-end">
         <button @click="openEdit = true" 
-            class="px-12 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+            class="px-12 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark flex items-center gap-2">
             Edit
         </button>
     </div>
@@ -117,7 +117,7 @@
                         class="px-4 py-2 border rounded hover:bg-gray-100">
                         Batal
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800">
+                    <button type="submit" class="px-4 py-2 bg-primary-dark text-white rounded hover:bg-primary-dark">
                         Simpan
                     </button>
                 </div>

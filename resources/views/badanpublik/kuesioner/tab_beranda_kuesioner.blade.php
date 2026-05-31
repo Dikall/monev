@@ -7,7 +7,7 @@
     {{-- HEADER KEMBALI --}}
     <div class="mb-8">
         <a href="{{ route('badanpublik/beranda') }}"
-           class="inline-flex items-center gap-1 text-red-700 font-semibold hover:text-red-900 text-sm">
+           class="inline-flex items-center gap-1 text-primary-dark font-semibold hover:text-primary-dark text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -20,9 +20,9 @@
     {{-- AKUN BELUM AKTIF --}}
     @if(isset($tidak_aktif) && $tidak_aktif)
         <div class="flex flex-col items-center justify-center py-32 text-center">
-            <div class="bg-white rounded-2xl shadow-md border border-red-100 px-12 py-16 max-w-lg">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-700"
+            <div class="bg-white rounded-2xl shadow-md border border-primary-light px-12 py-16 max-w-lg">
+                <div class="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-primary-dark"
                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01M12 3C6.477 3 2 7.477 2 12s4.477 9 10 9
@@ -46,7 +46,7 @@
         </div>
     @endif
     @if(session('error'))
-        <div class="mb-4 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg text-sm">
+        <div class="mb-4 bg-primary-light border border-primary-light text-primary-dark px-4 py-3 rounded-lg text-sm">
             {{ session('error') }}
         </div>
     @endif
@@ -162,7 +162,7 @@
             <div class="flex items-center gap-4">
                 <div class="flex-1">
                     <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div class="bg-red-700 h-2.5 rounded-full transition-all duration-500"
+                        <div class="bg-primary-dark h-2.5 rounded-full transition-all duration-500"
                              style="width: {{ $persen }}%"></div>
                     </div>
                 </div>
@@ -190,8 +190,8 @@
             @if($sudahSubmit)
                 {{-- Setelah submit: tampilkan tombol Hasil Penilaian saja --}}
                 <a href="{{ route('kuesioner.hasil') }}"
-                   class="inline-flex items-center gap-2 px-8 py-2.5 bg-red-700 text-white
-                          font-semibold rounded-lg hover:bg-red-800 transition-colors shadow-sm text-sm">
+                   class="inline-flex items-center gap-2 px-8 py-2.5 bg-primary-dark text-white
+                          font-semibold rounded-lg hover:bg-primary-dark transition-colors shadow-sm text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -205,8 +205,8 @@
             @elseif($isOpen)
                 {{-- Belum submit & periode aktif: Edit + Submit --}}
                 <a href="{{ route('kuesioner.index') }}"
-                   class="inline-flex items-center gap-2 px-8 py-2.5 border-2 border-red-700
-                          text-red-700 font-semibold rounded-lg hover:bg-red-50
+                   class="inline-flex items-center gap-2 px-8 py-2.5 border-2 border-primary-dark
+                          text-primary-dark font-semibold rounded-lg hover:bg-primary-light
                           transition-colors text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
@@ -221,8 +221,8 @@
                 {{-- Tombol Submit — buka modal konfirmasi --}}
                 <button type="button"
                         onclick="document.getElementById('modalSubmit').classList.remove('hidden')"
-                        class="inline-flex items-center gap-2 px-8 py-2.5 bg-red-700 text-white
-                               font-semibold rounded-lg hover:bg-red-800 transition-colors shadow-sm text-sm">
+                        class="inline-flex items-center gap-2 px-8 py-2.5 bg-primary-dark text-white
+                               font-semibold rounded-lg hover:bg-primary-dark transition-colors shadow-sm text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -290,8 +290,8 @@
             {{-- Batal --}}
             <button type="button"
                     onclick="document.getElementById('modalSubmit').classList.add('hidden')"
-                    class="px-8 py-2.5 border-2 border-red-700 text-red-700 font-bold
-                           rounded-xl hover:bg-red-50 transition-colors text-sm">
+                    class="px-8 py-2.5 border-2 border-primary-dark text-primary-dark font-bold
+                           rounded-xl hover:bg-primary-light transition-colors text-sm">
                 Batal
             </button>
 
@@ -299,8 +299,8 @@
             <form action="{{ route('kuesioner.submit') }}" method="POST">
                 @csrf
                 <button type="submit"
-                        class="px-10 py-2.5 bg-red-700 text-white font-bold rounded-xl
-                               hover:bg-red-800 transition-colors shadow-sm text-sm">
+                        class="px-10 py-2.5 bg-primary-dark text-white font-bold rounded-xl
+                               hover:bg-primary-dark transition-colors shadow-sm text-sm">
                     Ya
                 </button>
             </form>

@@ -10,7 +10,7 @@
         </div>
 
         @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div class="bg-primary-light border border-primary-main text-primary-dark px-4 py-3 rounded mb-4">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -28,13 +28,13 @@
                     type="text"
                     name="email"
                     value="{{ old('email') }}"
-                    class="w-full px-4 py-2 border rounded-md border-gray-500 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600 @error('email') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-md border-gray-500 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-main @error('email') border-primary-main @enderror"
                     placeholder="Email / Username"
                     required
                     autofocus
                 >
                 @error('email')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-primary-main text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
             <!-- Kata Sandi -->
@@ -45,16 +45,16 @@
                         type="password"
                         name="password"
                         id="password"
-                        class="w-full px-4 py-2 border rounded-md border-gray-500 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600 pr-10 @error('password') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border rounded-md border-gray-500 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-main pr-10 @error('password') border-primary-main @enderror"
                         placeholder="Kata Sandi"
                         required
                     >
                     @error('password')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        <p class="text-primary-main text-xs mt-1">{{ $message }}</p>
                     @enderror
 
                     <!-- Toggle eye -->
-                    <div onclick="togglePassword()" class="absolute inset-y-0 right-3 flex items-center text-red-600 cursor-pointer">
+                    <div onclick="togglePassword()" class="absolute inset-y-0 right-3 flex items-center text-primary-main cursor-pointer">
                         <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition duration-300 ease-in-out opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.368M9.88 9.88a3 3 0 104.243 4.243M3 3l18 18" />
@@ -71,22 +71,22 @@
             <!-- Remember Me -->
             <div class="flex items-center justify-between text-sm text-gray-300">
                 <label class="inline-flex items-center">
-                    <input type="checkbox" name="remember" class="form-checkbox text-red-600" {{ old('remember') ? 'checked' : '' }}>
+                    <input type="checkbox" name="remember" class="form-checkbox text-primary-main" {{ old('remember') ? 'checked' : '' }}>
                     <span class="ml-2">Ingat saya</span>
                 </label>
 
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-red-600 hover:underline">Lupa kata sandi?</a>
+                    <a href="{{ route('password.request') }}" class="text-primary-main hover:underline">Lupa kata sandi?</a>
                 @endif
             </div>
             <!-- Tombol Login -->
-            <button type="submit" class="w-full bg-red-700 hover:bg-red-800 text-white py-2 rounded-md font-semibold transition duration-300">
+            <button type="submit" class="w-full bg-primary-dark hover:bg-primary-dark text-white py-2 rounded-md font-semibold transition duration-300">
                 Masuk
             </button>
             <!-- Link ke register -->
             <p class="text-center text-sm text-gray-300 mt-4">
                 Belum punya akun?
-                <a href="{{ route('register') }}" class="text-red-500 hover:text-red-700 font-semibold transition duration-300">Daftar</a>
+                <a href="{{ route('register') }}" class="text-primary-main hover:text-primary-dark font-semibold transition duration-300">Daftar</a>
             </p>
         </form>
     </div>

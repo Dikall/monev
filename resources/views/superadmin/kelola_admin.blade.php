@@ -93,7 +93,7 @@
         <div class="flex justify-end">
             <button 
                 @click="openTambah = true"
-                class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 flex items-center gap-2">
+                class="px-6 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark flex items-center gap-2">
 
                 <svg xmlns="http://www.w3.org/2000/svg" 
                      class="h-5 w-5" fill="none" 
@@ -120,7 +120,7 @@
     {{-- TABEL --}}
     <div class="overflow-hidden rounded-xl border bg-white shadow">
         <table class="w-full text-sm">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-primary-dark text-white">
                 <tr>
                     <th class="px-4 py-3 text-left">Peran</th>
                     <th class="px-4 py-3 text-left">Nama</th>
@@ -195,7 +195,7 @@
                                 >
                                     @csrf
                                     @method('DELETE')
-                                    <button class="w-full rounded bg-red-700 px-4 py-2 text-xs text-white text-center">
+                                    <button class="w-full rounded bg-primary-dark px-4 py-2 text-xs text-white text-center">
                                         Hapus
                                     </button>
                                 </form>
@@ -269,7 +269,7 @@
                 >
 
                 <div class="text-right">
-                    <button class="rounded bg-red-700 px-6 py-2 text-white">
+                    <button class="rounded bg-primary-dark px-6 py-2 text-white">
                         Simpan
                     </button>
                 </div>
@@ -343,7 +343,7 @@
                 >
 
                 <div class="text-right">
-                    <button class="rounded bg-red-700 px-6 py-2 text-white">
+                    <button class="rounded bg-primary-dark px-6 py-2 text-white">
                         Update
                     </button>
                 </div>
@@ -388,12 +388,12 @@
                     >
                         <span class="flex flex-wrap gap-2">
                             <template x-if="selectedKategori !== ''">
-                                <span class="inline-flex items-center gap-1 rounded-md bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                                <span class="inline-flex items-center gap-1 rounded-md bg-primary-light px-2 py-0.5 text-xs font-medium text-primary-dark">
                                     <span x-text="selectedKategoriLabel"></span>
                                     <button
                                         type="button"
                                         @click.stop="setKategori('')"
-                                        class="font-bold text-red-500 hover:text-red-700"
+                                        class="font-bold text-primary-main hover:text-primary-dark"
                                     >×</button>
                                 </span>
                             </template>
@@ -418,7 +418,7 @@
                                         type="button"
                                         @click="setKategori('{{ $kategori->id }}')"
                                         class="w-full px-4 py-2 text-left hover:bg-gray-100"
-                                        :class="String(selectedKategori) === '{{ $kategori->id }}' ? 'font-semibold text-red-700' : 'text-gray-700'"
+                                        :class="String(selectedKategori) === '{{ $kategori->id }}' ? 'font-semibold text-primary-dark' : 'text-gray-700'"
                                     >{{ $kategori->name }}</button>
                                 </li>
                             @endforeach
@@ -436,12 +436,12 @@
                     >
                         <div class="flex flex-col gap-2">
                             <template x-for="body in selectedBodyObjects" :key="body.id">
-                                <div class="flex items-center justify-between gap-1 rounded-md bg-red-100 px-3 py-2 text-xs font-medium text-red-800">
+                                <div class="flex items-center justify-between gap-1 rounded-md bg-primary-light px-3 py-2 text-xs font-medium text-primary-dark">
                                     <span x-text="body.nama_badan"></span>
                                     <button
                                         type="button"
                                         @click.stop="removeBody(body.id)"
-                                        class="font-bold text-red-400 hover:text-red-700"
+                                        class="font-bold text-primary-main hover:text-primary-dark"
                                     >×</button>
                                 </div>
                             </template>
@@ -476,11 +476,11 @@
                                         type="button"
                                         @click.stop="toggleBody(body.id)"
                                         class="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-gray-50"
-                                        :class="isBodySelected(body.id) ? 'bg-red-50' : ''"
+                                        :class="isBodySelected(body.id) ? 'bg-primary-light' : ''"
                                     >
                                         <span
                                             class="flex h-4 w-4 shrink-0 items-center justify-center rounded border"
-                                            :class="isBodySelected(body.id) ? 'border-red-700 bg-red-700' : 'border-gray-300 bg-white'"
+                                            :class="isBodySelected(body.id) ? 'border-primary-dark bg-primary-dark' : 'border-gray-300 bg-white'"
                                         >
                                             <svg
                                                 x-show="isBodySelected(body.id)"
@@ -492,7 +492,7 @@
                                         </span>
                                         <span
                                             x-text="body.nama_badan"
-                                            :class="isBodySelected(body.id) ? 'font-medium text-red-800' : 'text-gray-700'"
+                                            :class="isBodySelected(body.id) ? 'font-medium text-primary-dark' : 'text-gray-700'"
                                         ></span>
                                     </button>
                                 </li>
@@ -507,7 +507,7 @@
                 <div class="text-right">
                     <button
                         type="submit"
-                        class="rounded-lg bg-red-700 px-8 py-3 font-semibold text-white hover:bg-red-800"
+                        class="rounded-lg bg-primary-dark px-8 py-3 font-semibold text-white hover:bg-primary-dark"
                     >
                         Simpan
                     </button>

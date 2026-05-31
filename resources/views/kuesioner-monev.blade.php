@@ -8,7 +8,7 @@
         @forelse($files as $file)
             <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">
                 <div>
-                    <h2 class="text-red-700 font-semibold text-base uppercase border-b border-gray-200 pb-2">
+                    <h2 class="text-primary-dark font-semibold text-base uppercase border-b border-gray-200 pb-2">
                         {{ pathinfo($file->file_name, PATHINFO_FILENAME) }}
                     </h2>
                     <p class="text-sm mt-3">{{ $file->file_name }}</p>
@@ -17,7 +17,7 @@
                     </p>
                 </div>
                 <a href="{{ route('kuesioner.download', $file->id) }}"
-                   class="bg-red-700 hover:bg-red-800 text-white font-semibold px-6 py-2 rounded text-sm">
+                   class="bg-primary-dark hover:bg-primary-dark text-white font-semibold px-6 py-2 rounded text-sm">
                     Download
                 </a>
             </div>

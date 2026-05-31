@@ -4,7 +4,7 @@
 <div class="max-w-8xl mx-auto mt-10 mb-20 px-6">
     <h1 class="text-xl font-bold mb-6">Laporan Monev</h1>
     <div class="flex items-center mb-6">
-        <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-red-700 hover:bg-red-800 text-black px-4 py-2 rounded-lg text-sm font-semibold">
+        <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-primary-dark hover:bg-primary-dark text-black px-4 py-2 rounded-lg text-sm font-semibold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -17,7 +17,7 @@
         @foreach ($laporans as $item)
         <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">
             <div>
-                <h2 class="text-red-700 font-semibold text-base uppercase border-b border-gray-200 pb-2">
+                <h2 class="text-primary-dark font-semibold text-base uppercase border-b border-gray-200 pb-2">
                     {{ $item->file_name }}
                 </h2>
                 <p class="text-sm mt-3">
@@ -32,7 +32,7 @@
                 @method('DELETE')
                 <button type="button"
                         onclick="openDeleteModal('{{ route('lapmonev.destroy', $item->id) }}')"
-                        class="bg-red-700 hover:bg-red-800 text-white font-semibold px-6 py-2 rounded text-sm">
+                        class="bg-primary-dark hover:bg-primary-dark text-white font-semibold px-6 py-2 rounded text-sm">
                     Hapus
                 </button>
             </form>
@@ -56,7 +56,7 @@
             @csrf
             <!-- Dropzone Style -->
             <div class="flex items-center justify-center w-full mb-4">
-                <label for="fileInput" class="flex flex-col items-center justify-center w-full h-64 border-2 border-red-700 border-dashed rounded-lg cursor-pointer bg-red-50 hover:bg-red-100">
+                <label for="fileInput" class="flex flex-col items-center justify-center w-full h-64 border-2 border-primary-dark border-dashed rounded-lg cursor-pointer bg-primary-light hover:bg-primary-light">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                         <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
@@ -71,7 +71,7 @@
             <!-- Preview File -->
             <div id="filePreview" class="hidden mt-4 flex items-center justify-between p-3 bg-gray-50 rounded border">
                 <div class="flex items-center gap-3" id="filePreviewContent"></div>
-                <button type="button" id="removeFile" class="text-red-600 hover:text-red-800">
+                <button type="button" id="removeFile" class="text-primary-main hover:text-primary-dark">
                     <!-- Icon Hapus -->
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -83,10 +83,10 @@
             <hr class="mb-4">
 
             <div class="flex justify-center gap-4">
-                <button type="button" onclick="closeModal()" class="border border-red-700 text-red-800 px-6 py-2 rounded hover:bg-red-50">
+                <button type="button" onclick="closeModal()" class="border border-primary-dark text-primary-dark px-6 py-2 rounded hover:bg-primary-light">
                     Batal
                 </button>
-                <button type="submit" class="bg-red-700 text-black px-6 py-2 rounded hover:bg-red-800">
+                <button type="submit" class="bg-primary-dark text-black px-6 py-2 rounded hover:bg-primary-dark">
                     Tambah
                 </button>
             </div>
@@ -104,10 +104,10 @@
             @csrf
             @method('DELETE')
             <div class="flex justify-center gap-4">
-                <button type="button" onclick="closeDeleteModal()" class="border border-red-700 text-red-800 px-6 py-2 rounded hover:bg-red-50">
+                <button type="button" onclick="closeDeleteModal()" class="border border-primary-dark text-primary-dark px-6 py-2 rounded hover:bg-primary-light">
                     Batal
                 </button>
-                <button type="submit" class="bg-red-700 hover:bg-red-800 text-black px-6 py-2 rounded">
+                <button type="submit" class="bg-primary-dark hover:bg-primary-dark text-black px-6 py-2 rounded">
                     Hapus
                 </button>
             </div>
@@ -131,7 +131,7 @@ const fileInput = document.getElementById('fileInput');
             let icon;
             const ext = file.name.split('.').pop().toLowerCase();
             if (ext === 'pdf') {
-                icon = `<svg class="w-6 h-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0L..."/></svg>`;
+                icon = `<svg class="w-6 h-6 text-primary-main" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0L..."/></svg>`;
             } else if (['xls','xlsx'].includes(ext)) {
                 icon = `<svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0L..."/></svg>`;
             } else {
