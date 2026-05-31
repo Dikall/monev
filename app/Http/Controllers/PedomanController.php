@@ -33,7 +33,7 @@ class PedomanController extends Controller
     public function index()
     {
         $pedomen = Pedoman::latest()->paginate(10);
-        return view('publikasi.pedmonev', compact('pedomen'));
+        return view('superadmin.publikasi.pedmonev', compact('pedomen'));
     }
 
     // Simpan file ke public/files

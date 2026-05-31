@@ -18,11 +18,9 @@
             </ul>
         </div>
         @endif
-
         <!-- Form Login -->
         <form method="POST" action="{{ route('login') }}" class="space-y-5">
             @csrf
-
             <!-- Email / Username -->
             <div>
                 <label class="block text-sm font-semibold mb-1 text-gray-300">Email / Username</label>
@@ -39,7 +37,6 @@
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
-
             <!-- Kata Sandi -->
             <div>
                 <label class="block text-sm font-semibold mb-1 text-gray-300">Kata Sandi</label>
@@ -71,7 +68,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Remember Me -->
             <div class="flex items-center justify-between text-sm text-gray-300">
                 <label class="inline-flex items-center">
@@ -83,12 +79,10 @@
                     <a href="{{ route('password.request') }}" class="text-red-600 hover:underline">Lupa kata sandi?</a>
                 @endif
             </div>
-
             <!-- Tombol Login -->
             <button type="submit" class="w-full bg-red-700 hover:bg-red-800 text-white py-2 rounded-md font-semibold transition duration-300">
                 Masuk
             </button>
-
             <!-- Link ke register -->
             <p class="text-center text-sm text-gray-300 mt-4">
                 Belum punya akun?

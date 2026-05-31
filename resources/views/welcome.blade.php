@@ -3,10 +3,10 @@
 @section('content')
 <div class="bg-[#fdfdfd] flex flex-col items-center min-h-screen overflow-x-hidden">
 
-  <div class="relative w-full h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden mb-10 z-0">
+  <div class="w-full mb-10 z-0">
     <img src="{{ $appSettings['cover'] ?? asset('images/cover.png') }}" 
        alt="COVER E-MONEV KALIMANTAN BARAT" 
-       class="absolute top-0 left-0 w-full h-full object-cover z-10" />
+       class="w-full h-auto object-contain block" />
   </div>
 
   <div class="w-full border-b border-stone-300 py-5 mb-10 bg-white">
@@ -64,7 +64,7 @@
     </a>
 
     <!-- Pengisian Kuisioner -->
-    <a href="#kuisioner" class="transform transition hover:-translate-y-1 w-full sm:w-[410px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
+    <a href="{{route('login')}}" class="transform transition hover:-translate-y-1 w-full sm:w-[410px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-red-700" viewBox="0 0 24 24">
         <path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 9H7v-2h4v2zm6-4H7V6h10v2z"/>
       </svg>
@@ -72,7 +72,7 @@
     </a>
 
     <!-- Verifikasi Kuisioner -->
-    <a href="#verifikasi" class="transform transition hover:-translate-y-1 w-full sm:w-[300px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
+    <a href="{{route('login')}}" class="transform transition hover:-translate-y-1 w-full sm:w-[300px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-red-700" viewBox="0 0 24 24">
         <path d="M14 2H6c-1.1 0-2 .9-2 2v16l4-4h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm1 10l-2.5-2.5-1.41 1.41L15 13.83 18.91 10l-1.41-1.41z"/>
       </svg>
@@ -81,8 +81,8 @@
   </div>
 
   <!-- Alur Monitoring -->
-  <div class="w-full sm:w-[95%] bg-white rounded-lg mb-10">
-    <img src="{{ asset('images/Frame 365.png') }}" alt="ALUR MONITORING DAN EVALUASI KETERBUKAAN INFORMASI PUBLIK" class="w-full h-auto object-contain">
+  <div id="alur-monev" class="w-full sm:w-[95%] bg-white rounded-lg mb-10 flex justify-center">
+    <img src="{{ $appSettings['alur_monev'] ?? asset('images/Frame 365.png') }}" alt="ALUR MONITORING DAN EVALUASI KETERBUKAAN INFORMASI PUBLIK" class="w-full h-auto object-contain">
   </div>
 
 </div>

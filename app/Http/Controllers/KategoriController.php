@@ -16,12 +16,12 @@ class KategoriController extends Controller
         $kategoris = Kategori::latest()->get();
         $tahuns    = Tahun::orderBy('tahun', 'desc')->get();
 
-        return view('kategori.index', compact('kategoris', 'tahuns'));
+        return view('superadmin.kelola_kategori', compact('kategoris', 'tahuns'));
     }
 
     public function create()
     {
-        return view('kategori.create');
+        return view('superadmin.kelola_kategori');
     }
 
     /**
@@ -46,12 +46,12 @@ class KategoriController extends Controller
 
     public function show(Kategori $kategori)
     {
-        return view('kategori.show', compact('kategori'));
+        return view('superadmin.kelola_kategori', compact('kategori'));
     }
 
     public function edit(Kategori $kategori)
     {
-        return view('kategori.edit', compact('kategori'));
+        return view('superadmin.kelola_kategori', compact('kategori'));
     }
 
     /**

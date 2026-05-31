@@ -115,7 +115,7 @@
                 @csrf
 
                 <label class="block mb-2 font-medium">
-                    Nama Kategori <span class="text-red-600">*</span>
+                    Nama Kategori
                 </label>
                 <input type="text"
                     name="name"

@@ -1,4 +1,4 @@
-    <div class="font-poppins bg-red-700 text-white text-sm">
+    <div class="font-inter bg-red-700 text-white text-sm">
         <div class="container mx-auto px-16 py-6">
             <div class="grid md:grid-cols-2 gap-12">
                 

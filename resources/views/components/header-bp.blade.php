@@ -1,4 +1,4 @@
-<div class="w-full bg-white shadow-sm sticky top-0 z-50">
+<div class="w-full">
     <div class="max-w-screen-xl mx-auto flex items-center justify-between px-2 py-4">
         <!-- Logo -->
         <div class="flex items-center space-x-5">

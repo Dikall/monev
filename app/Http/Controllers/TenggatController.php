@@ -25,12 +25,12 @@ class TenggatController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('tenggat.index', compact('tenggats', 'kategoris'));
+        return view('superadmin.kelola_tenggat', compact('tenggats', 'kategoris'));
     }
 
     public function create()
     {
-        return view('tenggat.create');
+        return view('superadmin.kelola_tenggat');
     }
 
     /**
@@ -72,7 +72,7 @@ class TenggatController extends Controller
     public function edit($id)
     {
         $tenggat = Tenggat::findOrFail($id);
-        return view('tenggat.edit', compact('tenggat'));
+        return view('superadmin.kelola_tenggat', compact('tenggat'));
     }
 
     /**

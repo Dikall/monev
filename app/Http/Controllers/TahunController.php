@@ -12,8 +12,8 @@ class TahunController extends Controller
      */
     public function index()
     {
-        $tahuns = Tahun::latest()->get();
-        return view('tahun.index', compact('tahuns'));
+        $tahuns = Tahun::orderBy('tahun', 'desc')->get();
+        return view('superadmin.kelola_tahun', compact('tahuns'));
     }
 
     /**

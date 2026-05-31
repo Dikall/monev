@@ -15,6 +15,7 @@ class AkunBpublikController extends Controller
     public function index(Request $request)
     {
         $kategoriId = $request->get('kategori_id');
+        $status     = $request->get('status'); // 'aktif', 'nonaktif', atau null
         $kategoris  = Kategori::orderBy('name')->get();
 
         $query = User::role('Badan Publik')->with(['publicBody']);
@@ -25,6 +26,12 @@ class AkunBpublikController extends Controller
             });
         }
 
+        if ($status === 'aktif') {
+            $query->where('is_aktif', true);
+        } elseif ($status === 'nonaktif') {
+            $query->where('is_aktif', false);
+        }
+
         $perPage = $request->input('per_page', 10);
         if (!in_array($perPage, [10, 25, 50, 100])) {
             $perPage = 10;
@@ -32,33 +39,33 @@ class AkunBpublikController extends Controller
 
         $users = $query->orderBy('name')->paginate($perPage)->withQueryString();
 
-        return view('akunbpublik.index', compact('users', 'kategoris', 'kategoriId'));
+        return view('superadmin.kelola_badanpublik', compact('users', 'kategoris', 'kategoriId', 'status'));
     }
 
-public function aktifkan(string $id): RedirectResponse
-{
-    $user = User::findOrFail($id);
+    public function aktifkan(string $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
 
-    // VALIDASI WAJIB
-    if (!$user->public_body_id) {
-        return back()->with('error', 'User belum memiliki badan publik.');
+        // VALIDASI WAJIB
+        if (!$user->public_body_id) {
+            return back()->with('error', 'User belum memiliki badan publik.');
+        }
+
+        $user->update([
+            'is_aktif' => true
+        ]);
+
+        // NOTIFIKASI KE BADAN PUBLIK
+        Notification::create([
+            'user_id' => $user->id,
+            'title' => 'AKUN TERVERIFIKASI',
+            'message' => 'Akun Anda sudah terverifikasi dan sekarang Anda dapat mengakses sistem.',
+        ]);
+
+        return redirect()->route('superadmin.akunbpublik.index')
+            ->with('success', 'Akun berhasil diaktifkan.');
     }
-
-    $user->update([
-        'is_aktif' => true
-    ]);
-
-    // NOTIFIKASI KE BADAN PUBLIK
-    Notification::create([
-        'user_id' => $user->id,
-        'title' => 'AKUN TERVERIFIKASI',
-        'message' => 'Akun Anda sudah terverifikasi dan sekarang Anda dapat mengakses sistem.',
-    ]);
-
-    return redirect()->route('superadmin.akunbpublik.index')
-        ->with('success', 'Akun berhasil diaktifkan.');
-}
- 
+    
     /**
      * Nonaktifkan akun badan publik.
      */

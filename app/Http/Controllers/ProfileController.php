@@ -26,7 +26,7 @@ class ProfileController extends Controller
     public function index()
     {
         $user = User::with('publicBody')->findOrFail(Auth::id());
-        return view('profile.index', compact('user'));
+        return view('badanpublik.kelola_profile', compact('user'));
     }
 
     public function resetPassword(Request $request)

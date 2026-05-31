@@ -32,7 +32,7 @@ class KuemonevController extends Controller
     public function index()
     {
         $kuemonevs = Kuemonev::latest()->paginate(10);
-        return view('publikasi.kuemonev', compact('kuemonevs'));
+        return view('superadmin.publikasi.kuemonev', compact('kuemonevs'));
     }
 
     // Simpan file ke public/files

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="bg-white min-h-screen">
-    <div class="mx-auto max-w-6xl px-6 py-8">
+    <div class="mx-auto px-6 py-6">
         <h1 class="text-xl font-bold text-gray-900 mb-6">Notifikasi</h1>
 
         <div class="space-y-4">

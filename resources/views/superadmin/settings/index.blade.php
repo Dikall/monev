@@ -48,6 +48,17 @@
                         <input type="file" name="cover" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
                         <p class="mt-1 text-xs text-gray-500">Rekomendasi resolusi: 1920x1080px. Max: 5MB.</p>
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Alur Monev (Homepage)</label>
+                        @if(isset($settings['alur_monev']))
+                            <div class="mb-2">
+                                <img src="{{ $settings['alur_monev'] }}" alt="Alur Monev" class="w-full h-32 object-cover rounded border">
+                            </div>
+                        @endif
+                        <input type="file" name="alur_monev" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                        <p class="mt-1 text-xs text-gray-500">Rekomendasi format landscape. Max: 5MB.</p>
+                    </div>
                 </div>
             </div>
 

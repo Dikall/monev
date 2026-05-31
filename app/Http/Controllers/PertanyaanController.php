@@ -71,7 +71,7 @@ class PertanyaanController extends Controller
 
         $pertanyaans = $result;
 
-        return view('pertanyaan.index', compact(
+        return view('superadmin.kelola_pertanyaan', compact(
             'pertanyaans', 'tahuns', 'kategoris', 'indikators',
             'parentJudul', 'parentSubJudul', 'bobotPerIndikator'
         ));

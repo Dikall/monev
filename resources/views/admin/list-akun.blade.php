@@ -65,7 +65,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
-                Unduh Rekap Excel
+                Unduh Semua Rekap
             </a>
         </div>
     </div>
@@ -88,12 +88,20 @@
     <div class="mb-10">
         <div class="bg-green-50 border border-grey-200 rounded-xl p-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">
-                    Rekapan Nilai — Sudah Submit
-                    <span class="ml-2 inline-flex items-center rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                        {{ count($bodiesMengisi) }}
-                    </span>
-                </h2>
+                <div class="flex items-center gap-4">
+                    <h2 class="text-lg font-semibold text-gray-800">
+                        Rekapan Nilai — Sudah Submit
+                        <span class="ml-2 inline-flex items-center rounded-full bg-green-200 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                            {{ count($bodiesMengisi) }}
+                        </span>
+                    </h2>
+                    <a href="{{ route('admin.export-list-akun', ['kategori' => $kategori->id, 'type' => 'mengisi']) }}" class="inline-flex items-center gap-1 rounded bg-green-100 px-2.5 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-200 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Unduh Excel
+                    </a>
+                </div>
                 <div class="flex flex-wrap items-center gap-3">
                     {{-- Search --}}
                     <div class="relative">
@@ -247,12 +255,20 @@
     <div class="mb-10">
         <div class="bg-red-50 border border-red-200 rounded-xl p-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                <h2 class="text-lg font-semibold text-red-800">
-                    Rekapan Nilai — Tidak Mengisi Kuesioner
-                    <span class="ml-2 inline-flex items-center rounded-full bg-red-200 px-2.5 py-0.5 text-xs font-medium text-red-800">
-                        {{ count($bodiesTidakMengisi) }}
-                    </span>
-                </h2>
+                <div class="flex items-center gap-4">
+                    <h2 class="text-lg font-semibold text-red-800">
+                        Rekapan Nilai — Tidak Mengisi Kuesioner
+                        <span class="ml-2 inline-flex items-center rounded-full bg-red-200 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                            {{ count($bodiesTidakMengisi) }}
+                        </span>
+                    </h2>
+                    <a href="{{ route('admin.export-list-akun', ['kategori' => $kategori->id, 'type' => 'tidak']) }}" class="inline-flex items-center gap-1 rounded bg-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-800 hover:bg-red-200 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Unduh Excel
+                    </a>
+                </div>
                 <div class="flex flex-wrap items-center gap-3">
                     {{-- Search --}}
                     <div class="relative">

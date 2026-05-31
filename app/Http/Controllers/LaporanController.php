@@ -35,7 +35,7 @@ class LaporanController extends Controller
     public function index()
     {
         $laporans = Laporan::latest()->paginate(10);
-        return view('publikasi.lapmonev', compact('laporans'));
+        return view('superadmin.publikasi.lapmonev', compact('laporans'));
     }
 
     // Simpan file ke public/files

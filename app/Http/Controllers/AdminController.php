@@ -32,7 +32,7 @@ class AdminController extends Controller
             ->pluck('public_body_id')
             ->toArray();
 
-        return view('verifikator.index', [
+        return view('superadmin.kelola_admin', [
             'users'           => $users,
             'bodies'          => PublicBody::with('kategori')->get(),
             'kategoris'       => Kategori::all(),
@@ -980,20 +980,23 @@ class AdminController extends Controller
         $rowsMengisi = $processData($bodiesMengisiRaw, 'mengisi');
         $rowsTidak   = $processData($bodiesTidakMengisiRaw, 'tidak');
 
+        $type = request('type', 'all');
+
         // Serialisasi ke JSON untuk Python
         $dataJson = json_encode([
             'verifikator_name' => $admin->name ?? $admin->username,
             'tahun'            => $tahunSekarang,
             'tanggal_cetak'    => now()->translatedFormat('d F Y'),
             'kategori'         => $kategori->name,
+            'export_type'      => $type,
             'indikators'       => $indikators->map(fn($i) => [
                 'id'             => $i->id,
                 'no'             => $i->no,
                 'nama_indikator' => strtoupper($i->nama_indikator),
                 'bobot'          => $i->bobot,
             ])->values()->toArray(),
-            'rows_mengisi' => $rowsMengisi,
-            'rows_tidak'   => $rowsTidak,
+            'rows_mengisi' => ($type === 'all' || $type === 'mengisi') ? $rowsMengisi : [],
+            'rows_tidak'   => ($type === 'all' || $type === 'tidak') ? $rowsTidak : [],
         ]);
 
         $tmpJson = tempnam(sys_get_temp_dir(), 'monev_list_') . '.json';

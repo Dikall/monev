@@ -23,7 +23,7 @@ class PublicBodyController extends Controller
         // Semua kategori global (tidak difilter per tahun)
         $kategoris = Kategori::orderBy('name')->get();
 
-        return view('bpublik.index', compact('publicBodies', 'kategoris'));
+        return view('superadmin.master_data_badanpublik', compact('publicBodies', 'kategoris'));
     }
 
     public function create()

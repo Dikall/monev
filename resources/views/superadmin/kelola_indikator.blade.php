@@ -17,6 +17,9 @@
         indikatorTahun:'',
         indikatorKategori:'',
 
+        bobotSums: @js($bobotSums),
+        originalBobot: 0,
+
         kategorisAll: @js($kategoris),
         kategoris: @js($kategoris),
 
@@ -57,6 +60,7 @@
                     openTambah = true;
                     indikatorTahun = '{{ $tahunId }}';
                     indikatorKategori = '';
+                    indikatorBobot = '';
                     filterKategori(true);
                 "
                 class="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800">
@@ -64,6 +68,22 @@
             </button>
         </div>
     </div>
+
+    {{-- ALERT --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition
+             class="mb-4 rounded-lg bg-green-100 px-4 py-3 text-green-800 flex items-center justify-between">
+            <span>{{ session('success') }}</span>
+            <button @click="show = false" class="text-green-600 hover:text-green-800">&times;</button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition
+             class="mb-4 rounded-lg bg-red-100 px-4 py-3 text-red-800 flex items-center justify-between">
+            <span>{{ session('error') }}</span>
+            <button @click="show = false" class="text-red-600 hover:text-red-800">&times;</button>
+        </div>
+    @endif
 
     {{-- TABLE --}}
     <div class="bg-white border shadow rounded-lg overflow-hidden">
@@ -101,6 +121,7 @@
                                     indikatorNo = '{{ $item->no }}';
                                     indikatorNama = '{{ $item->nama_indikator }}';
                                     indikatorBobot = '{{ $item->bobot }}';
+                                    originalBobot = parseFloat('{{ $item->bobot }}') || 0;
                                     indikatorKeterangan = '{{ $item->keterangan }}';
 
                                     indikatorTahun = '{{ $item->tahun_id }}';
@@ -178,8 +199,16 @@
                 <input name="nama_indikator" placeholder="Nama"
                     class="w-full border rounded-lg p-3 mb-4">
 
-                <input name="bobot" placeholder="Bobot"
-                    class="w-full border rounded-lg p-3 mb-4">
+                <input name="bobot" placeholder="Bobot" x-model="indikatorBobot"
+                    class="w-full border rounded-lg p-3 mb-1">
+                <div class="text-xs mb-5 flex justify-between px-1" x-show="indikatorTahun && indikatorKategori">
+                    <span class="text-gray-500">
+                        Total bobot terpasang: <strong x-text="(bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + '%'"></strong>
+                    </span>
+                    <span :class="((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + (parseFloat(indikatorBobot) || 0)) > 100 ? 'text-red-600 font-bold' : 'text-green-600 font-medium'">
+                        Proyeksi total: <span x-text="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) + (parseFloat(indikatorBobot) || 0)).toFixed(2).replace(/\.00$/, '')) + '% / 100%'"></span>
+                    </span>
+                </div>
 
                 <textarea name="keterangan"
                     class="w-full border rounded-lg p-3 mb-6"></textarea>
@@ -234,7 +263,15 @@
                     class="w-full border rounded-lg p-3 mb-4">
 
                 <input name="bobot" x-model="indikatorBobot"
-                    class="w-full border rounded-lg p-3 mb-4">
+                    class="w-full border rounded-lg p-3 mb-1">
+                <div class="text-xs mb-4 flex justify-between px-1" x-show="indikatorTahun && indikatorKategori">
+                    <span class="text-gray-500">
+                        Bobot indikator lain: <strong x-text="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot).toFixed(2).replace(/\.00$/, '')) + '%'"></strong>
+                    </span>
+                    <span :class="(((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot) + (parseFloat(indikatorBobot) || 0)) > 100 ? 'text-red-600 font-bold' : 'text-green-600 font-medium'">
+                        Proyeksi total: <span x-text="((((bobotSums[indikatorTahun + '-' + indikatorKategori] || 0) - originalBobot) + (parseFloat(indikatorBobot) || 0)).toFixed(2).replace(/\.00$/, '')) + '% / 100%'"></span>
+                    </span>
+                </div>
 
                 <textarea name="keterangan" x-model="indikatorKeterangan"
                     class="w-full border rounded-lg p-3 mb-6"></textarea>

@@ -10,13 +10,11 @@
         kategoris = kategorisAll;
         @if(request('tahun_id'))
             tahun = '{{ request('tahun_id') }}';
-            @if(request('kategori_id'))
-                kategori = '{{ request('kategori_id') }}';
-                filterIndikator();
-                @if(request('indikator_id'))
-                    indikator = '{{ request('indikator_id') }}';
-                @endif
-            @endif
+            kategori = '{{ request('kategori_id') }}';
+            if (kategori) {
+                indikators = indikatorsAll.filter(i => i.kategori_id == kategori && i.tahun_id == tahun);
+                indikator = '{{ request('indikator_id') }}';
+            }
         @endif
     ">
 
@@ -94,11 +92,11 @@
     @endif
 
     {{-- HEADER --}}
-    <div class="flex justify-between mb-6">
-        <h1 class="text-xl font-bold">Data Pertanyaan</h1>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-xl font-semibold text-slate-800">Data Pertanyaan</h1>
         <div class="flex gap-2">
             <button @click="openImport = true"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2">
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
@@ -106,52 +104,70 @@
                 Import Excel
             </button>
             <button @click="openTambah = true; resetForm();"
-                class="bg-red-700 text-black px-4 py-2 rounded">
+                class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 + Tambah Pertanyaan
             </button>
         </div>
     </div>
 
     {{-- TABLE --}}
-    <div class="bg-white rounded shadow overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-red-700 text-white">
+            <thead class="bg-red-700 text-white font-medium">
                 <tr>
-                    <th class="p-3 text-left">Tahun</th>
-                    <th class="p-3 text-left">Kategori</th>
-                    <th class="p-3 text-left">Indikator</th>
-                    <th class="p-3 text-left">Level</th>
-                    <th class="p-3 text-left">No</th>
-                    <th class="p-3 text-left">Pertanyaan</th>
-                    <th class="p-3 text-left">Bobot</th>
-                    <th class="p-3 text-center">Aksi</th>
+                    <th class="p-3 text-left font-medium">Tahun</th>
+                    <th class="p-3 text-left font-medium">Kategori</th>
+                    <th class="p-3 text-left font-medium">Indikator</th>
+                    <th class="p-3 text-left font-medium">Level</th>
+                    <th class="p-3 text-left font-medium w-16">No</th>
+                    <th class="p-3 text-left font-medium">Pertanyaan</th>
+                    <th class="p-3 text-center font-medium w-20">Bobot</th>
+                    <th class="p-3 text-center font-medium w-32">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-slate-100 text-slate-600">
                 @forelse($pertanyaans as $p)
-                <tr class="border-t
-                    {{ $p->level === 'judul'    ? 'bg-gray-100 font-bold' : '' }}
-                    {{ $p->level === 'subjudul' ? 'bg-gray-50  font-semibold' : '' }}
+                <tr class="transition-colors hover:bg-slate-50/50
+                    outline outline-1 outline-slate-200
+                    {{ $p->level === 'judul'    ? 'bg-red-50/40 text-red-950 font-medium' : '' }}
+                    {{ $p->level === 'subjudul' ? 'bg-red-50/10 text-slate-800' : '' }}
+                    {{ $p->level === 'pertanyaan' ? 'bg-white text-slate-600' : '' }}
                 ">
-                    <td class="p-3">{{ $p->tahun->tahun }}</td>
-                    <td class="p-3">{{ $p->kategori->name }}</td>
-                    <td class="p-3">{{ $p->indikator->nama_indikator }}</td>
-                    <td class="p-3">
+                    <td class="p-3 whitespace-nowrap">{{ $p->tahun->tahun }}</td>
+                    <td class="p-3 max-w-[160px]">
+                        <div class="line-clamp-2 leading-relaxed break-words" title="{{ $p->kategori->name }}">
+                            {{ $p->kategori->name }}
+                        </div>
+                    </td>
+                    <td class="p-3 max-w-[220px]">
+                        <div class="line-clamp-2 leading-relaxed break-words" title="{{ $p->indikator->nama_indikator }}">
+                            {{ $p->indikator->nama_indikator }}
+                        </div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">
                         @if($p->level === 'judul')
-                            <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs">Judul</span>
+                            <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-medium">Judul</span>
                         @elseif($p->level === 'subjudul')
-                            <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs">Sub Judul</span>
+                            <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs font-medium">Sub Judul</span>
                         @else
-                            <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">Pertanyaan</span>
+                            <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-xs">Pertanyaan</span>
                         @endif
                     </td>
-                    <td class="p-3">{{ $p->nomor }}</td>
-                    <td class="p-3">{{ $p->pertanyaan_kuisioner }}</td>
-                    <td class="p-3 text-center">
-                        {{ $p->level === 'pertanyaan' ? $p->bobot : '—' }}
+                    <td class="p-3 font-mono">
+                        <span class="{{ $p->level === 'subjudul' ? 'pl-4' : '' }} {{ $p->level === 'pertanyaan' ? 'pl-8' : '' }}">
+                            {{ $p->nomor }}
+                        </span>
                     </td>
-                    <td class="px-4 py-3">
-                        <div class="flex flex-col gap-1">
+                    <td class="p-3">
+                        <div class="line-clamp-2 leading-relaxed {{ $p->level === 'subjudul' ? 'pl-4 text-slate-800' : '' }} {{ $p->level === 'pertanyaan' ? 'pl-8 text-slate-600' : '' }}" title="{{ $p->pertanyaan_kuisioner }}">
+                            {{ $p->pertanyaan_kuisioner }}
+                        </div>
+                    </td>
+                    <td class="p-3 text-center font-medium">
+                        {{ $p->level === 'pertanyaan' ? $p->bobot : ' ' }}
+                    </td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
                             <button
                                 @click='
                                     openEdit      = true;
@@ -167,11 +183,11 @@
                                     pertanyaan    = `{{ addslashes($p->pertanyaan_kuisioner) }}`;
                                     bobot         = "{{ $p->bobot }}";
                                 '
-                                class="bg-red-700 text-black px-3 py-1 rounded">
+                                class="bg-red-700 hover:bg-red-800 text-white px-2.5 py-1 rounded text-xs font-medium transition-colors">
                                 Edit
                             </button>
                             <button @click="openDelete = true; pertanyaanDeleteId = {{ $p->id }}"
-                                class="border border-red-600 text-red-600 px-3 py-1 rounded">
+                                class="border border-red-700 text-red-700 hover:bg-red-50 px-2.5 py-1 rounded text-xs font-medium transition-colors">
                                 Hapus
                             </button>
                         </div>

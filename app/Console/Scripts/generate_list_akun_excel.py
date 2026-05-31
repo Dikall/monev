@@ -224,32 +224,40 @@ def main():
     tahun            = data.get("tahun", "")
     tanggal_cetak    = data.get("tanggal_cetak", "")
     verifikator_name = data.get("verifikator_name", "")
+    export_type      = data.get("export_type", "all")
     indikators       = data.get("indikators", [])
     rows_mengisi     = data.get("rows_mengisi", [])
     rows_tidak       = data.get("rows_tidak", [])
 
     wb = Workbook()
+    
+    if export_type == "mengisi" or export_type == "all":
+        # Sheet 1: Sudah Mengisi
+        ws1 = wb.active
+        ws1.title = "Sudah Submit"
+        build_sheet(
+            ws1, rows_mengisi, indikators,
+            f"Rekapan Nilai — Sudah Submit ({len(rows_mengisi)} Badan Publik)",
+            is_sudah_submit=True,
+            kategori=kategori, tahun=tahun,
+            tanggal_cetak=tanggal_cetak, verifikator_name=verifikator_name
+        )
 
-    # Sheet 1: Sudah Mengisi
-    ws1 = wb.active
-    ws1.title = "Sudah Submit"
-    build_sheet(
-        ws1, rows_mengisi, indikators,
-        f"Rekapan Nilai — Sudah Submit ({len(rows_mengisi)} Badan Publik)",
-        is_sudah_submit=True,
-        kategori=kategori, tahun=tahun,
-        tanggal_cetak=tanggal_cetak, verifikator_name=verifikator_name
-    )
-
-    # Sheet 2: Belum Mengisi
-    ws2 = wb.create_sheet(title="Belum Submit")
-    build_sheet(
-        ws2, rows_tidak, indikators,
-        f"Rekapan Nilai — Tidak Mengisi Kuesioner ({len(rows_tidak)} Badan Publik)",
-        is_sudah_submit=False,
-        kategori=kategori, tahun=tahun,
-        tanggal_cetak=tanggal_cetak, verifikator_name=verifikator_name
-    )
+    if export_type == "tidak" or export_type == "all":
+        # Sheet 2: Belum Mengisi
+        if export_type == "tidak":
+            ws2 = wb.active
+            ws2.title = "Belum Submit"
+        else:
+            ws2 = wb.create_sheet(title="Belum Submit")
+            
+        build_sheet(
+            ws2, rows_tidak, indikators,
+            f"Rekapan Nilai — Tidak Mengisi Kuesioner ({len(rows_tidak)} Badan Publik)",
+            is_sudah_submit=False,
+            kategori=kategori, tahun=tahun,
+            tanggal_cetak=tanggal_cetak, verifikator_name=verifikator_name
+        )
 
     wb.save(xlsx_path)
     print(f"OK: {xlsx_path}")

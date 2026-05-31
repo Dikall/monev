@@ -27,7 +27,14 @@ class IndikatorController extends Controller
             })
             ->values();
 
-        return view('indikator.index', compact('indikators', 'tahuns', 'kategoris', 'tahunId'));
+        $bobotSums = Indikator::selectRaw('tahun_id, kategori_id, SUM(bobot) as total')
+            ->groupBy('tahun_id', 'kategori_id')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return ["{$item->tahun_id}-{$item->kategori_id}" => floatval($item->total)];
+            });
+
+        return view('superadmin.kelola_indikator', compact('indikators', 'tahuns', 'kategoris', 'tahunId', 'bobotSums'));
     }
 
     /**
@@ -43,8 +50,30 @@ class IndikatorController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'tahun_id'       => 'required|exists:tahuns,id',
+            'kategori_id'    => 'required|exists:kategoris,id',
+            'no'             => 'required',
+            'nama_indikator' => 'required|string|max:255',
+            'bobot'          => 'required|numeric|min:0|max:100',
+            'keterangan'     => 'nullable|string',
+        ]);
+
+        $tahunId = $request->tahun_id;
+        $kategoriId = $request->kategori_id;
+        $newBobot = $request->bobot;
+
+        $currentTotal = Indikator::where('tahun_id', $tahunId)
+            ->where('kategori_id', $kategoriId)
+            ->sum('bobot');
+
+        if (($currentTotal + $newBobot) > 100) {
+            $kategoriName = Kategori::find($kategoriId)?->name ?? 'kategori ini';
+            return back()->withInput()->with('error', "Gagal menambahkan indikator. Total bobot indikator untuk {$kategoriName} pada tahun terpilih melebihi 100% (saat ini: {$currentTotal}%, ingin ditambah: {$newBobot}%).");
+        }
+
         Indikator::create($request->all());
-        return back();
+        return back()->with('success', 'Indikator berhasil ditambahkan.');
     }
 
     /**
@@ -68,8 +97,32 @@ class IndikatorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Indikator::findOrFail($id)->update($request->all());
-        return back();
+        $request->validate([
+            'tahun_id'       => 'required|exists:tahuns,id',
+            'kategori_id'    => 'required|exists:kategoris,id',
+            'no'             => 'required',
+            'nama_indikator' => 'required|string|max:255',
+            'bobot'          => 'required|numeric|min:0|max:100',
+            'keterangan'     => 'nullable|string',
+        ]);
+
+        $indikator = Indikator::findOrFail($id);
+        $tahunId = $request->tahun_id;
+        $kategoriId = $request->kategori_id;
+        $newBobot = $request->bobot;
+
+        $currentTotal = Indikator::where('tahun_id', $tahunId)
+            ->where('kategori_id', $kategoriId)
+            ->where('id', '!=', $id)
+            ->sum('bobot');
+
+        if (($currentTotal + $newBobot) > 100) {
+            $kategoriName = Kategori::find($kategoriId)?->name ?? 'kategori ini';
+            return back()->withInput()->with('error', "Gagal memperbarui indikator. Total bobot indikator untuk {$kategoriName} pada tahun terpilih melebihi 100% (saat ini di luar indikator ini: {$currentTotal}%, ingin diubah menjadi: {$newBobot}%).");
+        }
+
+        $indikator->update($request->all());
+        return back()->with('success', 'Indikator berhasil diperbarui.');
     }
 
     /**
@@ -78,6 +131,6 @@ class IndikatorController extends Controller
     public function destroy($id)
     {
         Indikator::findOrFail($id)->delete();
-        return back();
+        return back()->with('success', 'Indikator berhasil dihapus.');
     }
 }

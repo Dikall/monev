@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -26,7 +26,7 @@
     Sebelumnya x-data ada di dalam sidebar component saja, sehingga
     main content tidak bisa membaca nilai sidebarOpen → konten tertimpa sidebar.
 --}}
-<body class="overflow-x-hidden font-poppins bg-white text-gray-900" x-data="{ sidebarOpen: true }">
+<body class="overflow-x-hidden font-inter bg-white text-gray-900" x-data="{ sidebarOpen: true }">
 
     <!-- Wrapper seluruh halaman -->
     <div class="flex flex-col min-h-screen w-screen">
@@ -106,6 +106,7 @@
             theme: {
                 extend: {
                     fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
                         poppins: ['Poppins', 'sans-serif']
                     },
                 },

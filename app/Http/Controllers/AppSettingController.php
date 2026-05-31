@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class AppSettingController extends Controller
 {
@@ -20,6 +21,7 @@ class AppSettingController extends Controller
         $request->validate([
             'logo' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
             'cover' => 'nullable|image|mimes:png,jpg,jpeg|max:5120',
+            'alur_monev' => 'nullable|image|mimes:png,jpg,jpeg|max:5120',
             'alamat' => 'nullable|string',
             'no_telp' => 'nullable|string',
             'email' => 'nullable|email',
@@ -30,7 +32,7 @@ class AppSettingController extends Controller
             'youtube' => 'nullable|url',
         ]);
 
-        $data = $request->except(['_token', 'logo', 'cover']);
+        $data = $request->except(['_token', 'logo', 'cover', 'alur_monev']);
 
         // Handle Logo
         if ($request->hasFile('logo')) {
@@ -56,6 +58,19 @@ class AppSettingController extends Controller
 
             $coverPath = $request->file('cover')->store('public/settings');
             $data['cover'] = Storage::url($coverPath);
+        }
+
+        // Handle Alur Monev
+        if ($request->hasFile('alur_monev')) {
+            // Delete old alur_monev if exists
+            $oldAlur = AppSetting::where('key', 'alur_monev')->first();
+            if ($oldAlur && $oldAlur->value) {
+                $oldPath = str_replace('/storage/', 'public/', $oldAlur->value);
+                Storage::delete($oldPath);
+            }
+
+            $alurPath = $request->file('alur_monev')->store('public/settings');
+            $data['alur_monev'] = Storage::url($alurPath);
         }
 
         foreach ($data as $key => $value) {
