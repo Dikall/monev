@@ -25,7 +25,7 @@ class AdminController extends Controller
 {
     public function index(): View
     {
-        $users = User::role('Admin')->with('publicBodies.kategori')->get();
+        $users = User::role(['Admin', 'Super Admin'])->with('publicBodies.kategori')->get();
         
         // Ambil semua ID badan publik yang sudah di-set ke verifikator (admin) mana pun
         $assignedBodyIds = \Illuminate\Support\Facades\DB::table('admin_public_body')
@@ -793,6 +793,18 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
+
+        if ($user->hasRole('Super Admin')) {
+            $request->validate([
+                'password' => 'required|min:6|confirmed',
+            ]);
+
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            return back()->with('success', 'Password Super Admin berhasil diperbarui');
+        }
 
         $request->validate([
             'name'     => 'nullable|string|max:255',

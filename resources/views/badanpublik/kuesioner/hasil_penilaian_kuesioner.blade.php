@@ -92,7 +92,7 @@
                         <div class="relative w-24 h-24 flex-shrink-0">
                             <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
                                 <circle cx="60" cy="60" r="54" fill="none" stroke="#f1f5f9" stroke-width="12"/>
-                                <circle cx="60" cy="60" r="54" fill="none" stroke="#b91c1c" stroke-width="12"
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#3783ED" stroke-width="12"
                                         stroke-dasharray="{{ round(($penilaian->skor_total / 100) * 339.29, 2) }} 339.29"
                                         stroke-linecap="round" class="transition-all duration-1000 ease-out"/>
                             </svg>

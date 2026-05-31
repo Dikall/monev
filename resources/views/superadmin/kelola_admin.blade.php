@@ -14,6 +14,7 @@
         telepon: '',
         email: '',
         username: '',
+        isSuperAdmin: false,
         originalBodies: [],
 
 
@@ -167,38 +168,41 @@
                                         telepon       = '{{ addslashes($item->telepon ?? '') }}';
                                         email         = '{{ $item->email }}';
                                         username      = '{{ $item->username }}';
+                                        isSuperAdmin  = {{ $item->hasRole('Super Admin') ? 'true' : 'false' }};
                                     "
                                     class="w-full rounded bg-leafy px-4 py-2 text-xs text-white text-center"
                                 >Edit</button>
 
-                                {{-- Set Badan Publik --}}
-                                <button
-                                    @click="
-                                        openSet          = true;
-                                        verifikatorId    = {{ $item->id }};
-                                        selectedBodies   = {{ $item->publicBodies->pluck('id') }};
-                                        originalBodies   = {{ $item->publicBodies->pluck('id') }};
-                                        selectedKategori = '{{ $item->publicBodies->first()?->kategori_id ?? '' }}';
-                                        openBodyDrop     = false;
-                                        openKategoriDrop = false;
-                                        filterBodies();
-                                    "
-                                    class="w-full rounded bg-yellow-500 px-4 py-2 text-xs text-white text-center"
-                                >Set</button>
+                                @if (!$item->hasRole('Super Admin'))
+                                    {{-- Set Badan Publik --}}
+                                    <button
+                                        @click="
+                                            openSet          = true;
+                                            verifikatorId    = {{ $item->id }};
+                                            selectedBodies   = {{ $item->publicBodies->pluck('id') }};
+                                            originalBodies   = {{ $item->publicBodies->pluck('id') }};
+                                            selectedKategori = '{{ $item->publicBodies->first()?->kategori_id ?? '' }}';
+                                            openBodyDrop     = false;
+                                            openKategoriDrop = false;
+                                            filterBodies();
+                                        "
+                                        class="w-full rounded bg-yellow-500 px-4 py-2 text-xs text-white text-center"
+                                    >Set</button>
 
-                                {{-- Hapus --}}
-                                <form
-                                    action="{{ route('superadmin.verifikator.destroy', $item->id) }}"
-                                    method="POST"
-                                    class="w-full"
-                                    onsubmit="return confirm('Hapus verifikator ini?')"
-                                >
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="w-full rounded bg-primary-dark px-4 py-2 text-xs text-white text-center">
-                                        Hapus
-                                    </button>
-                                </form>
+                                    {{-- Hapus --}}
+                                    <form
+                                        action="{{ route('superadmin.verifikator.destroy', $item->id) }}"
+                                        method="POST"
+                                        class="w-full"
+                                        onsubmit="return confirm('Hapus verifikator ini?')"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="w-full rounded bg-primary-dark px-4 py-2 text-xs text-white text-center">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -290,57 +294,91 @@
     >
         <div class="w-[600px] rounded-xl bg-white p-8 shadow-xl">
             <div class="mb-6 flex justify-between">
-                <h2 class="text-lg font-bold">Edit Verifikator</h2>
+                <h2 class="text-lg font-bold" x-text="isSuperAdmin ? 'Ganti Password Super Admin' : 'Edit Verifikator'">Edit Verifikator</h2>
                 <button @click="openEdit = false">✕</button>
             </div>
+
+            <template x-if="isSuperAdmin">
+                <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-xs font-medium">
+                    ⚠️ Untuk akun Super Admin, Anda hanya diperbolehkan mengubah password demi alasan keamanan.
+                </div>
+            </template>
 
             {{-- FIX 2: gunakan template literal untuk action URL --}}
             <form x-bind:action="`{{ url('superadmin/verifikator') }}/${verifikatorId}`" method="POST">
                 @csrf
                 @method('PUT')
 
-                <input
-                    type="text"
-                    name="name"
-                    x-model="nama"
-                    placeholder="Nama"
-                    class="mb-3 w-full rounded border p-3"
-                >   
-                <input
-                    type="text"
-                    name="telepon"
-                    x-model="telepon"
-                    placeholder="No HP"
-                    class="mb-3 w-full rounded border p-3"
-                >
-                <input
-                    type="text"
-                    name="email"
-                    x-model="email"
-                    placeholder="Email"
-                    required
-                    class="mb-3 w-full rounded border p-3"
-                >
-                <input
-                    type="text"
-                    name="username"
-                    x-model="username"
-                    placeholder="Username"
-                    required
-                    class="mb-3 w-full rounded border p-3"
-                >
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password baru (kosongkan jika tidak diganti)"
-                    class="mb-3 w-full rounded border p-3"
-                >
-                <input
-                    type="password"
-                    name="password_confirmation"
-                    placeholder="Konfirmasi Password"
-                    class="mb-6 w-full rounded border p-3"
-                >
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Nama (Tidak dapat diubah)</label>
+                    <input
+                        type="text"
+                        name="name"
+                        x-model="nama"
+                        placeholder="Nama"
+                        :readonly="isSuperAdmin"
+                        :class="isSuperAdmin ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''"
+                        class="w-full rounded border p-3"
+                    >   
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">No HP (Tidak dapat diubah)</label>
+                    <input
+                        type="text"
+                        name="telepon"
+                        x-model="telepon"
+                        placeholder="No HP"
+                        :readonly="isSuperAdmin"
+                        :class="isSuperAdmin ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''"
+                        class="w-full rounded border p-3"
+                    >
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Email (Tidak dapat diubah)</label>
+                    <input
+                        type="text"
+                        name="email"
+                        x-model="email"
+                        placeholder="Email"
+                        :required="!isSuperAdmin"
+                        :readonly="isSuperAdmin"
+                        :class="isSuperAdmin ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''"
+                        class="w-full rounded border p-3"
+                    >
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Username (Tidak dapat diubah)</label>
+                    <input
+                        type="text"
+                        name="username"
+                        x-model="username"
+                        placeholder="Username"
+                        :required="!isSuperAdmin"
+                        :readonly="isSuperAdmin"
+                        :class="isSuperAdmin ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''"
+                        class="w-full rounded border p-3"
+                    >
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Password Baru</label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password baru (kosongkan jika tidak diganti)"
+                        :required="isSuperAdmin"
+                        class="w-full rounded border p-3"
+                    >
+                </div>
+                <div class="mb-6">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Konfirmasi Password Baru</label>
+                    <input
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Konfirmasi Password"
+                        :required="isSuperAdmin"
+                        class="w-full rounded border p-3"
+                    >
+                </div>
 
                 <div class="text-right">
                     <button class="rounded bg-primary-dark px-6 py-2 text-white">

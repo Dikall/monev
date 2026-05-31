@@ -132,7 +132,7 @@
                        class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2.5 focus:ring-primary-main focus:border-primary-main text-gray-500">
             </div>
             <div>
-                <button type="submit" class="w-full bg-primary-dark text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-colors shadow-md">
+                <button type="submit" class="w-full bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-colors shadow-md">
                     Tampilkan Pertanyaan
                 </button>
             </div>
@@ -168,7 +168,7 @@
             </div>
             {{-- Kanan: Set Bobot --}}
             <button @click="showModalBobot = true"
-                    class="inline-flex items-center gap-2 bg-primary-dark text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-sm whitespace-nowrap mb-0.5 w-full sm:w-auto justify-center">
+                    class="inline-flex items-center gap-2 bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-sm whitespace-nowrap mb-0.5 w-full sm:w-auto justify-center">
                 Set Bobot Nilai
             </button>
         </div>
