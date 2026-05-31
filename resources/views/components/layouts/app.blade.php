@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Monev Komisi Informasi Kalimantan Barat</title>
 
+    <!-- Favicon / Ikon Tab Browser (Mempunyai logo tersendiri, terpisah dari logo header) -->
+    <link rel="shortcut icon" href="{{ $appSettings['favicon'] ?? asset('favicon.ico') }}" type="image/x-icon">
+
     <!-- Styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

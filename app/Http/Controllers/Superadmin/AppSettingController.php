@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class AppSettingController extends Controller
 {
@@ -19,6 +20,7 @@ class AppSettingController extends Controller
     {
         $request->validate([
             'logo' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'favicon' => 'nullable|image|mimes:ico,png,jpg,jpeg,gif|max:1024',
             'cover' => 'nullable|image|mimes:png,jpg,jpeg|max:5120',
             'alamat' => 'nullable|string',
             'no_telp' => 'nullable|string',
@@ -30,7 +32,7 @@ class AppSettingController extends Controller
             'youtube' => 'nullable|url',
         ]);
 
-        $data = $request->except(['_token', 'logo', 'cover']);
+        $data = $request->except(['_token', 'logo', 'favicon', 'cover']);
 
         // Handle Logo
         if ($request->hasFile('logo')) {
@@ -43,6 +45,19 @@ class AppSettingController extends Controller
             
             $logoPath = $request->file('logo')->store('public/settings');
             $data['logo'] = Storage::url($logoPath);
+        }
+
+        // Handle Favicon
+        if ($request->hasFile('favicon')) {
+            // Delete old favicon if exists
+            $oldFavicon = AppSetting::where('key', 'favicon')->first();
+            if ($oldFavicon && $oldFavicon->value) {
+                $oldPath = str_replace('/storage/', 'public/', $oldFavicon->value);
+                Storage::delete($oldPath);
+            }
+            
+            $faviconPath = $request->file('favicon')->store('public/settings');
+            $data['favicon'] = Storage::url($faviconPath);
         }
 
         // Handle Cover
@@ -61,6 +76,9 @@ class AppSettingController extends Controller
         foreach ($data as $key => $value) {
             AppSetting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
+
+        // Hapus cache pengaturan agar langsung terupdate seketika
+        Cache::forget('app_settings');
 
         return redirect()->back()->with('success', 'Pengaturan berhasil diperbarui.');
     }

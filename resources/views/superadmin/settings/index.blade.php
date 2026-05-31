@@ -39,6 +39,17 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Favicon (Ikon Tab Browser)</label>
+                        @if(isset($settings['favicon']))
+                            <div class="mb-2">
+                                <img src="{{ $settings['favicon'] }}" alt="Favicon" class="h-10 w-10 object-contain rounded border p-1">
+                            </div>
+                        @endif
+                        <input type="file" name="favicon" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-light file:text-primary-dark hover:file:bg-primary-light">
+                        <p class="mt-1 text-xs text-gray-500">Rekomendasi ukuran: 32x32px (Rasio 1:1, format .ico/.png). Max: 1MB.</p>
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Foto Sampul (Homepage)</label>
                         @if(isset($settings['cover']))
                             <div class="mb-2">
