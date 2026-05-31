@@ -107,8 +107,21 @@
                 extend: {
                     fontFamily: {
                         inter: ['Inter', 'sans-serif'],
-                        poppins: ['Poppins', 'sans-serif']
                     },
+                    colors: {
+                        primary: {
+                            dark: '#1860C4',
+                            main: '#3783ED',
+                            light: '#C7DFFF',
+                        },
+                        neutral: {
+                            darkGrey: '#525252',
+                            grey: '#C6C6C6',
+                            lightGrey: '#EBEBEB',
+                            black: '#1B1B1B',
+                            white: '#FFFFFF',
+                        }
+                    }
                 },
             },
         };

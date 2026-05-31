@@ -16,12 +16,12 @@
 
         <!-- Menu Navigasi -->
         <nav id="menu" class="hidden sm:flex flex-col sm:flex-row sm:space-x-10 text-lg font-medium text-gray-700 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-6 sm:px-0 py-4 sm:py-0 shadow sm:shadow-none z-40">
-            <a href="/" class="font-inter block py-2 sm:py-0 border-b-2 sm:border-none border-red-600 sm:hover:text-red-600">Beranda</a>
-            <a href="/#alur-monev" class="font-inter block py-2 sm:py-0 hover:text-red-600">Alur</a>
+            <a href="/" class="font-inter block py-2 sm:py-0 border-b-2 sm:border-none border-primary-main sm:hover:text-primary-main">Beranda</a>
+            <a href="/#alur-monev" class="font-inter block py-2 sm:py-0 hover:text-primary-main">Alur</a>
 
             <!-- Publikasi dengan Submenu -->
             <div class="relative group">
-                <a href="#" class="font-inter block py-2 sm:py-0 hover:text-red-600 flex items-center">
+                <a href="#" class="font-inter block py-2 sm:py-0 hover:text-primary-main flex items-center">
                     Publikasi
                     <svg class="ml-1 h-4 w-4 transform group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" stroke-width="2"
                          viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <a href="{{route('login')}}" class="font-inter block py-2 sm:py-0 hover:text-red-600">Masuk</a>
+            <a href="{{route('login')}}" class="font-inter block py-2 sm:py-0 hover:text-primary-main">Masuk</a>
         </nav>
     </div>
 </div>

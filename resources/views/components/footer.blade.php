@@ -1,11 +1,11 @@
-    <div class="font-inter bg-red-700 text-white text-sm">
+    <div class="font-inter bg-primary-dark text-white text-sm">
         <div class="container mx-auto px-16 py-6">
             <div class="grid md:grid-cols-2 gap-12">
                 
                 <!-- Kolom 1: Letak Geografis -->
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Letak Geografis</h3>
-                    <div class="rounded-xl overflow-hidden shadow-2xl border border-red-600/50 w-full lg:w-[424px] h-[236px]">
+                    <div class="rounded-xl overflow-hidden shadow-2xl border border-primary-main/50 w-full lg:w-[424px] h-[236px]">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7979.635005280486!2d109.338784!3d-0.038167!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e1d59929235e77b%3A0x6b772426359f1064!2sKomisi%20Informasi%20Provinsi%20Kalimantan%20Barat!5e0!3m2!1sid!2sid!4v1715695000000!5m2!1sid!2sid" 
                             class="w-full h-full border-0" 
@@ -84,7 +84,7 @@
         </div>
         
         <!-- Copyright -->
-        <div class="border-t border-red-600 py-4">
+        <div class="border-t border-primary-main py-4">
             <div class="container mx-auto px-6">
                 <p class="text-center text-white">
                     Copyright 2025 Komisi Informasi Provinsi Kalimantan Barat

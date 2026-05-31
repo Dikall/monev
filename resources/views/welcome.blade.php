@@ -57,7 +57,7 @@
   <div class="flex flex-wrap justify-center gap-8 mb-20">
     <!-- Registrasi -->
     <a href="{{ route('register') }}" class="transform transition hover:-translate-y-1 w-full sm:w-[410px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-red-700" viewBox="0 0 24 24">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-primary-dark" viewBox="0 0 24 24">
         <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
       </svg>
       <span class="font-semibold text-base">Registrasi Badan Publik</span>
@@ -65,7 +65,7 @@
 
     <!-- Pengisian Kuisioner -->
     <a href="{{route('login')}}" class="transform transition hover:-translate-y-1 w-full sm:w-[410px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-red-700" viewBox="0 0 24 24">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-primary-dark" viewBox="0 0 24 24">
         <path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 9H7v-2h4v2zm6-4H7V6h10v2z"/>
       </svg>
       <span class="font-semibold text-base">Pengisian Kuesioner</span>
@@ -73,7 +73,7 @@
 
     <!-- Verifikasi Kuisioner -->
     <a href="{{route('login')}}" class="transform transition hover:-translate-y-1 w-full sm:w-[300px] flex items-center gap-3 bg-white shadow-md px-8 py-6 rounded-lg hover:bg-gray-100 text-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-red-700" viewBox="0 0 24 24">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 fill-primary-dark" viewBox="0 0 24 24">
         <path d="M14 2H6c-1.1 0-2 .9-2 2v16l4-4h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm1 10l-2.5-2.5-1.41 1.41L15 13.83 18.91 10l-1.41-1.41z"/>
       </svg>
       <span class="font-semibold text-base">Verifikasi Kuesioner</span>
