@@ -170,7 +170,7 @@
                                         username      = '{{ $item->username }}';
                                         isSuperAdmin  = {{ $item->hasRole('Super Admin') ? 'true' : 'false' }};
                                     "
-                                    class="w-full rounded bg-leafy px-4 py-2 text-xs text-white text-center"
+                                    class="w-full rounded bg-green-600 px-4 py-2 text-xs text-white text-center hover:bg-green-700 transition-colors"
                                 >Edit</button>
 
                                 @if (!$item->hasRole('Super Admin'))

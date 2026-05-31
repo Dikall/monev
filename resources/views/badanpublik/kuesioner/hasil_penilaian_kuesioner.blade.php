@@ -138,7 +138,7 @@
     {{-- PENILAIAN BELUM ADA ALERT --}}
     @if(!$sudahDinilai)
         <div class="bg-primary-light border border-blue-100 rounded-2xl p-8 mb-8 flex items-start gap-4">
-            <div class="w-10 h-10 bg-leafy text-black rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-200">
+            <div class="w-10 h-10 bg-primary-main text-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
