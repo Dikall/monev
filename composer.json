@@ -7,6 +7,10 @@
     "require": {
         "php": "^8.2",
         "ext-gd": "*",
+        "ext-zip": "*",
+        "ext-xml": "*",
+        "ext-dom": "*",
+        "ext-mbstring": "*",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
