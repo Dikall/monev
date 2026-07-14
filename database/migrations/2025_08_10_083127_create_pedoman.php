@@ -17,10 +17,6 @@ return new class extends Migration
             $table->binary('file_data'); // Data file dalam bentuk biner
             $table->timestamps();
         });
-
-        Schema::table('pedomen', function (Blueprint $table) {
-            DB::statement("ALTER TABLE pedomen MODIFY file_data LONGBLOB");
-        });
     }
 
     /**
