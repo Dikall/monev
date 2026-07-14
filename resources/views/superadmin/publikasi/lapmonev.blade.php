@@ -4,7 +4,7 @@
 <div class="max-w-8xl mx-auto mt-10 mb-20 px-6">
     <h1 class="text-xl font-bold mb-6">Laporan Monev</h1>
     <div class="flex items-center mb-6">
-        <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-primary-dark hover:bg-primary-dark text-black px-4 py-2 rounded-lg text-sm font-semibold">
+        <button onclick="openModal()" class="ml-auto flex items-center gap-2 bg-primary-dark hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-semibold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>

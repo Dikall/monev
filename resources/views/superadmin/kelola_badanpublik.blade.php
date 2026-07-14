@@ -158,7 +158,12 @@
                 <tr class="hover:bg-gray-50 badan-publik-row"
                     data-nama="{{ strtolower(optional($user->publicBody)->nama_badan ?? '') }}">
 
-                    <td class="px-4 py-3">{{ optional($user->publicBody)->nama_badan ?? '-' }}</td>
+                    <td class="px-4 py-3">
+                        <div class="font-medium text-gray-900">{{ optional($user->publicBody)->nama_badan ?? '-' }}</div>
+                        @if ($user->created_at && $user->created_at->diffInDays(now()) < 1)
+                            <div class="text-[11px] text-blue-400 italic mt-0.5">Baru daftar</div>
+                        @endif
+                    </td>
                     <td class="px-4 py-3">
                         <a href="{{ $user->website }}" target="_blank"
                            class="text-blue-600 hover:underline">

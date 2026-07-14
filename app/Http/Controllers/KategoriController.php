@@ -40,7 +40,7 @@ class KategoriController extends Controller
         ]);
 
         return redirect()
-            ->back()
+            ->route('superadmin.kategori.index')
             ->with('success', 'Kategori berhasil ditambahkan');
     }
 
@@ -70,7 +70,7 @@ class KategoriController extends Controller
         ]);
 
         return redirect()
-            ->back()
+            ->route('superadmin.kategori.index')
             ->with('success', 'Kategori berhasil diperbarui');
     }
 
@@ -79,7 +79,7 @@ class KategoriController extends Controller
         $kategori->delete();
 
         return redirect()
-            ->back()
+            ->route('superadmin.kategori.index')
             ->with('success', 'Kategori berhasil dihapus');
     }
 }

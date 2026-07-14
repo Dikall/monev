@@ -34,7 +34,7 @@
     </div>
 
     <!-- PPID -->
-    <h1 class="font-semibold text-xl mb-3">PPID</h1>
+    <h1 class="font-semibold text-xl mb-3">Atasan PPID</h1>
     <div class="bg-white border shadow rounded-lg p-5 mb-4 space-y-1">
         <p><strong>Nama PPID:</strong> {{ $user->nama_ppid }}</p>
         <p><strong>No Handphone:</strong> {{ $user->nohp_ppid }}</p>

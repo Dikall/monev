@@ -1,7 +1,7 @@
 @extends('components.layouts.app')
 
 @section('content')
-<div class="p-6">
+<div class="p-6" x-data="{ openKonfirmasi: false }">
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Kelola Tampilan</h1>
         <p class="text-sm text-gray-600">Sesuaikan tampilan dan informasi kontak aplikasi E-Monev.</p>
@@ -13,7 +13,7 @@
         </div>
     @endif
 
-    <form action="{{ route('superadmin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form id="settingsForm" action="{{ route('superadmin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -137,10 +137,60 @@
         </div>
 
         <div class="flex justify-end pt-4">
-            <button type="submit" class="bg-primary-dark hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-xl shadow-lg transition duration-200 transform hover:scale-105">
+            <button
+                type="button"
+                @click="openKonfirmasi = true"
+                class="bg-primary-dark hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-xl shadow-lg transition duration-200 transform hover:scale-105"
+            >
                 Simpan Perubahan
             </button>
         </div>
     </form>
+
+    {{-- Modal Konfirmasi Simpan Perubahan --}}
+    <div
+        x-show="openKonfirmasi"
+        x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-90"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-90"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        @click.self="openKonfirmasi = false"
+    >
+        <div class="w-[440px] rounded-2xl bg-white p-8 shadow-2xl text-center">
+
+            {{-- Ikon Konfirmasi --}}
+            <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Simpan Perubahan?</h3>
+            <p class="text-sm text-gray-500 mb-7">Pastikan semua informasi yang Anda masukkan sudah benar sebelum disimpan.</p>
+
+            <div class="flex justify-center gap-3">
+                <button
+                    type="button"
+                    @click="openKonfirmasi = false"
+                    class="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    Periksa Lagi
+                </button>
+                <button
+                    type="button"
+                    @click="openKonfirmasi = false; $nextTick(() => document.getElementById('settingsForm').submit())"
+                    class="rounded-lg bg-primary-dark px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                >
+                    Ya, Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection

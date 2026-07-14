@@ -3,7 +3,6 @@
 @section('content')
 <div class="max-w-8xl mx-auto mt-10 mb-20 px-16">
     <h1 class="text-xl font-bold mb-6">Kuesioner Monev</h1>
-
     <div class="space-y-4">
         @forelse($files as $file)
             <div class="bg-white rounded-lg shadow p-6 flex justify-between items-center">

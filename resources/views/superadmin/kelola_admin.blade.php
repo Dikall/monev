@@ -8,12 +8,13 @@
         openTambah: false,
         openEdit: false,
         openSet: false,
+        openHapus: false,
+        hapusAction: '',
 
         verifikatorId: null,
         nama: '',
         telepon: '',
-        email: '',
-        username: '',
+        username_email: '',
         isSuperAdmin: false,
         originalBodies: [],
 
@@ -162,13 +163,12 @@
                                 {{-- Edit --}}
                                 <button
                                     @click="
-                                        openEdit      = true;
-                                        verifikatorId = {{ $item->id }};
-                                        nama          = '{{ addslashes($item->name) }}';
-                                        telepon       = '{{ addslashes($item->telepon ?? '') }}';
-                                        email         = '{{ $item->email }}';
-                                        username      = '{{ $item->username }}';
-                                        isSuperAdmin  = {{ $item->hasRole('Super Admin') ? 'true' : 'false' }};
+                                        openEdit       = true;
+                                        verifikatorId  = {{ $item->id }};
+                                        nama           = '{{ addslashes($item->name) }}';
+                                        telepon        = '{{ addslashes($item->telepon ?? '') }}';
+                                        username_email = '{{ $item->email ?: $item->username }}';
+                                        isSuperAdmin   = {{ $item->hasRole('Super Admin') ? 'true' : 'false' }};
                                     "
                                     class="w-full rounded bg-green-600 px-4 py-2 text-xs text-white text-center hover:bg-green-700 transition-colors"
                                 >Edit</button>
@@ -190,18 +190,13 @@
                                     >Set</button>
 
                                     {{-- Hapus --}}
-                                    <form
-                                        action="{{ route('superadmin.verifikator.destroy', $item->id) }}"
-                                        method="POST"
-                                        class="w-full"
-                                        onsubmit="return confirm('Hapus verifikator ini?')"
+                                    <button
+                                        type="button"
+                                        @click="hapusAction = '{{ route('superadmin.verifikator.destroy', $item->id) }}'; openHapus = true"
+                                        class="w-full rounded bg-primary-dark px-4 py-2 text-xs text-white text-center hover:bg-red-700 transition-colors"
                                     >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="w-full rounded bg-primary-dark px-4 py-2 text-xs text-white text-center">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                        Hapus
+                                    </button>
                                 @endif
                             </div>
                         </td>
@@ -252,17 +247,11 @@
                     class="mb-3 w-full rounded border p-3"
                 >
                 <input
-                    type="text"
-                    name="email"
-                    placeholder="Email"
-                    class="mb-3 w-full rounded border p-3"
-                >
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    required
-                    class="mb-3 w-full rounded border p-3"
+                     type="text"
+                     name="username_email"
+                     placeholder="Username / Email"
+                     required
+                     class="mb-3 w-full rounded border p-3"
                 >
                 <input
                     type="password"
@@ -334,25 +323,12 @@
                     >
                 </div>
                 <div class="mb-3">
-                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Email (Tidak dapat diubah)</label>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Username / Email (Tidak dapat diubah)</label>
                     <input
                         type="text"
-                        name="email"
-                        x-model="email"
-                        placeholder="Email"
-                        :required="!isSuperAdmin"
-                        :readonly="isSuperAdmin"
-                        :class="isSuperAdmin ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''"
-                        class="w-full rounded border p-3"
-                    >
-                </div>
-                <div class="mb-3">
-                    <label class="block text-xs font-semibold text-gray-500 mb-1" x-show="isSuperAdmin">Username (Tidak dapat diubah)</label>
-                    <input
-                        type="text"
-                        name="username"
-                        x-model="username"
-                        placeholder="Username"
+                        name="username_email"
+                        x-model="username_email"
+                        placeholder="Username / Email"
                         :required="!isSuperAdmin"
                         :readonly="isSuperAdmin"
                         :class="isSuperAdmin ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''"
@@ -551,6 +527,59 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    {{-- ================================================================
+         MODAL: KONFIRMASI HAPUS VERIFIKATOR
+         ================================================================ --}}
+    <div
+        x-show="openHapus"
+        x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-90"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-90"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        @click.self="openHapus = false"
+    >
+        <div class="w-[440px] rounded-2xl bg-white p-8 shadow-2xl text-center">
+
+            {{-- Ikon Peringatan --}}
+            <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Hapus Verifikator?</h3>
+            <p class="text-sm text-gray-500 mb-7">Tindakan ini tidak dapat dibatalkan. Data verifikator akan dihapus secara permanen dari sistem.</p>
+
+            {{-- Form DELETE tersembunyi --}}
+            <form id="hapusForm" :action="hapusAction" method="POST">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            <div class="flex justify-center gap-3">
+                <button
+                    type="button"
+                    @click="openHapus = false"
+                    class="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    Batal
+                </button>
+                <button
+                    type="submit"
+                    form="hapusForm"
+                    class="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                >
+                    Ya, Hapus
+                </button>
+            </div>
         </div>
     </div>
 

@@ -58,7 +58,7 @@ class PedomanController extends Controller
             'file_data' => $filename
         ]);
 
-        return redirect()->back()->with('success', 'Dokumen berhasil diunggah.');
+        return redirect()->route('pedmonev.index')->with('success', 'Dokumen berhasil diunggah.');
     }
 
     public function destroy($id)
@@ -71,6 +71,6 @@ class PedomanController extends Controller
         }
 
         $dokumen->delete();
-        return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
+        return redirect()->route('pedmonev.index')->with('success', 'Dokumen berhasil dihapus.');
     }
 }

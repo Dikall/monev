@@ -287,10 +287,10 @@ class SuperAdminController extends Controller
                 $nilaiIndikatorRaw = $totalBobotPertanyaan > 0 ? round(($bobotYaRaw / $totalBobotPertanyaan) * $ind->bobot, 2) : 0;
                 $totalNilaiSAQRaw += $nilaiIndikatorRaw;
 
-                // 2. Verified SAQ - Jawaban = 1 (Ya) dan is_verified = true
+                // 2. Verified SAQ - Jawaban = 1 (Ya) dan is_verified = true, atau Jawaban = 0 (Tidak) dan is_verified = true
                 $bobotYaVerified = Pertanyaan::whereIn('id',
                     $jawabans->filter(function($j) {
-                        return $j->jawaban == 1 && $j->is_verified === true;
+                        return ($j->jawaban == 1 && $j->is_verified === true) || ($j->jawaban == 0 && $j->is_verified === true);
                     })->pluck('pertanyaan_id')
                 )->sum('bobot');
 
@@ -503,7 +503,7 @@ class SuperAdminController extends Controller
             
             $bobotYaVerified = $ptnsInd->filter(function($p) use ($jawabans) {
                 $j = $jawabans[$p->id] ?? null;
-                return $j && $j->jawaban == 1 && $j->is_verified === true;
+                return $j && (($j->jawaban == 1 && $j->is_verified === true) || ($j->jawaban == 0 && $j->is_verified === true));
             })->sum('bobot');
             
             $nilaiInd = $totalBobotPertanyaan > 0

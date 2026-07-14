@@ -40,10 +40,10 @@ class RegisterController extends Controller
         return response()->json($publicBodies);
     }
 
-    // REGISTER USER
     public function register()
     {
         $data = request()->all();
+        $isEmail = filter_var($data['username_email'] ?? '', FILTER_VALIDATE_EMAIL);
 
         $validator = Validator::make($data, [
             'kategori_id' => ['required','exists:kategoris,id'],
@@ -61,8 +61,14 @@ class RegisterController extends Controller
             'nohp_responden' => ['required','string','max:20'],
             'email_responden' => ['required','email','max:255'],
 
-            'username' => ['required', 'string', 'max:100', 'unique:users,username'],
-            'email' => ['nullable','email','unique:users,email'],
+            'username_email' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:users,username',
+                'unique:users,email',
+                $isEmail ? 'email' : '',
+            ],
             'password' => ['required','min:8','confirmed'],
         ]);
 
@@ -70,12 +76,12 @@ class RegisterController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $isEmail) {
 
             $user = User::create([
                 'public_body_id' => $data['public_body_id'],
-                'username' => $data['username'],
-                'email' => $data['email'] ?? null,
+                'username' => $data['username_email'],
+                'email' => $isEmail ? $data['username_email'] : null,
                 'password' => Hash::make($data['password']),
 
                 'nama_responden' => $data['nama_responden'],

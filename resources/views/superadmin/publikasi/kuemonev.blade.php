@@ -27,11 +27,11 @@
                 </p>
                 <p class="text-sm text-gray-500">{{ $item->created_at->translatedFormat('d F Y') }}</p>
             </div>
-            <form action="{{ route('lapmonev.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus dokumen ini?')">
+            <form action="{{ route('kuemonev.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus dokumen ini?')">
                 @csrf
                 @method('DELETE')
                 <button type="button"
-                        onclick="openDeleteModal('{{ route('lapmonev.destroy', $item->id) }}')"
+                        onclick="openDeleteModal('{{ route('kuemonev.destroy', $item->id) }}')"
                         class="bg-primary-dark hover:bg-primary-dark text-white font-semibold px-6 py-2 rounded text-sm">
                     Hapus
                 </button>

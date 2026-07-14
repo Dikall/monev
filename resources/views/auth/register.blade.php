@@ -25,16 +25,16 @@
         </div>
         @endif
 
-        <form action="{{ route('register') }}" method="POST" class="space-y-6">
+        <form action="{{ route('register') }}" method="POST" class="space-y-4">
             @csrf
 
             {{-- Data Badan Publik --}}
             <h3 class="text-lg font-semibold text-gray-800">Data Badan Publik</h3>
 
-            <div class="grid md:grid-cols-2 gap-6">
+            <div class="grid md:grid-cols-2 gap-8">
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Kategori Badan Publik*
+                        Kategori Badan Publik
                     </label>
                     <select name="kategori_id" id="kategori_id"
                         class="w-full h-10 px-4 border rounded-lg
@@ -56,7 +56,7 @@
 
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Nama Badan Publik*
+                        Nama Badan Publik
                     </label>
                     <select name="public_body_id" id="public_body_id"
                         class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
@@ -69,10 +69,10 @@
             {{-- Data Responden --}}
             <h3 class="text-lg font-semibold text-gray-800">Data Responden</h3>
 
-            <div class="grid md:grid-cols-2 gap-6">
+            <div class="grid md:grid-cols-2 gap-8">
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Nama Responden*
+                        Nama Responden
                     </label>
                     <input type="text" name="nama_responden" value="{{ old('nama_responden') }}"
                         class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
@@ -81,7 +81,7 @@
 
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        No Telepon / HP*
+                        No Telepon / HP Responden
                     </label>
                     <input type="text" name="nohp_responden" value="{{ old('nohp_responden') }}"
                         class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
@@ -90,7 +90,7 @@
 
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Jabatan*
+                        Jabatan Responden
                     </label>
                     <input type="text" name="jabatan_responden" value="{{ old('jabatan_responden') }}"
                         class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
@@ -99,7 +99,7 @@
 
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Email*
+                        Email Responden
                     </label>
                     <input type="email" name="email_responden" value="{{ old('email_responden') }}"
                         class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
@@ -112,60 +112,72 @@
                 Informasi Akun (digunakan untuk Login)
             </h3>
 
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="md:col-span-2">
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Username*
+                        Username / Email
                     </label>
                     <input type="text"
-                        name="username"
-                        value="{{ old('username') }}"
+                        name="username_email"
+                        value="{{ old('username_email') }}"
                         class="w-full h-10 px-4 border rounded-lg
-                        @error('username') border-primary-main @else border-gray-400 @enderror"
+                        @error('username_email') border-primary-main @else border-gray-400 @enderror"
+                        placeholder="Masukkan Username atau Alamat Email Anda"
                         required>
 
-                        @error('username')
+                        @error('username_email')
                         <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
                         @enderror
                 </div>
 
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Email
+                        Kata Sandi
                     </label>
-                    <input type="email"
-                        name="email"
-                        value="{{ old('email') }}"
-                        class="w-full h-10 px-4 border rounded-lg
-                        @error('email') border-primary-main @else border-gray-400 @enderror">
+                    <div class="relative">
+                        <input type="password"
+                            id="password"
+                            name="password"
+                            class="w-full h-10 pl-4 pr-10 border rounded-lg
+                            @error('password') border-primary-main @else border-gray-400 @enderror"
+                            required>
+                        <button type="button" 
+                                onclick="togglePasswordVisibility('password', 'eye-icon-pass')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                                style="top: 50%; transform: translateY(-50%);">
+                            <svg id="eye-icon-pass" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-xs text-red-500 mt-1">Kata sandi minimal 8 karakter.</p>
 
-                        @error('email')
-                        <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                    @error('password')
+                    <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
                     <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Kata Sandi*
+                        Ulangi Kata Sandi
                     </label>
-                    <input type="password"
-                        name="password"
-                        class="w-full h-10 px-4 border rounded-lg
-                        @error('password') border-primary-main @else border-gray-400 @enderror"
-                        required>
-
-                        @error('password')
-                        <p class="text-primary-main text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                </div>
-
-                <div>
-                    <label class="block text-lg font-medium text-gray-700 mb-1">
-                        Ulangi Kata Sandi*
-                    </label>
-                    <input type="password" name="password_confirmation"
-                        class="w-full h-10 px-4 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
-                        required>
+                    <div class="relative">
+                        <input type="password" 
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            class="w-full h-10 pl-4 pr-10 border border-gray-400 rounded-lg shadow-sm focus:border-primary-main focus:ring focus:ring-primary-light"
+                            required>
+                        <button type="button" 
+                                onclick="togglePasswordVisibility('password_confirmation', 'eye-icon-confirm')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                                style="top: 50%; transform: translateY(-50%);">
+                            <svg id="eye-icon-confirm" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -222,6 +234,24 @@ document.addEventListener('DOMContentLoaded', function() {
         loadPublicBodies(kategoriSelect.value, oldPublicBodyId);
     }
 });
+
+function togglePasswordVisibility(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const svg = document.getElementById(iconId);
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        svg.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+        `;
+    } else {
+        input.type = 'password';
+        svg.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        `;
+    }
+}
 </script>
 
 @endsection

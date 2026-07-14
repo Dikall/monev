@@ -120,7 +120,11 @@ class PertanyaanController extends Controller
             'bobot'                => $level === 'pertanyaan' ? (int) $request->bobot : 0,
         ]);
 
-        return back()->with('success', 'Berhasil tambah pertanyaan.');
+        return redirect()->route('superadmin.pertanyaan.index', [
+            'tahun_id' => $request->tahun_id,
+            'kategori_id' => $request->kategori_id,
+            'indikator_id' => $request->indikator_id,
+        ])->with('success', 'Berhasil tambah pertanyaan.');
     }
 
     public function show(Pertanyaan $pertanyaan) {}
@@ -168,12 +172,30 @@ class PertanyaanController extends Controller
             'bobot'                => $level === 'pertanyaan' ? (int) $request->bobot : 0,
         ]);
 
-        return back()->with('success', 'Berhasil update pertanyaan.');
+        return redirect()->route('superadmin.pertanyaan.index', [
+            'tahun_id' => $request->tahun_id,
+            'kategori_id' => $request->kategori_id,
+            'indikator_id' => $request->indikator_id,
+        ])->with('success', 'Berhasil update pertanyaan.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        Pertanyaan::findOrFail($id)->delete();
-        return back()->with('success', 'Berhasil hapus pertanyaan.');
+        $pertanyaan = Pertanyaan::find($id);
+        if (!$pertanyaan) {
+            return redirect()->route('superadmin.pertanyaan.index', [
+                'tahun_id' => $request->tahun_id,
+                'kategori_id' => $request->kategori_id,
+                'indikator_id' => $request->indikator_id,
+            ])->with('error', 'Pertanyaan tidak ditemukan atau sudah dihapus.');
+        }
+
+        $pertanyaan->delete();
+
+        return redirect()->route('superadmin.pertanyaan.index', [
+            'tahun_id' => $request->tahun_id,
+            'kategori_id' => $request->kategori_id,
+            'indikator_id' => $request->indikator_id,
+        ])->with('success', 'Berhasil hapus pertanyaan.');
     }
 }

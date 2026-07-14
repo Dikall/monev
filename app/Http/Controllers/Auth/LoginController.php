@@ -41,25 +41,30 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
-
     public function login(Request $request) : RedirectResponse
     {
-        $input = $request->all();
-
         $this->validate($request, [
             'email' => 'required',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            $user = Auth::user(); // ✅ Sekarang user sudah terautentikasi
+        // Coba login dengan mencocokkan input ke kolom email terlebih dahulu,
+        // jika gagal coba cocokkan ke kolom username (untuk mengakomodasi data lama/legacy).
+        $credentials = ['password' => $request->password];
+        $remember = $request->remember;
+
+        $loginSuccess = Auth::attempt(array_merge(['email' => $request->email], $credentials), $remember)
+            || Auth::attempt(array_merge(['username' => $request->email], $credentials), $remember);
+
+        if ($loginSuccess) {
+            $user = Auth::user();
 
             if ($user->hasRole('Super Admin')) {
                 return redirect()->route('superadmin.dashboard');
             } elseif ($user->hasRole('Admin')) {
                 return redirect()->route('admin/beranda');
             } elseif ($user->hasRole('Badan Publik')) {
-                return redirect()->route('badanpublik/beranda');;
+                return redirect()->route('badanpublik/beranda');
             } else {
                 Auth::logout();
                 return redirect()->route('login')->with('error', 'Role tidak dikenali.');

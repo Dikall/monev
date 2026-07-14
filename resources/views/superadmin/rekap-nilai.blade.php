@@ -29,6 +29,10 @@
         currentNilaiPresentasi: 0,
         selectedFileName: '',
 
+        showModalUnpublish: false,
+        activeForm: null,
+        unpublishTargetName: '',
+
         search: '{{ request('search') }}',
         sortOrder: 'asc',
         filterKualifikasi: '',
@@ -275,7 +279,8 @@
                                         Tambah Presentasi
                                     </button>
                                     @if($row['is_published'])
-                                        <form action="{{ route('superadmin.rekap-nilai.reset-publish', $row['id']) }}" method="POST" class="w-full" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan publikasi nilai ini?')">
+                                        <form action="{{ route('superadmin.rekap-nilai.reset-publish', $row['id']) }}" method="POST" class="w-full"
+                                              @submit.prevent="activeForm = $event.target; unpublishTargetName = '{{ $row['nama_badan'] }}'; showModalUnpublish = true">
                                             @csrf
                                             <button type="submit"
                                                     class="w-full px-2.5 py-1 text-[11px] font-semibold text-orange-600 border border-orange-400 rounded-md hover:bg-orange-50 transition-colors leading-tight whitespace-nowrap">
@@ -418,6 +423,50 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+    {{-- Modal Konfirmasi Unpublish Nilai --}}
+    <div
+        x-show="showModalUnpublish"
+        x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        @click.self="showModalUnpublish = false"
+    >
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 text-center">
+            {{-- Icon --}}
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100">
+                <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Unpublish Nilai?</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                Apakah Anda yakin ingin membatalkan publikasi nilai untuk <span class="font-semibold text-gray-800" x-text="unpublishTargetName"></span>? Badan publik ini tidak akan melihat nilai hasil evaluasi di halaman publik/beranda mereka.
+            </p>
+            
+            <div class="flex justify-center gap-3">
+                <button
+                    type="button"
+                    @click="showModalUnpublish = false"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    Batal
+                </button>
+                <button
+                    type="button"
+                    @click="if (activeForm) { activeForm.submit(); }; showModalUnpublish = false"
+                    class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-700 transition-colors"
+                >
+                    Ya, Batalkan Publikasi
+                </button>
+            </div>
         </div>
     </div>
 

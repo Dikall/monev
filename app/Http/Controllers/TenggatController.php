@@ -60,7 +60,7 @@ class TenggatController extends Controller
             'waktu_nonaktif' => $waktuNonaktif,
         ]);
 
-        return redirect()->back()
+        return redirect()->route('superadmin.tenggat.index')
             ->with('success', 'Tenggat berhasil ditambahkan');
     }
 
@@ -102,7 +102,7 @@ class TenggatController extends Controller
             'waktu_nonaktif' => $waktuNonaktif,
         ]);
 
-        return redirect()->back()
+        return redirect()->route('superadmin.tenggat.index')
             ->with('success', 'Tenggat berhasil diperbarui');
     }
 
@@ -110,7 +110,7 @@ class TenggatController extends Controller
     {
         $tenggat->delete();
 
-        return redirect()->back()
+        return redirect()->route('superadmin.tenggat.index')
             ->with('success', 'Tenggat berhasil dihapus');
     }
 }

@@ -237,34 +237,6 @@ class BadanPublikController extends Controller
             );
         }
 
-        // Validasi: Pastikan semua jawaban 'YA' punya Link atau Dokumen
-        $indikators = Indikator::where('tahun_id', $tahun->id)
-            ->where('kategori_id', $kategoriId)
-            ->get();
-            
-        $pertanyaanIds = Pertanyaan::where('level', 'pertanyaan')
-            ->whereIn('indikator_id', $indikators->pluck('id'))
-            ->pluck('id');
-
-        $jawabans = Jawaban::where('public_body_id', $publicBody->id)
-            ->where('tahun_id', $tahun->id)
-            ->whereIn('pertanyaan_id', $pertanyaanIds)
-            ->where('jawaban', 1)
-            ->get();
-
-        $countTanpaBukti = 0;
-        foreach ($jawabans as $j) {
-            $hasLinks = !empty($j->links) && is_array($j->links) && count(array_filter($j->links)) > 0;
-            $hasFile  = !empty($j->dokumen_path);
-            if (!$hasLinks && !$hasFile) {
-                $countTanpaBukti++;
-            }
-        }
-
-        if ($countTanpaBukti > 0) {
-            return back()->with('error', "Tidak dapat melakukan Submit. Terdapat {$countTanpaBukti} jawaban 'Ya' yang belum dilengkapi dengan Link atau Upload Dokumen pendukung.");
-        }
-
         // Tandai semua jawaban milik public body ini sebagai submitted
         Jawaban::where('public_body_id', $publicBody->id)
             ->where('tahun_id', $tahun->id)
@@ -346,8 +318,8 @@ class BadanPublikController extends Controller
 
             $totalBobotPertanyaan = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
             
-            // Effective "Ya" is when original answer was 1 AND it was verified by admin (is_verified === true)
-            $effectiveYaJawabans = $jawabans->filter(fn($j) => $j->jawaban == 1 && $j->is_verified === true);
+            // Effective "Ya" is when original answer was 1 AND it was verified by admin (is_verified === true), or when original was 0 AND it was verified as Ya by admin (is_verified === true)
+            $effectiveYaJawabans = $jawabans->filter(fn($j) => ($j->jawaban == 1 && $j->is_verified === true) || ($j->jawaban == 0 && $j->is_verified === true));
             $bobotYa = Pertanyaan::whereIn('id', $effectiveYaJawabans->pluck('pertanyaan_id'))->sum('bobot');
 
             $nilaiIndikator = $totalBobotPertanyaan > 0 ? round(($bobotYa / $totalBobotPertanyaan) * $ind->bobot, 2) : 0;
@@ -357,7 +329,7 @@ class BadanPublikController extends Controller
                 'indikator'   => $ind,
                 'total'       => $pertanyaanIds->count(),
                 'dijawab_ya'  => $effectiveYaJawabans->count(),
-                'dijawab_tidak' => $jawabans->where('jawaban', 0)->count() + $jawabans->where('jawaban', 1)->where('is_verified', false)->count(),
+                'dijawab_tidak' => $jawabans->filter(fn($j) => ($j->jawaban == 0 && $j->is_verified !== true) || ($j->jawaban == 1 && $j->is_verified === false))->count(),
                 'bobot_ya'    => $bobotYa,
                 'total_bobot' => $totalBobotPertanyaan,
                 'persentase'  => $totalBobotPertanyaan > 0 ? round(($bobotYa / $totalBobotPertanyaan) * 100, 2) : 0,

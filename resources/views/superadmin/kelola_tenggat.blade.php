@@ -34,7 +34,6 @@
                           stroke-width="2" 
                           d="M12 4v16m8-8H4"/>
                 </svg>
-
                 Tambah Tenggat
             </button>
         </div>
@@ -104,7 +103,6 @@
                                 class="px-4 py-1 bg-primary-dark text-white rounded hover:bg-primary-dark w-28">
                                 Edit
                             </button>
-
                             {{-- DELETE --}}
                             <button
                                 @click="openDelete=true; tenggatId={{ $item->id }};"

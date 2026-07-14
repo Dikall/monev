@@ -53,7 +53,7 @@ class KuemonevController extends Controller
             'file_data' => $filename
         ]);
 
-        return redirect()->back()->with('success', 'Dokumen berhasil diunggah.');
+        return redirect()->route('kuemonev.index')->with('success', 'Dokumen berhasil diunggah.');
     }
 
     // Hapus file
@@ -67,6 +67,6 @@ class KuemonevController extends Controller
         }
 
         $dokumen->delete();
-        return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
+        return redirect()->route('kuemonev.index')->with('success', 'Dokumen berhasil dihapus.');
     }
 }

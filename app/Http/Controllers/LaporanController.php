@@ -60,7 +60,7 @@ class LaporanController extends Controller
             'file_data' => $filename
         ]);
 
-        return redirect()->back()->with('success', 'Dokumen berhasil diunggah.');
+        return redirect()->route('lapmonev.index')->with('success', 'Dokumen berhasil diunggah.');
     }
 
     public function destroy($id)
@@ -73,6 +73,6 @@ class LaporanController extends Controller
         }
 
         $dokumen->delete();
-        return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
+        return redirect()->route('lapmonev.index')->with('success', 'Dokumen berhasil dihapus.');
     }
 }

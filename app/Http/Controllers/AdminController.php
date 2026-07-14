@@ -182,10 +182,10 @@ class AdminController extends Controller
 
                 $totalBobot = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
                 
-                // Effective "Ya" is when original answer was 1 AND it was NOT rejected by admin (is_verified !== false)
+                // Effective "Ya" is when original answer was 1 AND it was NOT rejected by admin (is_verified !== false), or when original was 0 AND it was verified as Ya by admin (is_verified === true)
                 $bobotYa = Pertanyaan::whereIn('id',
                     $jawabans->filter(function($j) {
-                        return $j->jawaban == 1 && $j->is_verified !== false;
+                        return ($j->jawaban == 1 && $j->is_verified !== false) || ($j->jawaban == 0 && $j->is_verified === true);
                     })->pluck('pertanyaan_id')
                 )->sum('bobot');
 
@@ -256,7 +256,7 @@ class AdminController extends Controller
 
         foreach ($assignedBodies as $body) {
             $userBp        = $body->users()->role('Badan Publik')->first();
-            $namaResponden = $userBp->nama_responden ?? '-';
+            $namaResponden = $userBp?->nama_responden ?? '-';
             $isSubmitted   = Jawaban::where('public_body_id', $body->id)
                 ->where('tahun_id', $tahun->id)
                 ->where('is_submitted', true)
@@ -283,7 +283,7 @@ class AdminController extends Controller
                 $totalBobot = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
 
                 $bobotYa = Pertanyaan::whereIn('id',
-                    $jawabans->filter(fn($j) => $j->jawaban == 1 && $j->is_verified !== false)
+                    $jawabans->filter(fn($j) => ($j->jawaban == 1 && $j->is_verified !== false) || ($j->jawaban == 0 && $j->is_verified === true))
                         ->pluck('pertanyaan_id')
                 )->sum('bobot');
 
@@ -297,8 +297,8 @@ class AdminController extends Controller
 
             $penilaian       = Penilaian::where('public_body_id', $body->id)
                 ->where('tahun_id', $tahun->id)->first();
-            $nilaiPresentasi = $penilaian->nilai_presentasi ?? null;
-            $isPublished     = $penilaian->is_published ?? false;
+            $nilaiPresentasi = $penilaian?->nilai_presentasi ?? null;
+            $isPublished     = $penilaian?->is_published ?? false;
 
             $totalScore = $nilaiPresentasi !== null
                 ? round(($totalNilaiKuesioner * 0.7) + ($nilaiPresentasi * 0.3), 2)
@@ -414,7 +414,8 @@ class AdminController extends Controller
                     'is_submitted' => true,
                     'submitted_at' => $tenggat->waktu_nonaktif
                 ]);
-            
+
+
             // Refresh data setelah auto-submit
             $bodiesSudahSubmitIds = Jawaban::where('tahun_id', $tahun->id)
                 ->where('is_submitted', true)
@@ -464,10 +465,10 @@ class AdminController extends Controller
 
                     $totalBobotPertanyaan = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
                     
-                    // Effective "Ya" is when original answer was 1 AND it was NOT rejected by admin (is_verified !== false)
+                    // Effective "Ya" is when original answer was 1 AND it was NOT rejected by admin (is_verified !== false), or when original was 0 AND it was verified as Ya by admin (is_verified === true)
                     $bobotYa = Pertanyaan::whereIn('id',
                         $jawabans->filter(function($j) {
-                            return $j->jawaban == 1 && $j->is_verified !== false;
+                            return ($j->jawaban == 1 && $j->is_verified !== false) || ($j->jawaban == 0 && $j->is_verified === true);
                         })->pluck('pertanyaan_id')
                     )->sum('bobot');
 
@@ -515,7 +516,7 @@ class AdminController extends Controller
 
         return view('admin.list-akun', compact(
             'admin', 'kategori', 'tahun', 'indikators',
-            'bodiesMengisi', 'bodiesTidakMengisi'
+            'bodiesMengisi', 'bodiesTidakMengisi', 'tenggat'
         ));
     }
 
@@ -751,18 +752,29 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
+        $isEmail = filter_var($request->username_email, FILTER_VALIDATE_EMAIL);
+
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'nullable|email|unique:users,email',
-            'username' => 'required|string|max:100|unique:users,username',
-            'password' => 'required|min:6',
+            'name'           => 'required|string|max:255',
+            'username_email' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:users,username',
+                'unique:users,email',
+                $isEmail ? 'email' : '',
+            ],
+            'password'       => 'required|min:6',
+        ], [
+            'username_email.unique' => 'Username atau Email sudah terdaftar.',
+            'username_email.email'  => 'Format email tidak valid.',
         ]);
 
         $user = User::create([
             'name'     => $request->name,
             'telepon'  => $request->telepon,
-            'username' => $request->username,
-            'email'    => $request->email,
+            'username' => $request->username_email,
+            'email'    => $isEmail ? $request->username_email : null,
             'password' => Hash::make($request->password),
         ]);
 
@@ -806,20 +818,31 @@ class AdminController extends Controller
             return back()->with('success', 'Password Super Admin berhasil diperbarui');
         }
 
+        $isEmail = filter_var($request->username_email, FILTER_VALIDATE_EMAIL);
+
         $request->validate([
-            'name'     => 'nullable|string|max:255',
-            'telepon'  => 'nullable|string|max:20',
-            'username' => 'required|string|max:100|unique:users,username,' . $id,
-            'email'    => 'nullable|email|unique:users,email,' . $id,
-            'password' => 'nullable|min:6|confirmed',
+            'name'           => 'nullable|string|max:255',
+            'telepon'        => 'nullable|string|max:20',
+            'username_email' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:users,username,' . $id,
+                'unique:users,email,' . $id,
+                $isEmail ? 'email' : '',
+            ],
+            'password'       => 'nullable|min:6|confirmed',
+        ], [
+            'username_email.unique' => 'Username atau Email sudah terdaftar.',
+            'username_email.email'  => 'Format email tidak valid.',
         ]);
 
         // Inisialisasi $data dengan field yang boleh diupdate
         $data = [
             'name'     => $request->name,
             'telepon'  => $request->telepon,
-            'username' => $request->username,
-            'email'    => $request->email,
+            'username' => $request->username_email,
+            'email'    => $isEmail ? $request->username_email : null,
         ];
 
         // Hanya update password jika diisi
@@ -946,7 +969,7 @@ class AdminController extends Controller
                     $totalBobot = Pertanyaan::whereIn('id', $pertanyaanIds)->sum('bobot');
 
                     $bobotYa = Pertanyaan::whereIn('id',
-                        $jawabans->filter(fn($j) => $j->jawaban == 1 && $j->is_verified !== false)
+                        $jawabans->filter(fn($j) => ($j->jawaban == 1 && $j->is_verified !== false) || ($j->jawaban == 0 && $j->is_verified === true))
                             ->pluck('pertanyaan_id')
                     )->sum('bobot');
 

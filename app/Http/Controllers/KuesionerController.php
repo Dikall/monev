@@ -112,9 +112,13 @@ class KuesionerController extends Controller
 
     public function autoSave(Request $request)
     {
-        // Hanya terima request AJAX
-        if (!$request->ajax() && !$request->wantsJson()) {
-            return response()->json(['status' => 'error', 'message' => 'Bukan request AJAX.'], 400);
+        // Terima request AJAX atau sendBeacon
+        // sendBeacon tidak mengirim header X-Requested-With, jadi cek juga Content-Type
+        $isAjax    = $request->ajax() || $request->wantsJson();
+        $isBeacon  = !$isAjax && $request->isMethod('POST');
+
+        if (!$isAjax && !$isBeacon) {
+            return response()->json(['status' => 'error', 'message' => 'Bukan request valid.'], 400);
         }
  
         $user = Auth::user();
@@ -163,21 +167,57 @@ class KuesionerController extends Controller
  
         $jawabans = $request->input('jawaban', []);
         $links    = $request->input('links', []);
- 
-        foreach ($jawabans as $pertanyaanId => $jawabanValue) {
+        $dokumens = $request->file('dokumen', []);
+
+        // Kumpulkan semua pertanyaan_id yang perlu diproses
+        // (dari jawaban, links, atau dokumen)
+        $allIds = collect(array_keys($jawabans))
+            ->merge(array_keys($links))
+            ->merge(array_keys($dokumens))
+            ->unique()
+            ->values();
+
+        $savedCount = 0;
+
+        foreach ($allIds as $pertanyaanId) {
             $data = [
                 'user_id'        => $user->id,
                 'public_body_id' => $publicBody->id,
                 'pertanyaan_id'  => $pertanyaanId,
                 'tahun_id'       => $tahun->id,
-                'jawaban'        => $jawabanValue,
             ];
+
+            // Jawaban radio (jika ada)
+            if (isset($jawabans[$pertanyaanId])) {
+                $data['jawaban'] = $jawabans[$pertanyaanId];
+            }
  
+            // Links (jika ada)
             if (!empty($links[$pertanyaanId])) {
                 $rawLinks = is_array($links[$pertanyaanId]) ? $links[$pertanyaanId] : [$links[$pertanyaanId]];
                 $data['links'] = array_values(array_filter($rawLinks, fn($l) => !empty($l) && trim($l) !== ''));
-            } else {
-                $data['links'] = null;
+            }
+
+            // Dokumen / file upload (jika ada)
+            if (isset($dokumens[$pertanyaanId])) {
+                $file = $dokumens[$pertanyaanId];
+
+                if ($file->isValid() && $file->getSize() <= 5 * 1024 * 1024) {
+                    // Hapus file lama jika ada
+                    $existing = Jawaban::where('public_body_id', $publicBody->id)
+                        ->where('pertanyaan_id', $pertanyaanId)
+                        ->where('tahun_id', $tahun->id)
+                        ->first();
+
+                    if ($existing?->dokumen_path) {
+                        Storage::disk('public')->delete($existing->dokumen_path);
+                    }
+
+                    $data['dokumen_path'] = $file->store(
+                        "dokumen_kuesioner/{$publicBody->id}",
+                        'public'
+                    );
+                }
             }
  
             Jawaban::updateOrCreate(
@@ -188,12 +228,14 @@ class KuesionerController extends Controller
                 ],
                 $data
             );
+
+            $savedCount++;
         }
  
         return response()->json([
             'status'  => 'success',
             'message' => 'Auto-save berhasil.',
-            'saved'   => count($jawabans),
+            'saved'   => $savedCount,
         ]);
     }
 

@@ -574,6 +574,9 @@
                 <form :action="'/superadmin/pertanyaan/' + pertanyaanDeleteId" method="POST">
                     @csrf
                     @method('DELETE')
+                    <input type="hidden" name="tahun_id" value="{{ request('tahun_id') }}">
+                    <input type="hidden" name="kategori_id" value="{{ request('kategori_id') }}">
+                    <input type="hidden" name="indikator_id" value="{{ request('indikator_id') }}">
                     <button type="submit"
                         class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus

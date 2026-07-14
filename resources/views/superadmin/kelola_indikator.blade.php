@@ -311,6 +311,7 @@
                 <form :action="'/superadmin/indikator/' + indikatorId" method="POST">
                     @csrf
                     @method('DELETE')
+                    <input type="hidden" name="tahun_id" value="{{ $tahunId }}">
 
                     <button class="px-8 py-2 bg-primary-dark text-white rounded-lg hover:bg-primary-dark">
                         Hapus

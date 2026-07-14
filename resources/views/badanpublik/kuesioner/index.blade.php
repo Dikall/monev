@@ -294,6 +294,9 @@
     let isSaving   = false;
     let autoTimer  = null;
 
+    // Set untuk melacak file input yang berubah (berdasarkan name attr)
+    const changedFiles = new Set();
+
     // ── Tandai form sudah berubah ────────────────────────────────
     function markDirty() {
         isDirty = true;
@@ -317,8 +320,9 @@
         statusEl.classList.remove('flex');
     }
 
-    // ── Kumpulkan data form (hanya radio & text, bukan file) ─────
-    function collectFormData() {
+    // ── Kumpulkan data form (radio + links, tanpa file) ──────────
+    // Digunakan untuk sendBeacon saat unload (tidak bisa kirim file)
+    function collectTextData() {
         const form     = document.getElementById('form-kuesioner');
         const payload  = new URLSearchParams();
 
@@ -331,10 +335,42 @@
             payload.append(radio.name, radio.value);
         });
 
-        // Text inputs (links[id])
+        // Text inputs (links[id][])
         form.querySelectorAll('input[type="text"][name^="links["]').forEach(input => {
             if (input.value.trim()) {
                 payload.append(input.name, input.value.trim());
+            }
+        });
+
+        return payload;
+    }
+
+    // ── Kumpulkan data form lengkap (radio + links + file) ───────
+    // Digunakan untuk auto-save biasa via fetch (bisa kirim file)
+    function collectFullFormData() {
+        const form     = document.getElementById('form-kuesioner');
+        const payload  = new FormData();
+
+        payload.append('_token',       CSRF_TOKEN);
+        payload.append('kategori_id',  KATEGORI_ID);
+        payload.append('indikator_id', INDIKATOR_ID);
+
+        // Radio buttons (jawaban[id] = 0/1)
+        form.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+            payload.append(radio.name, radio.value);
+        });
+
+        // Text inputs (links[id][])
+        form.querySelectorAll('input[type="text"][name^="links["]').forEach(input => {
+            if (input.value.trim()) {
+                payload.append(input.name, input.value.trim());
+            }
+        });
+
+        // File inputs (dokumen[id]) — hanya yang berubah
+        form.querySelectorAll('input[type="file"][name^="dokumen["]').forEach(input => {
+            if (changedFiles.has(input.name) && input.files && input.files.length > 0) {
+                payload.append(input.name, input.files[0]);
             }
         });
 
@@ -348,35 +384,41 @@
         isSaving = true;
         if (!isUnloading) showStatus('Menyimpan otomatis…', true);
 
-        const payload = collectFormData();
-
         try {
             if (isUnloading && navigator.sendBeacon) {
                 // sendBeacon: andalan saat halaman mau ditutup
-                // Harus pakai Blob agar bisa set Content-Type
-                const blob = new Blob([payload.toString()], {
+                // Hanya bisa kirim text data (radio + links), BUKAN file
+                const textPayload = collectTextData();
+                const blob = new Blob([textPayload.toString()], {
                     type: 'application/x-www-form-urlencoded',
                 });
                 navigator.sendBeacon(AUTOSAVE_URL, blob);
                 isDirty  = false;
                 isSaving = false;
+                changedFiles.clear();
                 return;
             }
+
+            // Gunakan FormData agar bisa mengirim file
+            const payload    = collectFullFormData();
+            const hasFiles   = changedFiles.size > 0;
 
             const resp = await fetch(AUTOSAVE_URL, {
                 method:  'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type':     'application/x-www-form-urlencoded',
+                    // Jangan set Content-Type manual — browser akan set
+                    // multipart/form-data + boundary secara otomatis
                 },
-                body:        payload.toString(),
-                keepalive:   true,   // tetap jalan walau tab pindah
+                body:        payload,
+                keepalive:   !hasFiles,  // keepalive tidak support body besar (file)
             });
 
             const json = await resp.json();
 
             if (json.status === 'success') {
                 isDirty = false;
+                changedFiles.clear();
                 showStatus('Tersimpan otomatis ✓', false);
                 setTimeout(hideStatus, 3000);
             } else {
@@ -389,25 +431,47 @@
         }
     }
 
-    // ── Pasang listener pada form ────────────────────────────────
+    // ── Pasang listener menggunakan event delegation ─────────────
+    // Event delegation menangkap event dari elemen yang di-render
+    // secara dinamis oleh Alpine.js (x-for template)
     function attachListeners() {
         const form = document.getElementById('form-kuesioner');
         if (!form) return;
 
-        // Radio buttons
-        form.querySelectorAll('input[type="radio"]').forEach(el => {
-            el.addEventListener('change', markDirty);
+        // Gunakan event delegation pada form untuk menangkap semua
+        // input change/input event, termasuk yang ditambah dinamis
+        form.addEventListener('change', function(e) {
+            const target = e.target;
+
+            // Radio buttons (jawaban)
+            if (target.type === 'radio' && target.name && target.name.startsWith('jawaban[')) {
+                markDirty();
+                return;
+            }
+
+            // File inputs (dokumen)
+            if (target.type === 'file' && target.name && target.name.startsWith('dokumen[')) {
+                changedFiles.add(target.name);
+                markDirty();
+                return;
+            }
         });
 
-        // Text inputs (links)
-        form.querySelectorAll('input[type="text"][name^="links["]').forEach(el => {
-            el.addEventListener('input', markDirty);
+        // Input event untuk text fields (links) — termasuk yang ditambah dinamis
+        form.addEventListener('input', function(e) {
+            const target = e.target;
+
+            if (target.type === 'text' && target.name && target.name.startsWith('links[')) {
+                markDirty();
+                return;
+            }
         });
 
         // Saat tombol Simpan ditekan → batalkan auto-save, biarkan form submit biasa
         form.addEventListener('submit', () => {
             clearTimeout(autoTimer);
             isDirty = false;
+            changedFiles.clear();
         });
     }
 

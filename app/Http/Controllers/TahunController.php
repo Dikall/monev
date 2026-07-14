@@ -37,7 +37,7 @@ class TahunController extends Controller
             'tahun' => $request->tahun
         ]);
 
-        return redirect()->back()->with('success','Tahun berhasil ditambahkan');
+        return redirect()->route('superadmin.tahun.index')->with('success','Tahun berhasil ditambahkan');
     }
 
 
@@ -71,7 +71,7 @@ class TahunController extends Controller
             'tahun' => $request->tahun
         ]);
 
-        return redirect()->back()->with('success','Tahun berhasil diupdate');
+        return redirect()->route('superadmin.tahun.index')->with('success','Tahun berhasil diupdate');
     }
 
     /**
@@ -81,6 +81,6 @@ class TahunController extends Controller
     {
         Tahun::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success','Tahun berhasil dihapus');
+        return redirect()->route('superadmin.tahun.index')->with('success','Tahun berhasil dihapus');
     }
 }

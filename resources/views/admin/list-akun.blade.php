@@ -1,6 +1,23 @@
 @extends('components.layouts.app')
 
 @section('content')
+@php
+    $toRoman = function($num) {
+        $n = intval($num);
+        $res = '';
+        $romanNumber_Array = [
+            'X'  => 10, 'IX' => 9,
+            'V'  => 5,  'IV' => 4,
+            'I'  => 1
+        ];
+        foreach ($romanNumber_Array as $roman => $number) {
+            $matches = intval($n / $number);
+            $res .= str_repeat($roman, $matches);
+            $n = $n % $number;
+        }
+        return $res;
+    };
+@endphp
 <div class="max-w-12xl mx-auto mt-10 mb-20 px-6 sm:px-10 lg:px-16"
      x-data="{
         searchMengisi: '',
@@ -11,6 +28,8 @@
         
         itemsMengisi: {{ json_encode($bodiesMengisi) }},
         itemsTidak: {{ json_encode($bodiesTidakMengisi) }},
+
+        showModalPublish: false,
 
         get filteredMengisi() {
             return this.itemsMengisi.filter(i => 
@@ -133,9 +152,9 @@
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Badan Publik</th>
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Responden</th>
                             @foreach ($indikators as $ind)
-                                <th class="px-4 py-3 text-center whitespace-nowrap" title="{{ $ind->nama_indikator }} (Bobot: {{ $ind->bobot }})">
-                                    {{ $ind->nama_indikator }}
-                                    <br><span class="text-xs font-normal opacity-80">({{ $ind->bobot }})</span>
+                                <th class="px-4 py-3 text-center min-w-[100px] leading-tight align-middle" title="{{ $ind->nama_indikator }} (Bobot: {{ $ind->bobot }})">
+                                    Indikator {{ $toRoman($ind->no) }}<br>
+                                    <span class="text-xs font-normal opacity-80">(Bobot: {{ $ind->bobot }})</span>
                                 </th>
                             @endforeach
                             <th class="px-4 py-3 text-center whitespace-nowrap">Nilai Presentasi</th>
@@ -154,8 +173,11 @@
                                 <td class="px-4 py-3 font-medium text-gray-800">{{ $row['nama_badan'] }}</td>
                                 <td class="px-4 py-3 text-gray-600">{{ $row['nama_responden'] }}</td>
                                 @foreach ($indikators as $ind)
-                                    <td class="px-4 py-3 text-center font-semibold">
-                                        {{ $row['nilai_per_indikator'][$ind->id] ?? 0 }}
+                                    <td class="px-4 py-4 text-center">
+                                        <span class="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 px-2 py-1 rounded shadow-sm whitespace-nowrap text-[11px]" title="{{ $ind->nama_indikator }}">
+                                            <span class="font-bold text-gray-700">{{ $toRoman($ind->no) }}:</span>
+                                            <span class="font-semibold text-primary-dark">{{ $row['nilai_per_indikator'][$ind->id] ?? 0 }}</span>
+                                        </span>
                                     </td>
                                 @endforeach
                                 <td class="px-4 py-3 text-center">
@@ -175,8 +197,8 @@
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        {{-- Publish Nilai --}}
-                                        <form method="POST" action="{{ route('admin.publish-nilai', $row['body']->id) }}" class="inline">
+                                        <form method="POST" action="{{ route('admin.publish-nilai', $row['body']->id) }}" class="inline"
+                                              @submit.prevent="activeForm = $event.target; publishTitle = '{{ $row['is_published'] ? 'Unpublish Nilai?' : 'Publish Nilai?' }}'; publishMessage = '{{ $row['is_published'] ? 'Apakah Anda yakin ingin membatalkan publikasi nilai untuk ' : 'Apakah Anda yakin ingin mempublikasikan nilai untuk ' }}' + '{{ $row['nama_badan'] }}?'; showModalPublish = true">
                                             @csrf
                                             @method('PATCH')
                                             @if(!$row['can_publish'] && !$row['is_published'])
@@ -301,9 +323,9 @@
                             <th class="px-4 py-3 text-left whitespace-nowrap">Nama Responden</th>
                             <th class="px-4 py-3 text-center whitespace-nowrap">Status</th>
                             @foreach ($indikators as $ind)
-                                <th class="px-4 py-3 text-center whitespace-nowrap" title="{{ $ind->nama_indikator }} (Bobot: {{ $ind->bobot }})">
-                                    {{ $ind->nama_indikator }}
-                                    <br><span class="text-xs font-normal opacity-80">({{ $ind->bobot }})</span>
+                                <th class="px-4 py-3 text-center min-w-[100px] leading-tight align-middle" title="{{ $ind->nama_indikator }} (Bobot: {{ $ind->bobot }})">
+                                    Indikator {{ $toRoman($ind->no) }}<br>
+                                    <span class="text-xs font-normal opacity-80">(Bobot: {{ $ind->bobot }})</span>
                                 </th>
                             @endforeach
                             <th class="px-4 py-3 text-center whitespace-nowrap">Nilai Presentasi</th>
@@ -337,8 +359,11 @@
                                     @endif
                                 </td>
                                 @foreach ($indikators as $ind)
-                                    <td class="px-4 py-3 text-center font-semibold text-gray-700">
-                                        {{ $row['nilai_per_indikator'][$ind->id] ?? 0 }}
+                                    <td class="px-4 py-4 text-center">
+                                        <span class="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 px-2 py-1 rounded shadow-sm whitespace-nowrap text-[11px]" title="{{ $ind->nama_indikator }}">
+                                            <span class="font-bold text-gray-700">{{ $toRoman($ind->no) }}:</span>
+                                            <span class="font-semibold text-primary-dark">{{ $row['nilai_per_indikator'][$ind->id] ?? 0 }}</span>
+                                        </span>
                                     </td>
                                 @endforeach
                                 <td class="px-4 py-3 text-center">
@@ -358,8 +383,8 @@
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        {{-- Publish Nilai --}}
-                                        <form method="POST" action="{{ route('admin.publish-nilai', $row['body']->id) }}" class="inline">
+                                        <form method="POST" action="{{ route('admin.publish-nilai', $row['body']->id) }}" class="inline"
+                                              @submit.prevent="activeForm = $event.target; publishTitle = '{{ $row['is_published'] ? 'Unpublish Nilai?' : 'Publish Nilai?' }}'; publishMessage = '{{ $row['is_published'] ? 'Apakah Anda yakin ingin membatalkan publikasi nilai untuk ' : 'Apakah Anda yakin ingin mempublikasikan nilai untuk ' }}' + '{{ $row['nama_badan'] }}?'; showModalPublish = true">
                                             @csrf
                                             @method('PATCH')
                                             @if(!$row['can_publish'] && !$row['is_published'])

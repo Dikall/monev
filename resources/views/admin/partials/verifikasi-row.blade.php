@@ -100,7 +100,7 @@
                 @endif
             </td>
 
-            {{-- Verifikasi: Radio Ya / Tidak --}}
+            {{-- Kolom Verifikasi --}}
             <td class="px-2 py-3 text-center" style="width: 12%">
                 <div class="flex items-center justify-center gap-2 flex-wrap">
                     <label class="inline-flex items-center gap-1 cursor-pointer text-xs text-gray-700 whitespace-nowrap">
@@ -124,9 +124,8 @@
                 </div>
             </td>
 
-            {{-- Catatan + Upload --}}
+            {{-- Catatan --}}
             <td class="px-3 py-3" style="width: 30%">
-                {{-- Input Catatan --}}
                 <input type="text"
                        name="catatan[{{ $item->id }}]"
                        value="{{ $jawaban?->catatan_verifikasi ?? '' }}"
@@ -135,6 +134,7 @@
                        @if(auth()->user()->hasRole('Super Admin')) readonly @else @input="triggerAutoSave()" @endif>
             </td>
 
+            {{-- Kolom Verifikator (Super Admin only) --}}
             @if(auth()->user()->hasRole('Super Admin'))
                 <td class="px-3 py-3 text-xs text-gray-600" style="width: 10%">
                     {{ $jawaban?->verifikator?->name ?? '-' }}

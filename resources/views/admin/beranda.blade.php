@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="max-w-12xl mx-auto mt-10 mb-20 px-6 sm:px-10 lg:px-16">
-
     <div class="bg-green-100 p-4 rounded-xl mb-4">
         {{-- Header Selamat Datang --}}
         <h1 class="text-xl font-semibold text-gray-800 mb-2">
@@ -77,6 +76,5 @@
             <p class="text-gray-500 text-sm">Belum ada kategori badan publik yang di-assign kepada Anda.</p>
         </div>
     @endif
-
 </div>
 @endsection

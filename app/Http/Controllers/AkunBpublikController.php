@@ -37,7 +37,7 @@ class AkunBpublikController extends Controller
             $perPage = 10;
         }
 
-        $users = $query->orderBy('name')->paginate($perPage)->withQueryString();
+        $users = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
         return view('superadmin.kelola_badanpublik', compact('users', 'kategoris', 'kategoriId', 'status'));
     }
