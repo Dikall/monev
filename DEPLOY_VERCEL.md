@@ -42,13 +42,14 @@ Klik **Deploy**. Vercel akan otomatis:
 1. memasang dependency Composer;
 2. menjalankan `npm ci`;
 3. membangun aset Vite ke `public/build`;
-4. menjalankan Laravel melalui `server.php`.
+4. menjalankan Laravel melalui PHP Function `api/index.php`.
 
 Database tidak dibuat dan migration tidak dijalankan oleh konfigurasi deployment ini.
 
 ## Catatan serverless
 
 - Session menggunakan cookie agar login tidak bergantung pada filesystem sementara.
+- Entry point Laravel berada di `api/index.php` agar Vercel mengeksekusinya sebagai PHP Function, bukan mengirim source PHP sebagai file unduhan.
 - Cache menggunakan memory per-request (`array`), queue berjalan sinkron, dan log dikirim ke Vercel (`stderr`).
 - Filesystem Vercel bersifat sementara. Fitur upload dokumen masih memerlukan object storage persisten (misalnya Supabase Storage atau S3) agar file baru tidak hilang setelah function didaur ulang. File statis yang sudah ada di `public/` tetap ikut deployment.
 - Setelah URL final diketahui, perbarui `APP_URL`, lalu redeploy supaya URL aset dan tautan aplikasi konsisten.
