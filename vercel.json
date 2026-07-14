@@ -3,14 +3,37 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.php",
+      "src": "api/index.php",
       "use": "vercel-php@0.9.0"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/build/(.*)",
+      "dest": "/public/build/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/public/images/$1"
+    },
+    {
+      "src": "/files/(.*)",
+      "dest": "/public/files/$1"
+    },
+    {
+      "src": "/(favicon\\.ico|robots\\.txt|erd\\.html)",
+      "dest": "/public/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/server.php"
+      "dest": "/api/index.php"
     }
   ],
   "env": {
