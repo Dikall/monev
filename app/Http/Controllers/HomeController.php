@@ -17,13 +17,19 @@ class HomeController extends Controller
         $this->middleware('permission:view-dashboard', ['only' => ['index','show']]);
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
-        return view('superadmin.dashboard');
+        $user = auth()->user();
+
+        if ($user->hasRole('Super Admin')) {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($user->hasRole('Admin')) {
+            return redirect()->route('admin/beranda');
+        } elseif ($user->hasRole('Badan Publik')) {
+            return redirect()->route('badanpublik/beranda');
+        }
+
+        auth()->logout();
+        return redirect()->route('login')->with('error', 'Role tidak dikenali.');
     }
 }
