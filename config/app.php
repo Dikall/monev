@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'monev-production-584c.up.railway.app'),
 
     'asset_url' => env('ASSET_URL', '/'),
 
